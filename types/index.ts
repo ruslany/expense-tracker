@@ -10,13 +10,14 @@ export interface CSVFieldMapping {
   status?: string;
   cardMember?: string;
   accountNumber?: string;
+  transactionType?: string;
+  memo?: string;
 }
 
 export interface ParsedTransaction {
   date: Date;
   description: string;
   amount: number;
-  merchant: string;
   originalData: Record<string, unknown>;
 }
 
@@ -36,7 +37,6 @@ export interface DashboardStats {
     description: string;
     amount: number;
     category: string | null;
-    merchant: string | null;
   }>;
   spendingByDay: Array<{
     date: string;

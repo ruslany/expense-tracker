@@ -14,11 +14,12 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     institution: "fidelity",
     fieldMapping: {
       date: "Date",
-      description: "Description",
+      description: "Name",
       amount: "Amount",
-      balance: "Balance",
+      transactionType: "Transaction",
+      memo: "Memo",
     },
-    dateFormat: "MM/dd/yyyy",
+    dateFormat: "yyyy-MM-dd",
   },
   citi: {
     institution: "citi",
@@ -102,14 +103,10 @@ function parseTransaction(
     amount = credit - debit; // Credits are positive, debits are negative
   }
 
-  // Extract merchant name from description (basic implementation)
-  const merchant = extractMerchant(description);
-
   return {
     date,
     description,
     amount,
-    merchant,
     originalData: row,
   };
 }
@@ -124,12 +121,6 @@ function parseAmount(amountStr: string): number {
   }
 
   return parseFloat(cleaned);
-}
-
-function extractMerchant(description: string): string {
-  // Basic merchant extraction - take first part before common separators
-  const parts = description.split(/[-#@]/);
-  return parts[0].trim();
 }
 
 export function validateCSVHeaders(
