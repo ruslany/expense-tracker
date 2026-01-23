@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { csvMappingSchema } from "@/lib/validations";
+import type { Prisma } from "@/lib/generated/prisma/client";
 
 export async function GET() {
   try {
@@ -26,12 +27,12 @@ export async function POST(request: NextRequest) {
     const mapping = await prisma.cSVMapping.upsert({
       where: { institution: validated.institution },
       update: {
-        fieldMapping: validated.fieldMapping,
+        fieldMapping: validated.fieldMapping as Prisma.InputJsonValue,
         dateFormat: validated.dateFormat,
       },
       create: {
         institution: validated.institution,
-        fieldMapping: validated.fieldMapping,
+        fieldMapping: validated.fieldMapping as Prisma.InputJsonValue,
         dateFormat: validated.dateFormat,
       },
     });

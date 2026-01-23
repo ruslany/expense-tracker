@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseCSVFile, previewCSV, defaultMappings } from "@/lib/csv-parser";
 import type { Institution } from "@/types";
+import type { Prisma } from "@/lib/generated/prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
       csvMapping = await prisma.cSVMapping.create({
         data: {
           institution,
-          fieldMapping: defaultConfig.fieldMapping,
+          fieldMapping: defaultConfig.fieldMapping as unknown as Prisma.InputJsonValue,
           dateFormat: defaultConfig.dateFormat,
         },
       });
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
           description: tx.description,
           amount: tx.amount,
           merchant: tx.merchant,
-          originalData: tx.originalData,
+          originalData: tx.originalData as Prisma.InputJsonValue,
           importedAt: now,
         })),
       });

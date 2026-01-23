@@ -13,13 +13,13 @@ export const transactionSchema = z.object({
   amount: z.number(),
   category: z.string().optional(),
   merchant: z.string().optional(),
-  originalData: z.record(z.unknown()),
+  originalData: z.record(z.string(), z.unknown()),
   importedAt: z.coerce.date(),
 });
 
 export const csvMappingSchema = z.object({
   institution: z.string().min(1, "Institution is required"),
-  fieldMapping: z.record(z.string()),
+  fieldMapping: z.record(z.string(), z.string()),
   dateFormat: z.string().min(1, "Date format is required"),
 });
 
