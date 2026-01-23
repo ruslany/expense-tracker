@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { transactionFilterSchema } from "@/lib/validations";
+import type { Prisma } from "@/lib/generated/prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
       pageSize,
     } = validated;
 
-    const where: any = {};
+    const where: Prisma.TransactionWhereInput = {};
 
     if (startDate) {
       where.date = { ...where.date, gte: startDate };

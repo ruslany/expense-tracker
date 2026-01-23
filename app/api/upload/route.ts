@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseCSVFile, previewCSV, defaultMappings } from "@/lib/csv-parser";
-import type { Institution } from "@/types";
+import type { CSVFieldMapping, Institution } from "@/types";
 import type { Prisma } from "@/lib/generated/prisma/client";
 
 export async function POST(request: NextRequest) {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     // Parse CSV
     const config = {
       institution,
-      fieldMapping: csvMapping.fieldMapping as any,
+      fieldMapping: csvMapping.fieldMapping as CSVFieldMapping,
       dateFormat: csvMapping.dateFormat,
     };
 

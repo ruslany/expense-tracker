@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { parse, format } from "date-fns";
+import { parse } from "date-fns";
 import type { CSVFieldMapping, ParsedTransaction, Institution } from "@/types";
 
 export interface CSVParserConfig {
