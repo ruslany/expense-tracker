@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       startDate,
       endDate,
       accountId,
-      category,
+      categoryId,
       minAmount,
       maxAmount,
       search,
@@ -39,8 +39,8 @@ export async function GET(request: NextRequest) {
       where.accountId = accountId;
     }
 
-    if (category) {
-      where.category = category;
+    if (categoryId) {
+      where.categoryId = categoryId;
     }
 
     if (minAmount !== undefined || maxAmount !== undefined) {
@@ -54,10 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      where.OR = [
-        { description: { contains: search, mode: "insensitive" } },
-        { merchant: { contains: search, mode: "insensitive" } },
-      ];
+      where.description = { contains: search, mode: "insensitive" };
     }
 
     const [transactions, total] = await Promise.all([
@@ -69,6 +66,12 @@ export async function GET(request: NextRequest) {
               id: true,
               name: true,
               institution: true,
+            },
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },

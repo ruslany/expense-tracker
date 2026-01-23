@@ -62,7 +62,6 @@ export async function POST(request: NextRequest) {
           date: tx.date,
           description: tx.description,
           amount: tx.amount,
-          merchant: tx.merchant,
           originalData: tx.originalData as Prisma.InputJsonValue,
           importedAt: now,
         })),

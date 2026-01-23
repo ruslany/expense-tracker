@@ -29,6 +29,12 @@ export async function GET(request: NextRequest) {
             institution: true,
           },
         },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: { date: "desc" },
     });
@@ -49,7 +55,7 @@ export async function GET(request: NextRequest) {
     const categoryTotals = new Map<string, number>();
     transactions.forEach((t) => {
       if (t.amount < 0) {
-        const category = t.category || "Uncategorized";
+        const category = t.category?.name || "Uncategorized";
         const current = categoryTotals.get(category) || 0;
         categoryTotals.set(category, current + Math.abs(t.amount));
       }
@@ -70,8 +76,7 @@ export async function GET(request: NextRequest) {
       date: t.date,
       description: t.description,
       amount: t.amount,
-      category: t.category,
-      merchant: t.merchant,
+      category: t.category?.name ?? null,
     }));
 
     // Calculate spending by day

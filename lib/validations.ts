@@ -11,8 +11,7 @@ export const transactionSchema = z.object({
   date: z.coerce.date(),
   description: z.string().min(1, "Description is required"),
   amount: z.number(),
-  category: z.string().optional(),
-  merchant: z.string().optional(),
+  categoryId: z.string().optional(),
   originalData: z.record(z.string(), z.unknown()),
   importedAt: z.coerce.date(),
 });
@@ -25,12 +24,11 @@ export const csvMappingSchema = z.object({
 
 export const categorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
-  parentId: z.string().optional(),
+  keywords: z.array(z.string()).optional(),
 });
 
 export const transactionUpdateSchema = z.object({
-  category: z.string().optional(),
-  merchant: z.string().optional(),
+  categoryId: z.string().optional(),
   description: z.string().optional(),
 });
 
@@ -38,7 +36,7 @@ export const transactionFilterSchema = z.object({
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   accountId: z.string().optional(),
-  category: z.string().optional(),
+  categoryId: z.string().optional(),
   minAmount: z.coerce.number().optional(),
   maxAmount: z.coerce.number().optional(),
   search: z.string().optional(),

@@ -14,11 +14,11 @@ const mockStats = {
 };
 
 const mockRecentTransactions = [
-  { id: "1", date: new Date("2024-01-20"), description: "Whole Foods Market", amount: -87.43, category: "Groceries", merchant: "Whole Foods" },
-  { id: "2", date: new Date("2024-01-19"), description: "Shell Gas Station", amount: -45.20, category: "Transportation", merchant: "Shell" },
-  { id: "3", date: new Date("2024-01-18"), description: "Netflix Subscription", amount: -15.99, category: "Entertainment", merchant: "Netflix" },
-  { id: "4", date: new Date("2024-01-17"), description: "Salary Deposit", amount: 5420.00, category: "Income", merchant: null },
-  { id: "5", date: new Date("2024-01-16"), description: "Amazon Purchase", amount: -124.56, category: "Shopping", merchant: "Amazon" },
+  { id: "1", date: new Date("2024-01-20"), description: "Whole Foods Market", amount: -87.43, category: "Groceries" },
+  { id: "2", date: new Date("2024-01-19"), description: "Shell Gas Station", amount: -45.20, category: "Transportation" },
+  { id: "3", date: new Date("2024-01-18"), description: "Netflix Subscription", amount: -15.99, category: "Entertainment" },
+  { id: "4", date: new Date("2024-01-17"), description: "Salary Deposit", amount: 5420.00, category: "Income" },
+  { id: "5", date: new Date("2024-01-16"), description: "Amazon Purchase", amount: -124.56, category: "Shopping" },
 ];
 
 export default function Dashboard() {

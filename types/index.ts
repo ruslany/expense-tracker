@@ -48,7 +48,7 @@ export interface TransactionFilters {
   startDate?: Date;
   endDate?: Date;
   accountId?: string;
-  category?: string;
+  categoryId?: string;
   minAmount?: number;
   maxAmount?: number;
   search?: string;

@@ -24,7 +24,6 @@ interface Transaction {
   description: string;
   amount: number;
   category: string | null;
-  merchant: string | null;
   account: {
     id: string;
     name: string;
@@ -56,14 +55,6 @@ export function TransactionsTable({ data }: TransactionsTableProps) {
       },
       cell: ({ row }) => formatDate(row.getValue("date")),
       sortingFn: "datetime",
-    },
-    {
-      accessorKey: "merchant",
-      header: "Merchant",
-      cell: ({ row }) => {
-        const merchant = row.getValue("merchant") as string | null;
-        return merchant || <span className="text-muted-foreground">—</span>;
-      },
     },
     {
       accessorKey: "description",

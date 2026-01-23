@@ -12,7 +12,6 @@ const mockTransactions = [
     description: "Whole Foods Market #123",
     amount: -87.43,
     category: "Groceries",
-    merchant: "Whole Foods",
     account: { id: "acc1", name: "Fidelity Visa" },
   },
   {
@@ -21,7 +20,6 @@ const mockTransactions = [
     description: "Shell Gas Station",
     amount: -45.20,
     category: "Transportation",
-    merchant: "Shell",
     account: { id: "acc1", name: "Fidelity Visa" },
   },
   {
@@ -30,7 +28,6 @@ const mockTransactions = [
     description: "Netflix Subscription",
     amount: -15.99,
     category: "Entertainment",
-    merchant: "Netflix",
     account: { id: "acc2", name: "Citi Card" },
   },
   {
@@ -39,7 +36,6 @@ const mockTransactions = [
     description: "Salary Deposit",
     amount: 5420.00,
     category: "Income",
-    merchant: null,
     account: { id: "acc1", name: "Fidelity Visa" },
   },
   {
@@ -48,7 +44,6 @@ const mockTransactions = [
     description: "Amazon Purchase - Electronics",
     amount: -124.56,
     category: "Shopping",
-    merchant: "Amazon",
     account: { id: "acc3", name: "Amex Gold" },
   },
   {
@@ -57,7 +52,6 @@ const mockTransactions = [
     description: "Starbucks Coffee",
     amount: -6.75,
     category: "Dining",
-    merchant: "Starbucks",
     account: { id: "acc1", name: "Fidelity Visa" },
   },
   {
@@ -66,7 +60,6 @@ const mockTransactions = [
     description: "Uber Ride",
     amount: -23.40,
     category: "Transportation",
-    merchant: "Uber",
     account: { id: "acc2", name: "Citi Card" },
   },
   {
@@ -75,7 +68,6 @@ const mockTransactions = [
     description: "Target Stores",
     amount: -67.89,
     category: "Shopping",
-    merchant: "Target",
     account: { id: "acc1", name: "Fidelity Visa" },
   },
   {
@@ -84,7 +76,6 @@ const mockTransactions = [
     description: "Electric Bill Payment",
     amount: -142.30,
     category: "Utilities",
-    merchant: "PG&E",
     account: { id: "acc1", name: "Fidelity Visa" },
   },
   {
@@ -93,7 +84,6 @@ const mockTransactions = [
     description: "Chipotle Mexican Grill",
     amount: -14.25,
     category: "Dining",
-    merchant: "Chipotle",
     account: { id: "acc3", name: "Amex Gold" },
   },
 ];
