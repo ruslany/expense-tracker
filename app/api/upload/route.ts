@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     // Parse CSV
     const config = {
       institution,
-      fieldMapping: csvMapping.fieldMapping as CSVFieldMapping,
+      fieldMapping: csvMapping.fieldMapping as unknown as CSVFieldMapping,
       dateFormat: csvMapping.dateFormat,
     };
 

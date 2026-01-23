@@ -24,12 +24,15 @@ export async function GET(request: NextRequest) {
 
     const where: Prisma.TransactionWhereInput = {};
 
-    if (startDate) {
-      where.date = { ...where.date, gte: startDate };
-    }
-
-    if (endDate) {
-      where.date = { ...where.date, lte: endDate };
+    if (startDate || endDate) {
+      const dateFilter: Prisma.DateTimeFilter = {};
+      if (startDate) {
+        dateFilter.gte = startDate;
+      }
+      if (endDate) {
+        dateFilter.lte = endDate;
+      }
+      where.date = dateFilter;
     }
 
     if (accountId) {
