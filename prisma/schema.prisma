@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  id          String        @id @default(cuid())
+  name        String
+  institution String
+  accountType String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  transactions Transaction[]
+
+  @@index([institution])
+}
+
+model Transaction {
+  id           String   @id @default(cuid())
+  accountId    String
+  date         DateTime
+  description  String
+  amount       Float
+  category     String?
+  merchant     String?
+  originalData Json
+  importedAt   DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([date])
+  @@index([category])
+}
+
+model CSVMapping {
+  id           String   @id @default(cuid())
+  institution  String   @unique
+  fieldMapping Json
+  dateFormat   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  parentId  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryHierarchy")
+
+  @@index([parentId])
+}
+
+model ImportHistory {
+  id           String   @id @default(cuid())
+  fileName     String
+  institution  String
+  accountId    String?
+  rowsImported Int
+  importedAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+}
