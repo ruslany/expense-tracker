@@ -60,7 +60,7 @@ export function TransactionsTable({ data }: TransactionsTableProps) {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="max-w-[300px] truncate" title={row.getValue("description")}>
+        <div className="max-w-75 truncate" title={row.getValue("description")}>
           {row.getValue("description")}
         </div>
       ),
