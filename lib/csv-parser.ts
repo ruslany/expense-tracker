@@ -6,6 +6,8 @@ export interface CSVParserConfig {
   institution: Institution;
   fieldMapping: CSVFieldMapping;
   dateFormat: string;
+  invertAmount: boolean;
+  skipPatterns?: string[];
 }
 
 // Default mappings for known institutions
@@ -20,6 +22,8 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
       memo: "Memo",
     },
     dateFormat: "yyyy-MM-dd",
+    invertAmount: false, // Fidelity shows expenses as negative
+    skipPatterns: ["INTERNET PAYMENT THANK YOU"],
   },
   citi: {
     institution: "citi",
@@ -31,6 +35,8 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
       credit: "Credit",
     },
     dateFormat: "MM/dd/yyyy",
+    invertAmount: false, // Uses debit/credit columns, already handled correctly
+    skipPatterns: [],
   },
   amex: {
     institution: "amex",
@@ -42,6 +48,8 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
       amount: "Amount",
     },
     dateFormat: "MM/dd/yyyy",
+    invertAmount: true, // AMEX shows expenses as positive, need to invert
+    skipPatterns: ["ONLINE PAYMENT - THANK YOU"],
   },
 };
 
@@ -64,6 +72,15 @@ export function parseCSVFile(
   for (const row of parseResult.data) {
     try {
       const transaction = parseTransaction(row, config);
+
+      // Skip transactions matching any skip pattern
+      const shouldSkip = config.skipPatterns?.some((pattern) =>
+        transaction.description.toUpperCase().includes(pattern.toUpperCase())
+      );
+      if (shouldSkip) {
+        continue;
+      }
+
       transactions.push(transaction);
     } catch (error) {
       console.error("Error parsing row:", row, error);
@@ -103,6 +120,11 @@ function parseTransaction(
     const debit = row[fieldMapping.debit] ? parseAmount(row[fieldMapping.debit]) : 0;
     const credit = row[fieldMapping.credit] ? parseAmount(row[fieldMapping.credit]) : 0;
     amount = credit - debit; // Credits are positive, debits are negative
+  }
+
+  // Invert amount if needed (some institutions show expenses as positive)
+  if (config.invertAmount) {
+    amount = -amount;
   }
 
   return {

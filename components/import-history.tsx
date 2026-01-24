@@ -1,3 +1,11 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
 
 interface ImportHistoryItem {
@@ -22,33 +30,31 @@ export function ImportHistory({ history }: ImportHistoryProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b">
-            <th className="px-4 py-3 text-left font-medium">File Name</th>
-            <th className="px-4 py-3 text-left font-medium">Institution</th>
-            <th className="px-4 py-3 text-left font-medium">Rows Imported</th>
-            <th className="px-4 py-3 text-left font-medium">Imported At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {history.map((item) => (
-            <tr key={item.id} className="border-b last:border-0">
-              <td className="px-4 py-3">{item.fileName}</td>
-              <td className="px-4 py-3 capitalize">{item.institution}</td>
-              <td className="px-4 py-3">{item.rowsImported}</td>
-              <td className="px-4 py-3">
-                {formatDate(item.importedAt)} at{" "}
-                {item.importedAt.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>File Name</TableHead>
+          <TableHead>Institution</TableHead>
+          <TableHead>Rows Imported</TableHead>
+          <TableHead>Imported At</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {history.map((item) => (
+          <TableRow key={item.id}>
+            <TableCell>{item.fileName}</TableCell>
+            <TableCell className="capitalize">{item.institution}</TableCell>
+            <TableCell>{item.rowsImported}</TableCell>
+            <TableCell>
+              {formatDate(item.importedAt)} at{" "}
+              {item.importedAt.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
