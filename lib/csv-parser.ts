@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { parse } from "date-fns";
+import { parse, startOfDay } from "date-fns";
 import type { CSVFieldMapping, ParsedTransaction, Institution } from "@/types";
 
 export interface CSVParserConfig {
@@ -85,7 +85,7 @@ function parseTransaction(
   if (!dateStr) {
     throw new Error("Date field is missing");
   }
-  const date = parse(dateStr, dateFormat, new Date());
+  const date = parse(dateStr, dateFormat, startOfDay(new Date()));
 
   // Parse description
   const description = row[fieldMapping.description] || "Unknown";
