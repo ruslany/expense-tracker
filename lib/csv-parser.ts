@@ -6,6 +6,7 @@ export interface CSVParserConfig {
   institution: Institution;
   fieldMapping: CSVFieldMapping;
   dateFormat: string;
+  invertAmount: boolean;
 }
 
 // Default mappings for known institutions
@@ -20,6 +21,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
       memo: "Memo",
     },
     dateFormat: "yyyy-MM-dd",
+    invertAmount: false, // Fidelity shows expenses as negative
   },
   citi: {
     institution: "citi",
@@ -31,6 +33,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
       credit: "Credit",
     },
     dateFormat: "MM/dd/yyyy",
+    invertAmount: false, // Uses debit/credit columns, already handled correctly
   },
   amex: {
     institution: "amex",
@@ -42,6 +45,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
       amount: "Amount",
     },
     dateFormat: "MM/dd/yyyy",
+    invertAmount: true, // AMEX shows expenses as positive, need to invert
   },
 };
 
@@ -103,6 +107,11 @@ function parseTransaction(
     const debit = row[fieldMapping.debit] ? parseAmount(row[fieldMapping.debit]) : 0;
     const credit = row[fieldMapping.credit] ? parseAmount(row[fieldMapping.credit]) : 0;
     amount = credit - debit; // Credits are positive, debits are negative
+  }
+
+  // Invert amount if needed (some institutions show expenses as positive)
+  if (config.invertAmount) {
+    amount = -amount;
   }
 
   return {

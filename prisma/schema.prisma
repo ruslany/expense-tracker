@@ -44,6 +44,7 @@ model CSVMapping {
   institution  String   @unique
   fieldMapping Json
   dateFormat   String
+  invertAmount Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

@@ -11,6 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
 interface Account {
@@ -194,29 +202,25 @@ export function CSVUploader() {
       {preview && preview.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-sm font-medium">Preview (first 5 rows)</h3>
-          <div className="overflow-x-auto rounded-md border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted">
-                <tr>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
                   {Object.keys(preview[0]).map((header) => (
-                    <th key={header} className="px-4 py-2 text-left font-medium">
-                      {header}
-                    </th>
+                    <TableHead key={header}>{header}</TableHead>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {preview.map((row, idx) => (
-                  <tr key={idx} className="border-t">
+                  <TableRow key={idx}>
                     {Object.values(row).map((value, cellIdx) => (
-                      <td key={cellIdx} className="px-4 py-2">
-                        {value}
-                      </td>
+                      <TableCell key={cellIdx}>{value}</TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}

@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
           institution,
           fieldMapping: defaultConfig.fieldMapping as unknown as Prisma.InputJsonValue,
           dateFormat: defaultConfig.dateFormat,
+          invertAmount: defaultConfig.invertAmount,
         },
       });
     }
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
       institution,
       fieldMapping: csvMapping.fieldMapping as unknown as CSVFieldMapping,
       dateFormat: csvMapping.dateFormat,
+      invertAmount: csvMapping.invertAmount,
     };
 
     const parsedTransactions = parseCSVFile(fileContent, config);
