@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Upload, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,14 +12,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import type { Institution } from "@/types";
+
+interface Account {
+  id: string;
+  name: string;
+  institution: string;
+  accountType: string;
+}
 
 export function CSVUploader() {
   const [file, setFile] = useState<File | null>(null);
-  const [institution, setInstitution] = useState<Institution | "">("");
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<Record<string, string>[] | null>(null);
+
+  useEffect(() => {
+    async function fetchAccounts() {
+      try {
+        const response = await fetch("/api/accounts");
+        if (response.ok) {
+          const data = await response.json();
+          setAccounts(data);
+        }
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+      }
+    }
+    fetchAccounts();
+  }, []);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -50,13 +72,15 @@ export function CSVUploader() {
   };
 
   const handleUpload = async () => {
-    if (!file || !institution) return;
+    const selectedAccount = accounts.find((a) => a.id === selectedAccountId);
+    if (!file || !selectedAccount) return;
 
     setIsUploading(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("institution", institution);
+      formData.append("institution", selectedAccount.institution);
+      formData.append("accountId", selectedAccount.id);
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -81,20 +105,22 @@ export function CSVUploader() {
 
   return (
     <div className="space-y-6">
-      {/* Institution Selector */}
+      {/* Account Selector */}
       <div className="space-y-2">
-        <Label htmlFor="institution">Select Institution</Label>
+        <Label htmlFor="account">Select Account</Label>
         <Select
-          value={institution}
-          onValueChange={(value) => setInstitution(value as Institution)}
+          value={selectedAccountId}
+          onValueChange={setSelectedAccountId}
         >
-          <SelectTrigger id="institution">
-            <SelectValue placeholder="Choose your credit card institution" />
+          <SelectTrigger id="account">
+            <SelectValue placeholder="Choose your account" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="fidelity">Fidelity</SelectItem>
-            <SelectItem value="citi">Costco Citi</SelectItem>
-            <SelectItem value="amex">American Express</SelectItem>
+            {accounts.map((account) => (
+              <SelectItem key={account.id} value={account.id}>
+                {account.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -158,7 +184,7 @@ export function CSVUploader() {
       {/* Upload Button */}
       <Button
         onClick={handleUpload}
-        disabled={!file || !institution || isUploading}
+        disabled={!file || !selectedAccountId || isUploading}
         className="w-full"
       >
         {isUploading ? "Uploading..." : "Upload and Import"}
