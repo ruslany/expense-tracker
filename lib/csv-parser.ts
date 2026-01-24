@@ -125,6 +125,36 @@ function parseAmount(amountStr: string): number {
   return parseFloat(cleaned);
 }
 
+export interface CategoryWithKeywords {
+  id: string;
+  name: string;
+  keywords: string[];
+}
+
+/**
+ * Detects the category for a transaction based on keyword matching.
+ * Returns the category ID if a match is found, null otherwise.
+ *
+ * Matching is case-insensitive and checks if any keyword is contained
+ * in the transaction description.
+ */
+export function detectCategory(
+  description: string,
+  categories: CategoryWithKeywords[]
+): string | null {
+  const descriptionLower = description.toLowerCase();
+
+  for (const category of categories) {
+    for (const keyword of category.keywords) {
+      if (keyword && descriptionLower.includes(keyword.toLowerCase())) {
+        return category.id;
+      }
+    }
+  }
+
+  return null;
+}
+
 export function validateCSVHeaders(
   fileContent: string,
   expectedMapping: CSVFieldMapping

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { parseCSVFile, previewCSV, defaultMappings } from "@/lib/csv-parser";
+import { parseCSVFile, previewCSV, defaultMappings, detectCategory } from "@/lib/csv-parser";
 import type { CSVFieldMapping, Institution } from "@/types";
 import type { Prisma } from "@/lib/generated/prisma/client";
 
@@ -56,12 +56,18 @@ export async function POST(request: NextRequest) {
     if (accountId && parsedTransactions.length > 0) {
       const now = new Date();
 
+      // Fetch categories for automatic category detection
+      const categories = await prisma.category.findMany({
+        select: { id: true, name: true, keywords: true },
+      });
+
       await prisma.transaction.createMany({
         data: parsedTransactions.map((tx) => ({
           accountId,
           date: tx.date,
           description: tx.description,
           amount: tx.amount,
+          categoryId: detectCategory(tx.description, categories),
           originalData: tx.originalData as Prisma.InputJsonValue,
           importedAt: now,
         })),
