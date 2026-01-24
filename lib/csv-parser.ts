@@ -85,7 +85,9 @@ function parseTransaction(
   if (!dateStr) {
     throw new Error("Date field is missing");
   }
-  const date = parse(dateStr, dateFormat, startOfDay(new Date()));
+  const parsedDate = parse(dateStr, dateFormat, startOfDay(new Date()));
+  // Convert to UTC midnight to avoid timezone offset issues
+  const date = new Date(Date.UTC(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()));
 
   // Parse description
   const description = row[fieldMapping.description] || "Unknown";
