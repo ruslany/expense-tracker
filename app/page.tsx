@@ -4,24 +4,68 @@ import { DashboardCharts } from "@/components/dashboard-charts";
 import { RecentTransactions } from "@/components/recent-transactions";
 import { formatCurrency } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
-// Mock data for demonstration
-const mockStats = {
-  totalSpent: 3245.67,
-  totalIncome: 5420.00,
-  netCashFlow: 2174.33,
-  transactionCount: 47,
-};
+async function getStats() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-const mockRecentTransactions = [
-  { id: "1", date: new Date("2024-01-20"), description: "Whole Foods Market", amount: -87.43, category: "Groceries" },
-  { id: "2", date: new Date("2024-01-19"), description: "Shell Gas Station", amount: -45.20, category: "Transportation" },
-  { id: "3", date: new Date("2024-01-18"), description: "Netflix Subscription", amount: -15.99, category: "Entertainment" },
-  { id: "4", date: new Date("2024-01-17"), description: "Salary Deposit", amount: 5420.00, category: "Income" },
-  { id: "5", date: new Date("2024-01-16"), description: "Amazon Purchase", amount: -124.56, category: "Shopping" },
-];
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      date: {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      },
+    },
+  });
 
-export default function Dashboard() {
+  const totalSpent = transactions
+    .filter((t) => t.amount < 0)
+    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+  const totalCredits = transactions
+    .filter((t) => t.amount > 0)
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const transactionCount = transactions.length;
+
+  const maxTransaction = transactions.length > 0
+    ? Math.max(...transactions.map((t) => Math.abs(t.amount)))
+    : 0;
+
+  return {
+    totalSpent,
+    totalCredits,
+    transactionCount,
+    maxTransaction,
+  };
+}
+
+async function getRecentTransactions() {
+  const transactions = await prisma.transaction.findMany({
+    orderBy: { date: "desc" },
+    take: 10,
+    include: {
+      category: true,
+    },
+  });
+
+  return transactions.map((t) => ({
+    id: t.id,
+    date: t.date,
+    description: t.description,
+    amount: t.amount,
+    category: t.category?.name ?? null,
+  }));
+}
+
+export default async function Dashboard() {
+  const [stats, recentTransactions] = await Promise.all([
+    getStats(),
+    getRecentTransactions(),
+  ]);
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -41,7 +85,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-destructive">
-                {formatCurrency(mockStats.totalSpent)}
+                {formatCurrency(stats.totalSpent)}
               </div>
               <p className="text-xs text-muted-foreground">This month</p>
             </CardContent>
@@ -49,25 +93,12 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Income</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Credits</CardTitle>
               <ArrowUpIcon className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {formatCurrency(mockStats.totalIncome)}
-              </div>
-              <p className="text-xs text-muted-foreground">This month</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Net Cash Flow</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(mockStats.netCashFlow)}
+                {formatCurrency(stats.totalCredits)}
               </div>
               <p className="text-xs text-muted-foreground">This month</p>
             </CardContent>
@@ -76,10 +107,23 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Transactions</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.transactionCount}</div>
+              <p className="text-xs text-muted-foreground">This month</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Max Transaction</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockStats.transactionCount}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(stats.maxTransaction)}
+              </div>
               <p className="text-xs text-muted-foreground">This month</p>
             </CardContent>
           </Card>
@@ -89,7 +133,7 @@ export default function Dashboard() {
         <DashboardCharts />
 
         {/* Recent Transactions */}
-        <RecentTransactions transactions={mockRecentTransactions} />
+        <RecentTransactions transactions={recentTransactions} />
       </div>
     </AppShell>
   );
