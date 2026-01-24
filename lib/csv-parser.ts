@@ -7,6 +7,7 @@ export interface CSVParserConfig {
   fieldMapping: CSVFieldMapping;
   dateFormat: string;
   invertAmount: boolean;
+  skipPatterns?: string[];
 }
 
 // Default mappings for known institutions
@@ -22,6 +23,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     },
     dateFormat: "yyyy-MM-dd",
     invertAmount: false, // Fidelity shows expenses as negative
+    skipPatterns: ["INTERNET PAYMENT THANK YOU"],
   },
   citi: {
     institution: "citi",
@@ -34,6 +36,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     },
     dateFormat: "MM/dd/yyyy",
     invertAmount: false, // Uses debit/credit columns, already handled correctly
+    skipPatterns: [],
   },
   amex: {
     institution: "amex",
@@ -46,6 +49,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     },
     dateFormat: "MM/dd/yyyy",
     invertAmount: true, // AMEX shows expenses as positive, need to invert
+    skipPatterns: ["ONLINE PAYMENT - THANK YOU"],
   },
 };
 
@@ -68,6 +72,15 @@ export function parseCSVFile(
   for (const row of parseResult.data) {
     try {
       const transaction = parseTransaction(row, config);
+
+      // Skip transactions matching any skip pattern
+      const shouldSkip = config.skipPatterns?.some((pattern) =>
+        transaction.description.toUpperCase().includes(pattern.toUpperCase())
+      );
+      if (shouldSkip) {
+        continue;
+      }
+
       transactions.push(transaction);
     } catch (error) {
       console.error("Error parsing row:", row, error);
