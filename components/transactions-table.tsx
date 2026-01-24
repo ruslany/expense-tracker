@@ -16,6 +16,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
+import {
   Table,
   TableBody,
   TableCell,
@@ -24,7 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 
 interface Transaction {
   id: string;
@@ -203,30 +212,67 @@ export function TransactionsTable({ data }: TransactionsTableProps) {
         <div className="text-sm text-muted-foreground">
           Showing {table.getRowModel().rows.length} of {data.length} transaction(s)
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Previous
-          </Button>
-          <div className="text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <Pagination className="mx-0 w-auto">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => table.previousPage()}
+                className={cn(
+                  "cursor-pointer",
+                  !table.getCanPreviousPage() && "pointer-events-none opacity-50"
+                )}
+              />
+            </PaginationItem>
+            {(() => {
+              const currentPage = table.getState().pagination.pageIndex;
+              const pageCount = table.getPageCount();
+              const pages: (number | "ellipsis")[] = [];
+
+              if (pageCount <= 5) {
+                for (let i = 0; i < pageCount; i++) pages.push(i);
+              } else {
+                pages.push(0);
+                if (currentPage > 2) pages.push("ellipsis");
+                for (
+                  let i = Math.max(1, currentPage - 1);
+                  i <= Math.min(pageCount - 2, currentPage + 1);
+                  i++
+                ) {
+                  pages.push(i);
+                }
+                if (currentPage < pageCount - 3) pages.push("ellipsis");
+                pages.push(pageCount - 1);
+              }
+
+              return pages.map((page, idx) =>
+                page === "ellipsis" ? (
+                  <PaginationItem key={`ellipsis-${idx}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => table.setPageIndex(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              );
+            })()}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => table.nextPage()}
+                className={cn(
+                  "cursor-pointer",
+                  !table.getCanNextPage() && "pointer-events-none opacity-50"
+                )}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
