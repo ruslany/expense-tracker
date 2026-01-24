@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardCharts } from "@/components/dashboard-charts";
-import { RecentTransactions } from "@/components/recent-transactions";
+import { SpendingByCategoryTable } from "@/components/spending-by-category-table";
 import { formatCurrency } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -42,28 +42,108 @@ async function getStats() {
   };
 }
 
-async function getRecentTransactions() {
+async function getCategorySpendingTable() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
   const transactions = await prisma.transaction.findMany({
-    orderBy: { date: "desc" },
-    take: 10,
+    where: {
+      date: {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      },
+      amount: { lt: 0 },
+    },
     include: {
       category: true,
     },
   });
 
-  return transactions.map((t) => ({
-    id: t.id,
-    date: t.date,
-    description: t.description,
-    amount: t.amount,
-    category: t.category?.name ?? null,
-  }));
+  // Group by category with totals, count, and max
+  const categoryMap = new Map<string, { total: number; count: number; max: number }>();
+
+  for (const t of transactions) {
+    const categoryName = t.category?.name ?? "Uncategorized";
+    const amount = Math.abs(t.amount);
+    const existing = categoryMap.get(categoryName);
+
+    if (existing) {
+      existing.total += amount;
+      existing.count += 1;
+      existing.max = Math.max(existing.max, amount);
+    } else {
+      categoryMap.set(categoryName, { total: amount, count: 1, max: amount });
+    }
+  }
+
+  const grandTotal = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.total, 0);
+  const totalCount = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.count, 0);
+  const overallMaxTransaction = Math.max(...Array.from(categoryMap.values()).map((c) => c.max), 0);
+
+  const data = Array.from(categoryMap.entries())
+    .map(([name, stats]) => ({
+      name,
+      totalExpenses: Math.round(stats.total * 100) / 100,
+      percent: grandTotal > 0 ? (stats.total / grandTotal) * 100 : 0,
+      count: stats.count,
+      maxTransaction: Math.round(stats.max * 100) / 100,
+    }))
+    .sort((a, b) => b.totalExpenses - a.totalExpenses);
+
+  return {
+    data,
+    grandTotal: Math.round(grandTotal * 100) / 100,
+    totalCount,
+    overallMaxTransaction: Math.round(overallMaxTransaction * 100) / 100,
+  };
+}
+
+const MONTHLY_BUDGET = 1000;
+
+async function getSpendingOverTime() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      date: {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      },
+      amount: { lt: 0 },
+    },
+    orderBy: { date: "asc" },
+  });
+
+  // Group by date and sum amounts
+  const spendingByDate = new Map<string, number>();
+
+  for (const t of transactions) {
+    const dateKey = t.date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const current = spendingByDate.get(dateKey) ?? 0;
+    spendingByDate.set(dateKey, current + Math.abs(t.amount));
+  }
+
+  // Calculate running total
+  let runningTotal = 0;
+  return Array.from(spendingByDate.entries()).map(([date, amount]) => {
+    runningTotal += amount;
+    return {
+      date,
+      amount: Math.round(amount * 100) / 100,
+      runningTotal: Math.round(runningTotal * 100) / 100,
+      budget: MONTHLY_BUDGET,
+    };
+  });
 }
 
 export default async function Dashboard() {
-  const [stats, recentTransactions] = await Promise.all([
+  const [stats, categorySpendingTable, spendingOverTime] = await Promise.all([
     getStats(),
-    getRecentTransactions(),
+    getCategorySpendingTable(),
+    getSpendingOverTime(),
   ]);
 
   return (
@@ -130,10 +210,15 @@ export default async function Dashboard() {
         </div>
 
         {/* Charts */}
-        <DashboardCharts />
+        <DashboardCharts spendingOverTime={spendingOverTime} />
 
-        {/* Recent Transactions */}
-        <RecentTransactions transactions={recentTransactions} />
+        {/* Spending by Category Table */}
+        <SpendingByCategoryTable
+          data={categorySpendingTable.data}
+          grandTotal={categorySpendingTable.grandTotal}
+          totalCount={categorySpendingTable.totalCount}
+          overallMaxTransaction={categorySpendingTable.overallMaxTransaction}
+        />
       </div>
     </AppShell>
   );
