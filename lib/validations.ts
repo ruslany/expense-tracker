@@ -28,7 +28,7 @@ export const categorySchema = z.object({
 });
 
 export const transactionUpdateSchema = z.object({
-  categoryId: z.string().optional(),
+  categoryId: z.string().nullable().optional(),
   description: z.string().optional(),
 });
 
