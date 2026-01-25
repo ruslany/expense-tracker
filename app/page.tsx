@@ -1,10 +1,10 @@
-import { AppShell } from "@/components/app-shell";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DashboardCharts } from "@/components/dashboard-charts";
-import { SpendingByCategoryTable } from "@/components/spending-by-category-table";
-import { formatCurrency } from "@/lib/utils";
-import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import { AppShell } from '@/components/app-shell';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashboardCharts } from '@/components/dashboard-charts';
+import { SpendingByCategoryTable } from '@/components/spending-by-category-table';
+import { formatCurrency } from '@/lib/utils';
+import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
 
 async function getStats() {
   const now = new Date();
@@ -30,9 +30,8 @@ async function getStats() {
 
   const transactionCount = transactions.length;
 
-  const maxTransaction = transactions.length > 0
-    ? Math.max(...transactions.map((t) => Math.abs(t.amount)))
-    : 0;
+  const maxTransaction =
+    transactions.length > 0 ? Math.max(...transactions.map((t) => Math.abs(t.amount))) : 0;
 
   return {
     totalSpent,
@@ -64,7 +63,7 @@ async function getCategorySpendingTable() {
   const categoryMap = new Map<string, { total: number; count: number; max: number }>();
 
   for (const t of transactions) {
-    const categoryName = t.category?.name ?? "Uncategorized";
+    const categoryName = t.category?.name ?? 'Uncategorized';
     const amount = Math.abs(t.amount);
     const existing = categoryMap.get(categoryName);
 
@@ -114,14 +113,14 @@ async function getSpendingOverTime() {
       },
       amount: { lt: 0 },
     },
-    orderBy: { date: "asc" },
+    orderBy: { date: 'asc' },
   });
 
   // Group by date and sum amounts
   const spendingByDate = new Map<string, number>();
 
   for (const t of transactions) {
-    const dateKey = t.date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const dateKey = t.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const current = spendingByDate.get(dateKey) ?? 0;
     spendingByDate.set(dateKey, current + Math.abs(t.amount));
   }
@@ -151,9 +150,7 @@ export default async function Dashboard() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Overview of your expenses and income
-          </p>
+          <p className="text-muted-foreground">Overview of your expenses and income</p>
         </div>
 
         {/* Summary Cards */}
@@ -201,9 +198,7 @@ export default async function Dashboard() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(stats.maxTransaction)}
-              </div>
+              <div className="text-2xl font-bold">{formatCurrency(stats.maxTransaction)}</div>
               <p className="text-xs text-muted-foreground">This month</p>
             </CardContent>
           </Card>

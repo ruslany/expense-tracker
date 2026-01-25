@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
     const accounts = await prisma.account.findMany({
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       select: {
         id: true,
         name: true,
@@ -15,10 +15,7 @@ export async function GET() {
 
     return NextResponse.json(accounts);
   } catch (error) {
-    console.error("Error fetching accounts:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch accounts" },
-      { status: 500 }
-    );
+    console.error('Error fetching accounts:', error);
+    return NextResponse.json({ error: 'Failed to fetch accounts' }, { status: 500 });
   }
 }

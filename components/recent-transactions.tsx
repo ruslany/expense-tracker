@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency, formatDate } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface Transaction {
   id: string;
@@ -28,22 +28,18 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
               className="flex items-center justify-between border-b pb-4 last:border-0"
             >
               <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {transaction.description}
-                </p>
+                <p className="text-sm font-medium leading-none">{transaction.description}</p>
                 <p className="text-sm text-muted-foreground">
                   {transaction.category} • {formatDate(transaction.date)}
                 </p>
               </div>
               <div
                 className={cn(
-                  "text-sm font-medium",
-                  transaction.amount < 0
-                    ? "text-destructive"
-                    : "text-green-600"
+                  'text-sm font-medium',
+                  transaction.amount < 0 ? 'text-destructive' : 'text-green-600',
                 )}
               >
-                {transaction.amount < 0 ? "" : "+"}
+                {transaction.amount < 0 ? '' : '+'}
                 {formatCurrency(transaction.amount)}
               </div>
             </div>

@@ -1,5 +1,5 @@
-import { Nav } from "./nav";
-import { ThemeToggle } from "./theme-toggle";
+import { Nav } from './nav';
+import { ThemeToggle } from './theme-toggle';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (

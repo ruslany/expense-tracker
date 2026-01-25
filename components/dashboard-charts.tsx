@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   LineChart,
   Line,
@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from "recharts";
+} from 'recharts';
 
 interface SpendingDataPoint {
   date: string;
@@ -36,17 +36,14 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
             <XAxis
               dataKey="date"
               className="text-xs"
-              tick={{ fill: "hsl(var(--muted-foreground))" }}
+              tick={{ fill: 'hsl(var(--muted-foreground))' }}
             />
-            <YAxis
-              className="text-xs"
-              tick={{ fill: "hsl(var(--muted-foreground))" }}
-            />
+            <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
             <Tooltip
               contentStyle={{
-                backgroundColor: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "8px",
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
               }}
             />
             <Legend />
@@ -56,7 +53,7 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
               name="Daily Spending"
               stroke="hsl(var(--primary))"
               strokeWidth={2}
-              dot={{ fill: "hsl(var(--primary))" }}
+              dot={{ fill: 'hsl(var(--primary))' }}
             />
             <Line
               type="monotone"
@@ -64,7 +61,7 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
               name="Running Total"
               stroke="#10b981"
               strokeWidth={2}
-              dot={{ fill: "#10b981" }}
+              dot={{ fill: '#10b981' }}
             />
             <Line
               type="monotone"

@@ -1,25 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { parseCSVFile, previewCSV, defaultMappings, detectCategory } from "@/lib/csv-parser";
-import type { CSVFieldMapping, Institution } from "@/types";
-import type { Prisma } from "@/lib/generated/prisma/client";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { parseCSVFile, previewCSV, defaultMappings, detectCategory } from '@/lib/csv-parser';
+import type { CSVFieldMapping, Institution } from '@/types';
+import type { Prisma } from '@/lib/generated/prisma/client';
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get("file") as File;
-    const institution = formData.get("institution") as Institution;
-    const accountId = formData.get("accountId") as string | null;
+    const file = formData.get('file') as File;
+    const institution = formData.get('institution') as Institution;
+    const accountId = formData.get('accountId') as string | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
     if (!institution) {
-      return NextResponse.json(
-        { error: "Institution is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Institution is required' }, { status: 400 });
     }
 
     // Read file content
@@ -101,10 +98,7 @@ export async function POST(request: NextRequest) {
       parsedCount: parsedTransactions.length,
     });
   } catch (error) {
-    console.error("Error uploading CSV:", error);
-    return NextResponse.json(
-      { error: "Failed to process CSV file" },
-      { status: 500 }
-    );
+    console.error('Error uploading CSV:', error);
+    return NextResponse.json({ error: 'Failed to process CSV file' }, { status: 500 });
   }
 }

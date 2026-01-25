@@ -1,16 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { startOfMonth, endOfMonth, format } from "date-fns";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { startOfMonth, endOfMonth, format } from 'date-fns';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const monthParam = searchParams.get("month");
+    const monthParam = searchParams.get('month');
 
     const now = new Date();
-    const startDate = monthParam
-      ? startOfMonth(new Date(monthParam))
-      : startOfMonth(now);
+    const startDate = monthParam ? startOfMonth(new Date(monthParam)) : startOfMonth(now);
     const endDate = monthParam ? endOfMonth(new Date(monthParam)) : endOfMonth(now);
 
     // Fetch all transactions for the month
@@ -36,7 +34,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: { date: "desc" },
+      orderBy: { date: 'desc' },
     });
 
     // Calculate summary stats
@@ -55,7 +53,7 @@ export async function GET(request: NextRequest) {
     const categoryTotals = new Map<string, number>();
     transactions.forEach((t) => {
       if (t.amount < 0) {
-        const category = t.category?.name || "Uncategorized";
+        const category = t.category?.name || 'Uncategorized';
         const current = categoryTotals.get(category) || 0;
         categoryTotals.set(category, current + Math.abs(t.amount));
       }
@@ -83,7 +81,7 @@ export async function GET(request: NextRequest) {
     const spendingByDay = new Map<string, number>();
     transactions.forEach((t) => {
       if (t.amount < 0) {
-        const dateKey = format(t.date, "MMM d");
+        const dateKey = format(t.date, 'MMM d');
         const current = spendingByDay.get(dateKey) || 0;
         spendingByDay.set(dateKey, current + Math.abs(t.amount));
       }
@@ -103,10 +101,7 @@ export async function GET(request: NextRequest) {
       spendingByDay: spendingByDayArray,
     });
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch dashboard data" },
-      { status: 500 }
-    );
+    console.error('Error fetching dashboard data:', error);
+    return NextResponse.json({ error: 'Failed to fetch dashboard data' }, { status: 500 });
   }
 }

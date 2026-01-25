@@ -1,15 +1,15 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const accountSchema = z.object({
-  name: z.string().min(1, "Account name is required"),
-  institution: z.string().min(1, "Institution is required"),
-  accountType: z.string().min(1, "Account type is required"),
+  name: z.string().min(1, 'Account name is required'),
+  institution: z.string().min(1, 'Institution is required'),
+  accountType: z.string().min(1, 'Account type is required'),
 });
 
 export const transactionSchema = z.object({
-  accountId: z.string().min(1, "Account ID is required"),
+  accountId: z.string().min(1, 'Account ID is required'),
   date: z.coerce.date(),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().min(1, 'Description is required'),
   amount: z.number(),
   categoryId: z.string().optional(),
   originalData: z.record(z.string(), z.unknown()),
@@ -17,13 +17,13 @@ export const transactionSchema = z.object({
 });
 
 export const csvMappingSchema = z.object({
-  institution: z.string().min(1, "Institution is required"),
+  institution: z.string().min(1, 'Institution is required'),
   fieldMapping: z.record(z.string(), z.string()),
-  dateFormat: z.string().min(1, "Date format is required"),
+  dateFormat: z.string().min(1, 'Date format is required'),
 });
 
 export const categorySchema = z.object({
-  name: z.string().min(1, "Category name is required"),
+  name: z.string().min(1, 'Category name is required'),
   keywords: z.array(z.string()).optional(),
 });
 
@@ -45,6 +45,6 @@ export const transactionFilterSchema = z.object({
 });
 
 export const csvUploadSchema = z.object({
-  institution: z.enum(["fidelity", "citi", "amex"]),
-  accountId: z.string().min(1, "Account ID is required"),
+  institution: z.enum(['fidelity', 'citi', 'amex']),
+  accountId: z.string().min(1, 'Account ID is required'),
 });

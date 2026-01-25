@@ -5,8 +5,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { formatDate } from "@/lib/utils";
+} from '@/components/ui/table';
+import { formatDate } from '@/lib/utils';
 
 interface ImportHistoryItem {
   id: string;
@@ -46,10 +46,10 @@ export function ImportHistory({ history }: ImportHistoryProps) {
             <TableCell className="capitalize">{item.institution}</TableCell>
             <TableCell>{item.rowsImported}</TableCell>
             <TableCell>
-              {formatDate(item.importedAt)} at{" "}
+              {formatDate(item.importedAt)} at{' '}
               {item.importedAt.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
+                hour: '2-digit',
+                minute: '2-digit',
               })}
             </TableCell>
           </TableRow>

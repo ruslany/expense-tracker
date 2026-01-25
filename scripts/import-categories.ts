@@ -1,10 +1,10 @@
-import { PrismaClient } from "../lib/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
-import * as fs from "fs";
-import * as path from "path";
-import { fileURLToPath } from "url";
-import Papa from "papaparse";
+import { PrismaClient } from '../lib/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+import Papa from 'papaparse';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,8 +19,8 @@ interface CategoryRow {
 }
 
 async function importCategories() {
-  const csvPath = path.join(__dirname, "../sampledata/Categories.csv");
-  const csvContent = fs.readFileSync(csvPath, "utf-8");
+  const csvPath = path.join(__dirname, '../sampledata/Categories.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
   const parsed = Papa.parse<CategoryRow>(csvContent, {
     header: true,
@@ -28,7 +28,7 @@ async function importCategories() {
   });
 
   if (parsed.errors.length > 0) {
-    console.error("CSV parsing errors:", parsed.errors);
+    console.error('CSV parsing errors:', parsed.errors);
     return;
   }
 
@@ -63,7 +63,7 @@ async function importCategories() {
     }
   }
 
-  console.log("\nImport complete!");
+  console.log('\nImport complete!');
 }
 
 importCategories()
