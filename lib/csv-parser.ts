@@ -1,6 +1,6 @@
-import Papa from "papaparse";
-import { parse, startOfDay } from "date-fns";
-import type { CSVFieldMapping, ParsedTransaction, Institution } from "@/types";
+import Papa from 'papaparse';
+import { parse, startOfDay } from 'date-fns';
+import type { CSVFieldMapping, ParsedTransaction, Institution } from '@/types';
 
 export interface CSVParserConfig {
   institution: Institution;
@@ -13,50 +13,47 @@ export interface CSVParserConfig {
 // Default mappings for known institutions
 export const defaultMappings: Record<Institution, CSVParserConfig> = {
   fidelity: {
-    institution: "fidelity",
+    institution: 'fidelity',
     fieldMapping: {
-      date: "Date",
-      description: "Name",
-      amount: "Amount",
-      transactionType: "Transaction",
-      memo: "Memo",
+      date: 'Date',
+      description: 'Name',
+      amount: 'Amount',
+      transactionType: 'Transaction',
+      memo: 'Memo',
     },
-    dateFormat: "yyyy-MM-dd",
+    dateFormat: 'yyyy-MM-dd',
     invertAmount: false, // Fidelity shows expenses as negative
-    skipPatterns: ["INTERNET PAYMENT THANK YOU"],
+    skipPatterns: ['INTERNET PAYMENT THANK YOU'],
   },
   citi: {
-    institution: "citi",
+    institution: 'citi',
     fieldMapping: {
-      status: "Status",
-      date: "Date",
-      description: "Description",
-      debit: "Debit",
-      credit: "Credit",
+      status: 'Status',
+      date: 'Date',
+      description: 'Description',
+      debit: 'Debit',
+      credit: 'Credit',
     },
-    dateFormat: "MM/dd/yyyy",
+    dateFormat: 'MM/dd/yyyy',
     invertAmount: false, // Uses debit/credit columns, already handled correctly
     skipPatterns: [],
   },
   amex: {
-    institution: "amex",
+    institution: 'amex',
     fieldMapping: {
-      date: "Date",
-      description: "Description",
-      cardMember: "Card Member",
-      accountNumber: "Account #",
-      amount: "Amount",
+      date: 'Date',
+      description: 'Description',
+      cardMember: 'Card Member',
+      accountNumber: 'Account #',
+      amount: 'Amount',
     },
-    dateFormat: "MM/dd/yyyy",
+    dateFormat: 'MM/dd/yyyy',
     invertAmount: true, // AMEX shows expenses as positive, need to invert
-    skipPatterns: ["ONLINE PAYMENT - THANK YOU"],
+    skipPatterns: ['ONLINE PAYMENT - THANK YOU'],
   },
 };
 
-export function parseCSVFile(
-  fileContent: string,
-  config: CSVParserConfig
-): ParsedTransaction[] {
+export function parseCSVFile(fileContent: string, config: CSVParserConfig): ParsedTransaction[] {
   const parseResult = Papa.parse<Record<string, string>>(fileContent, {
     header: true,
     skipEmptyLines: true,
@@ -75,7 +72,7 @@ export function parseCSVFile(
 
       // Skip transactions matching any skip pattern
       const shouldSkip = config.skipPatterns?.some((pattern) =>
-        transaction.description.toUpperCase().includes(pattern.toUpperCase())
+        transaction.description.toUpperCase().includes(pattern.toUpperCase()),
       );
       if (shouldSkip) {
         continue;
@@ -83,7 +80,7 @@ export function parseCSVFile(
 
       transactions.push(transaction);
     } catch (error) {
-      console.error("Error parsing row:", row, error);
+      console.error('Error parsing row:', row, error);
       // Continue with next row instead of failing entire import
     }
   }
@@ -91,23 +88,22 @@ export function parseCSVFile(
   return transactions;
 }
 
-function parseTransaction(
-  row: Record<string, string>,
-  config: CSVParserConfig
-): ParsedTransaction {
+function parseTransaction(row: Record<string, string>, config: CSVParserConfig): ParsedTransaction {
   const { fieldMapping, dateFormat } = config;
 
   // Parse date
   const dateStr = row[fieldMapping.date];
   if (!dateStr) {
-    throw new Error("Date field is missing");
+    throw new Error('Date field is missing');
   }
   const parsedDate = parse(dateStr, dateFormat, startOfDay(new Date()));
   // Convert to UTC midnight to avoid timezone offset issues
-  const date = new Date(Date.UTC(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()));
+  const date = new Date(
+    Date.UTC(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()),
+  );
 
   // Parse description
-  const description = row[fieldMapping.description] || "Unknown";
+  const description = row[fieldMapping.description] || 'Unknown';
 
   // Parse amount - handle different formats (debit/credit columns or single amount column)
   let amount = 0;
@@ -137,10 +133,10 @@ function parseTransaction(
 
 function parseAmount(amountStr: string): number {
   // Remove currency symbols, commas, and whitespace
-  const cleaned = amountStr.replace(/[$,\s]/g, "");
+  const cleaned = amountStr.replace(/[$,\s]/g, '');
 
   // Handle parentheses notation for negative numbers
-  if (cleaned.startsWith("(") && cleaned.endsWith(")")) {
+  if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
     return -parseFloat(cleaned.slice(1, -1));
   }
 
@@ -162,7 +158,7 @@ export interface CategoryWithKeywords {
  */
 export function detectCategory(
   description: string,
-  categories: CategoryWithKeywords[]
+  categories: CategoryWithKeywords[],
 ): string | null {
   const descriptionLower = description.toLowerCase();
 
@@ -179,7 +175,7 @@ export function detectCategory(
 
 export function validateCSVHeaders(
   fileContent: string,
-  expectedMapping: CSVFieldMapping
+  expectedMapping: CSVFieldMapping,
 ): { isValid: boolean; missingHeaders: string[] } {
   const parseResult = Papa.parse(fileContent, {
     header: true,
@@ -188,9 +184,7 @@ export function validateCSVHeaders(
 
   const headers = parseResult.meta.fields || [];
   const expectedHeaders = Object.values(expectedMapping).filter(Boolean);
-  const missingHeaders = expectedHeaders.filter(
-    (header) => !headers.includes(header)
-  );
+  const missingHeaders = expectedHeaders.filter((header) => !headers.includes(header));
 
   return {
     isValid: missingHeaders.length === 0,
@@ -198,10 +192,7 @@ export function validateCSVHeaders(
   };
 }
 
-export function previewCSV(
-  fileContent: string,
-  rowCount: number = 5
-): Record<string, string>[] {
+export function previewCSV(fileContent: string, rowCount: number = 5): Record<string, string>[] {
   const parseResult = Papa.parse<Record<string, string>>(fileContent, {
     header: true,
     preview: rowCount,

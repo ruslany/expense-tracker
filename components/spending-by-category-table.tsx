@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -9,8 +9,8 @@ import {
   TableHeader,
   TableRow,
   TableFooter,
-} from "@/components/ui/table";
-import { formatCurrency } from "@/lib/utils";
+} from '@/components/ui/table';
+import { formatCurrency } from '@/lib/utils';
 
 interface CategorySpending {
   name: string;
@@ -78,7 +78,9 @@ export function SpendingByCategoryTable({
               <TableCell className="text-right font-bold">{formatCurrency(grandTotal)}</TableCell>
               <TableCell className="text-right font-bold">100.00%</TableCell>
               <TableCell className="text-right font-bold">{totalCount}</TableCell>
-              <TableCell className="text-right font-bold">{formatCurrency(overallMaxTransaction)}</TableCell>
+              <TableCell className="text-right font-bold">
+                {formatCurrency(overallMaxTransaction)}
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>

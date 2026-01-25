@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useEffect } from "react";
-import { Upload, FileText, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { useState, useCallback, useEffect } from 'react';
+import { Upload, FileText, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -18,8 +18,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 interface Account {
   id: string;
@@ -31,7 +31,7 @@ interface Account {
 export function CSVUploader() {
   const [file, setFile] = useState<File | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<Record<string, string>[] | null>(null);
@@ -39,13 +39,13 @@ export function CSVUploader() {
   useEffect(() => {
     async function fetchAccounts() {
       try {
-        const response = await fetch("/api/accounts");
+        const response = await fetch('/api/accounts');
         if (response.ok) {
           const data = await response.json();
           setAccounts(data);
         }
       } catch (error) {
-        console.error("Error fetching accounts:", error);
+        console.error('Error fetching accounts:', error);
       }
     }
     fetchAccounts();
@@ -54,9 +54,9 @@ export function CSVUploader() {
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setIsDragging(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setIsDragging(false);
     }
   }, []);
@@ -67,7 +67,7 @@ export function CSVUploader() {
     setIsDragging(false);
 
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type === "text/csv") {
+    if (droppedFile && droppedFile.type === 'text/csv') {
       setFile(droppedFile);
     }
   }, []);
@@ -86,12 +86,12 @@ export function CSVUploader() {
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append("file", file);
-      formData.append("institution", selectedAccount.institution);
-      formData.append("accountId", selectedAccount.id);
+      formData.append('file', file);
+      formData.append('institution', selectedAccount.institution);
+      formData.append('accountId', selectedAccount.id);
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
+      const response = await fetch('/api/upload', {
+        method: 'POST',
         body: formData,
       });
 
@@ -99,13 +99,13 @@ export function CSVUploader() {
         const data = await response.json();
         setPreview(data.preview);
         // Handle success
-        console.log("Upload successful:", data);
+        console.log('Upload successful:', data);
       } else {
         // Handle error
-        console.error("Upload failed");
+        console.error('Upload failed');
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error('Error uploading file:', error);
     } finally {
       setIsUploading(false);
     }
@@ -116,10 +116,7 @@ export function CSVUploader() {
       {/* Account Selector */}
       <div className="space-y-2">
         <Label htmlFor="account">Select Account</Label>
-        <Select
-          value={selectedAccountId}
-          onValueChange={setSelectedAccountId}
-        >
+        <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
           <SelectTrigger id="account">
             <SelectValue placeholder="Choose your account" />
           </SelectTrigger>
@@ -140,10 +137,10 @@ export function CSVUploader() {
         onDragOver={handleDrag}
         onDrop={handleDrop}
         className={cn(
-          "relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors",
+          'relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors',
           isDragging
-            ? "border-primary bg-primary/5"
-            : "border-muted-foreground/25 hover:border-muted-foreground/50"
+            ? 'border-primary bg-primary/5'
+            : 'border-muted-foreground/25 hover:border-muted-foreground/50',
         )}
       >
         <input
@@ -157,9 +154,7 @@ export function CSVUploader() {
           <div className="flex flex-col items-center gap-2 text-center">
             <Upload className="h-10 w-10 text-muted-foreground" />
             <div>
-              <p className="text-sm font-medium">
-                Drop your CSV file here, or click to browse
-              </p>
+              <p className="text-sm font-medium">Drop your CSV file here, or click to browse</p>
               <p className="text-xs text-muted-foreground">
                 Supports CSV files from credit card institutions
               </p>
@@ -170,9 +165,7 @@ export function CSVUploader() {
             <FileText className="h-8 w-8 text-primary" />
             <div className="flex-1">
               <p className="text-sm font-medium">{file.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {(file.size / 1024).toFixed(2)} KB
-              </p>
+              <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(2)} KB</p>
             </div>
             <Button
               variant="ghost"
@@ -195,7 +188,7 @@ export function CSVUploader() {
         disabled={!file || !selectedAccountId || isUploading}
         className="w-full"
       >
-        {isUploading ? "Uploading..." : "Upload and Import"}
+        {isUploading ? 'Uploading...' : 'Upload and Import'}
       </Button>
 
       {/* Preview */}

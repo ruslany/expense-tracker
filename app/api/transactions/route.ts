@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { transactionFilterSchema } from "@/lib/validations";
-import type { Prisma } from "@/lib/generated/prisma/client";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { transactionFilterSchema } from '@/lib/validations';
+import type { Prisma } from '@/lib/generated/prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      where.description = { contains: search, mode: "insensitive" };
+      where.description = { contains: search, mode: 'insensitive' };
     }
 
     const [transactions, total] = await Promise.all([
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: { date: "desc" },
+        orderBy: { date: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
@@ -90,10 +90,7 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / pageSize),
     });
   } catch (error) {
-    console.error("Error fetching transactions:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch transactions" },
-      { status: 500 }
-    );
+    console.error('Error fetching transactions:', error);
+    return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
   }
 }
