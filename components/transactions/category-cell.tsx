@@ -34,7 +34,7 @@ export function CategoryCell({
   const [isLoading, setIsLoading] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(
-    categoryId && categoryName ? { id: categoryId, name: categoryName } : null
+    categoryId && categoryName ? { id: categoryId, name: categoryName } : null,
   );
 
   const handleValueChange = async (category: Category | null) => {
@@ -62,7 +62,9 @@ export function CategoryCell({
       router.refresh();
     } catch (error) {
       console.error('Failed to update category:', error);
-      setSelectedCategory(categoryId && categoryName ? { id: categoryId, name: categoryName } : null);
+      setSelectedCategory(
+        categoryId && categoryName ? { id: categoryId, name: categoryName } : null,
+      );
     } finally {
       setIsLoading(false);
     }
