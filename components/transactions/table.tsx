@@ -6,8 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { fetchFilteredTransactions } from '@/lib/data';
+import { fetchFilteredTransactions, fetchCategories } from '@/lib/data';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
+import { CategoryCell } from './category-cell';
 
 export async function TransactionsTable({
   query,
@@ -18,7 +19,10 @@ export async function TransactionsTable({
   currentPage: number;
   pageSize: number;
 }) {
-  const transactions = await fetchFilteredTransactions(query, currentPage, pageSize);
+  const [transactions, categories] = await Promise.all([
+    fetchFilteredTransactions(query, currentPage, pageSize),
+    fetchCategories(),
+  ]);
 
   return (
     <div className="rounded-md border">
@@ -43,13 +47,12 @@ export async function TransactionsTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  {transaction.category ? (
-                    <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium">
-                      {transaction.category}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">Uncategorized</span>
-                  )}
+                  <CategoryCell
+                    transactionId={transaction.id}
+                    categoryId={transaction.categoryId}
+                    categoryName={transaction.category}
+                    categories={categories}
+                  />
                 </TableCell>
                 <TableCell>{transaction.account.name}</TableCell>
                 <TableCell className="text-right">
