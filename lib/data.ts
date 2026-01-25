@@ -35,6 +35,7 @@ export async function fetchFilteredTransactions(
       description: t.description,
       amount: t.amount,
       category: t.category?.name ?? null,
+      categoryId: t.category?.id ?? null,
       account: {
         id: t.account.id,
         name: t.account.name,
@@ -43,6 +44,22 @@ export async function fetchFilteredTransactions(
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch transactions.');
+  }
+}
+
+export async function fetchCategories() {
+  try {
+    const categories = await prisma.category.findMany({
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return categories;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch categories.');
   }
 }
 
