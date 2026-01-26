@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateTable
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
@@ -17,9 +20,9 @@ CREATE TABLE "Transaction" (
     "date" TIMESTAMP(3) NOT NULL,
     "description" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
-    "category" TEXT,
-    "merchant" TEXT,
+    "categoryId" TEXT,
     "originalData" JSONB NOT NULL,
+    "contentHash" TEXT NOT NULL,
     "importedAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -33,6 +36,8 @@ CREATE TABLE "CSVMapping" (
     "institution" TEXT NOT NULL,
     "fieldMapping" JSONB NOT NULL,
     "dateFormat" TEXT NOT NULL,
+    "invertAmount" BOOLEAN NOT NULL DEFAULT false,
+    "skipPatterns" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -43,7 +48,7 @@ CREATE TABLE "CSVMapping" (
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "parentId" TEXT,
+    "keywords" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -73,7 +78,10 @@ CREATE INDEX "Transaction_accountId_idx" ON "Transaction"("accountId");
 CREATE INDEX "Transaction_date_idx" ON "Transaction"("date");
 
 -- CreateIndex
-CREATE INDEX "Transaction_category_idx" ON "Transaction"("category");
+CREATE INDEX "Transaction_categoryId_idx" ON "Transaction"("categoryId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Transaction_accountId_contentHash_key" ON "Transaction"("accountId", "contentHash");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CSVMapping_institution_key" ON "CSVMapping"("institution");
@@ -81,11 +89,9 @@ CREATE UNIQUE INDEX "CSVMapping_institution_key" ON "CSVMapping"("institution");
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
--- CreateIndex
-CREATE INDEX "Category_parentId_idx" ON "Category"("parentId");
-
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Category" ADD CONSTRAINT "Category_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
