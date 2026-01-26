@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { parseCSVFile, previewCSV, defaultMappings, detectCategory } from '@/lib/csv-parser';
+import { computeContentHash } from '@/lib/utils';
 import type { CSVFieldMapping, Institution } from '@/types';
 import type { Prisma } from '@/lib/generated/prisma/client';
 
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
         select: { id: true, name: true, keywords: true },
       });
 
-      await prisma.transaction.createMany({
+      const result = await prisma.transaction.createMany({
         data: parsedTransactions.map((tx) => ({
           accountId,
           date: tx.date,
@@ -70,9 +71,14 @@ export async function POST(request: NextRequest) {
           amount: tx.amount,
           categoryId: detectCategory(tx.description, categories),
           originalData: tx.originalData as Prisma.InputJsonValue,
+          contentHash: computeContentHash(tx.originalData),
           importedAt: now,
         })),
+        skipDuplicates: true,
       });
+
+      const importedCount = result.count;
+      const skippedCount = parsedTransactions.length - importedCount;
 
       // Create import history record
       await prisma.importHistory.create({
@@ -80,13 +86,15 @@ export async function POST(request: NextRequest) {
           fileName: file.name,
           institution,
           accountId,
-          rowsImported: parsedTransactions.length,
+          rowsImported: importedCount,
         },
       });
 
       return NextResponse.json({
         success: true,
-        imported: parsedTransactions.length,
+        imported: importedCount,
+        skipped: skippedCount,
+        total: parsedTransactions.length,
         preview,
       });
     }

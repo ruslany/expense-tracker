@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { createHash } from 'crypto';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -43,4 +44,9 @@ export function generatePagination(currentPage: number, totalPages: number) {
   // show the first page, an ellipsis, the current page and its neighbors,
   // another ellipsis, and the last page.
   return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+}
+
+export function computeContentHash(data: Record<string, unknown>): string {
+  const normalized = JSON.stringify(data, Object.keys(data).sort());
+  return createHash('sha256').update(normalized).digest('hex');
 }
