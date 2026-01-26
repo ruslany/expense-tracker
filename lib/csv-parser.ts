@@ -36,7 +36,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     },
     dateFormat: 'MM/dd/yyyy',
     invertAmount: false, // Uses debit/credit columns, already handled correctly
-    skipPatterns: [],
+    skipPatterns: ['ONLINE PAYMENT, THANK YOU'],
   },
   amex: {
     institution: 'amex',

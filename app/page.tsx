@@ -98,7 +98,7 @@ async function getCategorySpendingTable() {
   };
 }
 
-const MONTHLY_BUDGET = 1000;
+const MONTHLY_BUDGET = 7000;
 
 async function getSpendingOverTime() {
   const now = new Date();
