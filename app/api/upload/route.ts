@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { parseCSVFile, previewCSV, defaultMappings, detectCategory } from '@/lib/csv-parser';
 import { computeContentHash } from '@/lib/utils';
-import type { CSVFieldMapping, Institution } from '@/types';
+import type { CSVFieldMapping, Institution, ParsedTransaction } from '@/types';
 import type { Prisma } from '@/lib/generated/prisma/client';
+
+function computeSequencedHashes(transactions: ParsedTransaction[]): string[] {
+  const baseHashCounts = new Map<string, number>();
+
+  return transactions.map((tx) => {
+    const baseHash = computeContentHash(tx.originalData);
+    const sequence = baseHashCounts.get(baseHash) ?? 0;
+    baseHashCounts.set(baseHash, sequence + 1);
+    return computeContentHash({ ...tx.originalData, _seq: sequence });
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,15 +74,18 @@ export async function POST(request: NextRequest) {
         select: { id: true, name: true, keywords: true },
       });
 
+      // Compute hashes with sequence numbers for identical rows
+      const contentHashes = computeSequencedHashes(parsedTransactions);
+
       const result = await prisma.transaction.createMany({
-        data: parsedTransactions.map((tx) => ({
+        data: parsedTransactions.map((tx, index) => ({
           accountId,
           date: tx.date,
           description: tx.description,
           amount: tx.amount,
           categoryId: detectCategory(tx.description, categories),
           originalData: tx.originalData as Prisma.InputJsonValue,
-          contentHash: computeContentHash(tx.originalData),
+          contentHash: contentHashes[index],
           importedAt: now,
         })),
         skipDuplicates: true,
