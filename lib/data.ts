@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import type { TransactionWhereInput } from './generated/prisma/models/Transaction';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -6,18 +7,44 @@ export async function fetchFilteredTransactions(
   query: string,
   currentPage: number,
   pageSize: number = DEFAULT_PAGE_SIZE,
+  categoryId?: string,
+  accountId?: string,
 ) {
   const offset = (currentPage - 1) * pageSize;
 
+  // Build where clause with AND logic for all filters
+  const where: TransactionWhereInput = {};
+  const conditions: TransactionWhereInput[] = [];
+
+  // Text search (OR on description/account.name/category.name)
+  if (query) {
+    conditions.push({
+      OR: [
+        { description: { contains: query, mode: 'insensitive' } },
+        { account: { name: { contains: query, mode: 'insensitive' } } },
+        { category: { name: { contains: query, mode: 'insensitive' } } },
+      ],
+    });
+  }
+
+  // Category filter
+  if (categoryId) {
+    conditions.push({ categoryId });
+  }
+
+  // Account filter
+  if (accountId) {
+    conditions.push({ accountId });
+  }
+
+  // Combine all conditions with AND
+  if (conditions.length > 0) {
+    where.AND = conditions;
+  }
+
   try {
     const transactions = await prisma.transaction.findMany({
-      where: {
-        OR: [
-          { description: { contains: query, mode: 'insensitive' } },
-          { account: { name: { contains: query, mode: 'insensitive' } } },
-          { category: { name: { contains: query, mode: 'insensitive' } } },
-        ],
-      },
+      where,
       include: {
         account: true,
         category: true,
@@ -63,22 +90,65 @@ export async function fetchCategories() {
   }
 }
 
-export async function fetchTransactionsPages(query: string, pageSize: number = DEFAULT_PAGE_SIZE) {
-  try {
-    const count = await prisma.transaction.count({
-      where: {
-        OR: [
-          { description: { contains: query, mode: 'insensitive' } },
-          { account: { name: { contains: query, mode: 'insensitive' } } },
-          { category: { name: { contains: query, mode: 'insensitive' } } },
-        ],
-      },
+export async function fetchTransactionsPages(
+  query: string,
+  pageSize: number = DEFAULT_PAGE_SIZE,
+  categoryId?: string,
+  accountId?: string,
+) {
+  // Build where clause with AND logic for all filters
+  const where: TransactionWhereInput = {};
+  const conditions: TransactionWhereInput[] = [];
+
+  // Text search (OR on description/account.name/category.name)
+  if (query) {
+    conditions.push({
+      OR: [
+        { description: { contains: query, mode: 'insensitive' } },
+        { account: { name: { contains: query, mode: 'insensitive' } } },
+        { category: { name: { contains: query, mode: 'insensitive' } } },
+      ],
     });
+  }
+
+  // Category filter
+  if (categoryId) {
+    conditions.push({ categoryId });
+  }
+
+  // Account filter
+  if (accountId) {
+    conditions.push({ accountId });
+  }
+
+  // Combine all conditions with AND
+  if (conditions.length > 0) {
+    where.AND = conditions;
+  }
+
+  try {
+    const count = await prisma.transaction.count({ where });
 
     const totalPages = Math.ceil(count / pageSize);
     return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of transactions.');
+  }
+}
+
+export async function fetchAccounts() {
+  try {
+    const accounts = await prisma.account.findMany({
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return accounts;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch accounts.');
   }
 }
