@@ -29,7 +29,9 @@ export const categorySchema = z.object({
 
 export const transactionUpdateSchema = z.object({
   categoryId: z.string().nullable().optional(),
-  description: z.string().optional(),
+  description: z.string().min(1, 'Description is required').optional(),
+  date: z.coerce.date().optional(),
+  amount: z.number().optional(),
 });
 
 export const transactionFilterSchema = z.object({

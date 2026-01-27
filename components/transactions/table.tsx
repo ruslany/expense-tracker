@@ -69,7 +69,12 @@ export async function TransactionsTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <TransactionActions transactionId={transaction.id} />
+                  <TransactionActions
+                    transactionId={transaction.id}
+                    date={transaction.date}
+                    description={transaction.description}
+                    amount={transaction.amount}
+                  />
                 </TableCell>
               </TableRow>
             ))
