@@ -9,6 +9,7 @@ import {
 import { fetchFilteredTransactions, fetchCategories } from '@/lib/data';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { CategoryCell } from './category-cell';
+import { TransactionActions } from './actions';
 
 export async function TransactionsTable({
   query,
@@ -34,6 +35,7 @@ export async function TransactionsTable({
             <TableHead>Category</TableHead>
             <TableHead>Account</TableHead>
             <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="w-10"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -66,11 +68,14 @@ export async function TransactionsTable({
                     {formatCurrency(transaction.amount)}
                   </span>
                 </TableCell>
+                <TableCell>
+                  <TransactionActions transactionId={transaction.id} />
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
+              <TableCell colSpan={6} className="h-24 text-center">
                 No transactions found.
               </TableCell>
             </TableRow>
