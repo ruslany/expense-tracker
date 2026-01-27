@@ -20,7 +20,7 @@ async function getStats() {
     },
   });
 
-  const totalSpent = transactions
+  const totalExpenses = transactions
     .filter((t) => t.amount < 0)
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
@@ -28,13 +28,17 @@ async function getStats() {
     .filter((t) => t.amount > 0)
     .reduce((sum, t) => sum + t.amount, 0);
 
+  // Net spending = expenses minus refunds/credits
+  const netSpent = totalExpenses - totalCredits;
+
   const transactionCount = transactions.length;
 
   const maxTransaction =
     transactions.length > 0 ? Math.max(...transactions.map((t) => Math.abs(t.amount))) : 0;
 
   return {
-    totalSpent,
+    totalExpenses,
+    netSpent,
     totalCredits,
     transactionCount,
     maxTransaction,
@@ -46,48 +50,69 @@ async function getCategorySpendingTable() {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
+  // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
     where: {
       date: {
         gte: startOfMonth,
         lte: endOfMonth,
       },
-      amount: { lt: 0 },
     },
     include: {
       category: true,
     },
   });
 
-  // Group by category with totals, count, and max
-  const categoryMap = new Map<string, { total: number; count: number; max: number }>();
+  // Group by category with net totals (expenses - credits), count, and max expense
+  const categoryMap = new Map<
+    string,
+    { expenses: number; credits: number; count: number; maxExpense: number }
+  >();
 
   for (const t of transactions) {
     const categoryName = t.category?.name ?? 'Uncategorized';
-    const amount = Math.abs(t.amount);
     const existing = categoryMap.get(categoryName);
 
     if (existing) {
-      existing.total += amount;
+      if (t.amount < 0) {
+        existing.expenses += Math.abs(t.amount);
+        existing.maxExpense = Math.max(existing.maxExpense, Math.abs(t.amount));
+      } else {
+        existing.credits += t.amount;
+      }
       existing.count += 1;
-      existing.max = Math.max(existing.max, amount);
     } else {
-      categoryMap.set(categoryName, { total: amount, count: 1, max: amount });
+      categoryMap.set(categoryName, {
+        expenses: t.amount < 0 ? Math.abs(t.amount) : 0,
+        credits: t.amount > 0 ? t.amount : 0,
+        count: 1,
+        maxExpense: t.amount < 0 ? Math.abs(t.amount) : 0,
+      });
     }
   }
 
-  const grandTotal = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.total, 0);
+  // Calculate net spending per category (expenses - credits)
+  const grandTotal = Array.from(categoryMap.values()).reduce(
+    (sum, c) => sum + (c.expenses - c.credits),
+    0
+  );
   const totalCount = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.count, 0);
-  const overallMaxTransaction = Math.max(...Array.from(categoryMap.values()).map((c) => c.max), 0);
+  const overallMaxTransaction = Math.max(
+    ...Array.from(categoryMap.values()).map((c) => c.maxExpense),
+    0
+  );
 
   const data = Array.from(categoryMap.entries())
-    .map(([name, stats]) => ({
-      name,
-      totalExpenses: Math.round(stats.total * 100) / 100,
-      percent: grandTotal > 0 ? (stats.total / grandTotal) * 100 : 0,
-      count: stats.count,
-      maxTransaction: Math.round(stats.max * 100) / 100,
-    }))
+    .map(([name, stats]) => {
+      const netSpending = stats.expenses - stats.credits;
+      return {
+        name,
+        totalExpenses: Math.round(netSpending * 100) / 100,
+        percent: grandTotal > 0 ? (netSpending / grandTotal) * 100 : 0,
+        count: stats.count,
+        maxTransaction: Math.round(stats.maxExpense * 100) / 100,
+      };
+    })
     .sort((a, b) => b.totalExpenses - a.totalExpenses);
 
   return {
@@ -105,33 +130,39 @@ async function getSpendingOverTime() {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
+  // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
     where: {
       date: {
         gte: startOfMonth,
         lte: endOfMonth,
       },
-      amount: { lt: 0 },
     },
     orderBy: { date: 'asc' },
   });
 
-  // Group by date and sum amounts
-  const spendingByDate = new Map<string, number>();
+  // Group by date and calculate net spending (expenses - credits)
+  const spendingByDate = new Map<string, { expenses: number; credits: number }>();
 
   for (const t of transactions) {
     const dateKey = t.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const current = spendingByDate.get(dateKey) ?? 0;
-    spendingByDate.set(dateKey, current + Math.abs(t.amount));
+    const current = spendingByDate.get(dateKey) ?? { expenses: 0, credits: 0 };
+    if (t.amount < 0) {
+      current.expenses += Math.abs(t.amount);
+    } else {
+      current.credits += t.amount;
+    }
+    spendingByDate.set(dateKey, current);
   }
 
-  // Calculate running total
+  // Calculate running total of net spending
   let runningTotal = 0;
-  return Array.from(spendingByDate.entries()).map(([date, amount]) => {
-    runningTotal += amount;
+  return Array.from(spendingByDate.entries()).map(([date, { expenses, credits }]) => {
+    const netAmount = expenses - credits;
+    runningTotal += netAmount;
     return {
       date,
-      amount: Math.round(amount * 100) / 100,
+      amount: Math.round(netAmount * 100) / 100,
       runningTotal: Math.round(runningTotal * 100) / 100,
       budget: MONTHLY_BUDGET,
     };
@@ -157,14 +188,14 @@ export default async function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
+              <CardTitle className="text-sm font-medium">Net Spent</CardTitle>
               <ArrowDownIcon className="h-4 w-4 text-destructive" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-destructive">
-                {formatCurrency(stats.totalSpent)}
+                {formatCurrency(stats.netSpent)}
               </div>
-              <p className="text-xs text-muted-foreground">This month</p>
+              <p className="text-xs text-muted-foreground">After refunds</p>
             </CardContent>
           </Card>
 
