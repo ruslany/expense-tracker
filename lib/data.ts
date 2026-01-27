@@ -3,20 +3,13 @@ import type { TransactionWhereInput } from './generated/prisma/models/Transactio
 
 const DEFAULT_PAGE_SIZE = 10;
 
-export async function fetchFilteredTransactions(
-  query: string,
-  currentPage: number,
-  pageSize: number = DEFAULT_PAGE_SIZE,
+function buildTransactionWhereClause(
+  query?: string,
   categoryId?: string,
   accountId?: string,
-) {
-  const offset = (currentPage - 1) * pageSize;
-
-  // Build where clause with AND logic for all filters
-  const where: TransactionWhereInput = {};
+): TransactionWhereInput {
   const conditions: TransactionWhereInput[] = [];
 
-  // Text search (OR on description/account.name/category.name)
   if (query) {
     conditions.push({
       OR: [
@@ -27,20 +20,26 @@ export async function fetchFilteredTransactions(
     });
   }
 
-  // Category filter
   if (categoryId) {
     conditions.push({ categoryId });
   }
 
-  // Account filter
   if (accountId) {
     conditions.push({ accountId });
   }
 
-  // Combine all conditions with AND
-  if (conditions.length > 0) {
-    where.AND = conditions;
-  }
+  return conditions.length > 0 ? { AND: conditions } : {};
+}
+
+export async function fetchFilteredTransactions(
+  query: string,
+  currentPage: number,
+  pageSize: number = DEFAULT_PAGE_SIZE,
+  categoryId?: string,
+  accountId?: string,
+) {
+  const offset = (currentPage - 1) * pageSize;
+  const where = buildTransactionWhereClause(query, categoryId, accountId);
 
   try {
     const transactions = await prisma.transaction.findMany({
@@ -96,35 +95,7 @@ export async function fetchTransactionsPages(
   categoryId?: string,
   accountId?: string,
 ) {
-  // Build where clause with AND logic for all filters
-  const where: TransactionWhereInput = {};
-  const conditions: TransactionWhereInput[] = [];
-
-  // Text search (OR on description/account.name/category.name)
-  if (query) {
-    conditions.push({
-      OR: [
-        { description: { contains: query, mode: 'insensitive' } },
-        { account: { name: { contains: query, mode: 'insensitive' } } },
-        { category: { name: { contains: query, mode: 'insensitive' } } },
-      ],
-    });
-  }
-
-  // Category filter
-  if (categoryId) {
-    conditions.push({ categoryId });
-  }
-
-  // Account filter
-  if (accountId) {
-    conditions.push({ accountId });
-  }
-
-  // Combine all conditions with AND
-  if (conditions.length > 0) {
-    where.AND = conditions;
-  }
+  const where = buildTransactionWhereClause(query, categoryId, accountId);
 
   try {
     const count = await prisma.transaction.count({ where });
