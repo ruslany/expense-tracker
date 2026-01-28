@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, CreditCard, Upload, Wallet } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Upload, Wallet, PieChart } from 'lucide-react';
 
 const navItems = [
   {
@@ -25,6 +25,11 @@ const navItems = [
     title: 'Accounts',
     href: '/accounts',
     icon: Wallet,
+  },
+  {
+    title: 'Big Expenses',
+    href: '/big-expenses',
+    icon: PieChart,
   },
 ];
 

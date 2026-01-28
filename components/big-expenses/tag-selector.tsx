@@ -1,0 +1,52 @@
+'use client';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+
+interface Tag {
+  id: string;
+  name: string;
+}
+
+interface TagSelectorProps {
+  tags: Tag[];
+}
+
+export function TagSelector({ tags }: TagSelectorProps) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const currentTagId = searchParams.get('tagId') || '';
+
+  const handleChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (value && value !== 'none') {
+      params.set('tagId', value);
+    } else {
+      params.delete('tagId');
+    }
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  return (
+    <Select value={currentTagId || 'none'} onValueChange={handleChange}>
+      <SelectTrigger className="w-48">
+        <SelectValue placeholder="Select a tag" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="none">Select a tag...</SelectItem>
+        {tags.map((tag) => (
+          <SelectItem key={tag.id} value={tag.id}>
+            {tag.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
