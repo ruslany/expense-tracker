@@ -82,6 +82,27 @@ export async function POST(request: NextRequest) {
       // Compute hashes with sequence numbers for identical rows
       const contentHashes = computeSequencedHashes(parsedTransactions);
 
+      // Collect all unique tags from parsed transactions
+      const allTagNames = new Set<string>();
+      parsedTransactions.forEach((tx) => {
+        tx.tags?.forEach((tag) => allTagNames.add(tag));
+      });
+
+      // Upsert all tags
+      const tagNameToId = new Map<string, string>();
+      if (allTagNames.size > 0) {
+        await Promise.all(
+          Array.from(allTagNames).map(async (tagName) => {
+            const tag = await prisma.tag.upsert({
+              where: { name: tagName },
+              update: {},
+              create: { name: tagName },
+            });
+            tagNameToId.set(tagName, tag.id);
+          })
+        );
+      }
+
       const result = await prisma.transaction.createMany({
         data: parsedTransactions.map((tx, index) => ({
           accountId,
@@ -100,6 +121,45 @@ export async function POST(request: NextRequest) {
 
       const importedCount = result.count;
       const skippedCount = parsedTransactions.length - importedCount;
+
+      // Create tag associations for imported transactions
+      if (tagNameToId.size > 0 && importedCount > 0) {
+        // Query back the transactions we just created by their content hashes
+        const createdTransactions = await prisma.transaction.findMany({
+          where: {
+            accountId,
+            contentHash: { in: contentHashes },
+          },
+          select: { id: true, contentHash: true },
+        });
+
+        // Build a map from contentHash to transaction ID
+        const hashToTxId = new Map(
+          createdTransactions.map((tx) => [tx.contentHash, tx.id])
+        );
+
+        // Build tag associations
+        const tagAssociations: { transactionId: string; tagId: string }[] = [];
+        parsedTransactions.forEach((tx, index) => {
+          const txId = hashToTxId.get(contentHashes[index]);
+          if (txId && tx.tags) {
+            tx.tags.forEach((tagName) => {
+              const tagId = tagNameToId.get(tagName);
+              if (tagId) {
+                tagAssociations.push({ transactionId: txId, tagId });
+              }
+            });
+          }
+        });
+
+        // Create tag associations (skip duplicates in case of re-import)
+        if (tagAssociations.length > 0) {
+          await prisma.transactionTag.createMany({
+            data: tagAssociations,
+            skipDuplicates: true,
+          });
+        }
+      }
 
       // Create import history record
       await prisma.importHistory.create({

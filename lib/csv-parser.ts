@@ -138,12 +138,27 @@ function parseTransaction(row: Record<string, string>, config: CSVParserConfig):
     }
   }
 
+  // Parse tags if present in CSV (auto-detect common tag column names)
+  let tags: string[] | undefined;
+  const tagColumnNames = ['Tag', 'tag', 'TAG', 'Tags', 'tags', 'TAGS'];
+  for (const colName of tagColumnNames) {
+    if (row[colName]) {
+      // Split by comma or semicolon to support multiple tags in one cell
+      tags = row[colName]
+        .split(/[,;]/)
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+      break;
+    }
+  }
+
   return {
     date,
     description,
     amount,
     originalData: row,
     ...(category && { category }),
+    ...(tags && tags.length > 0 && { tags }),
   };
 }
 

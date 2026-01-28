@@ -21,6 +21,7 @@ export interface ParsedTransaction {
   amount: number;
   originalData: Record<string, unknown>;
   category?: string;
+  tags?: string[];
 }
 
 export interface DashboardStats {
