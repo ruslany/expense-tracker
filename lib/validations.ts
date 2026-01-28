@@ -50,3 +50,11 @@ export const csvUploadSchema = z.object({
   institution: z.enum(['fidelity', 'citi', 'amex']),
   accountId: z.string().min(1, 'Account ID is required'),
 });
+
+export const tagSchema = z.object({
+  name: z.string().min(1, 'Tag name is required').max(50, 'Tag name too long'),
+});
+
+export const transactionTagsUpdateSchema = z.object({
+  tagIds: z.array(z.string()),
+});

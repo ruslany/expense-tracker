@@ -19,6 +19,11 @@ type Account = {
   name: string;
 };
 
+type Tag = {
+  id: string;
+  name: string;
+};
+
 export function CategoryFilter({ categories }: { categories: Category[] }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -84,6 +89,42 @@ export function AccountFilter({ accounts }: { accounts: Account[] }) {
         {accounts.map((account) => (
           <SelectItem key={account.id} value={account.id}>
             {account.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function TagFilter({ tags }: { tags: Tag[] }) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const currentTagId = searchParams.get('tagId') || '';
+
+  const handleChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', '1'); // Reset to first page when filtering
+
+    if (value && value !== 'all') {
+      params.set('tagId', value);
+    } else {
+      params.delete('tagId');
+    }
+
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  return (
+    <Select value={currentTagId || 'all'} onValueChange={handleChange}>
+      <SelectTrigger className="w-45">
+        <SelectValue placeholder="All Tags" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All Tags</SelectItem>
+        {tags.map((tag) => (
+          <SelectItem key={tag.id} value={tag.id}>
+            {tag.name}
           </SelectItem>
         ))}
       </SelectContent>
