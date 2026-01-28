@@ -7,6 +7,7 @@ function buildTransactionWhereClause(
   query?: string,
   categoryId?: string,
   accountId?: string,
+  tagId?: string,
 ): TransactionWhereInput {
   const conditions: TransactionWhereInput[] = [];
 
@@ -28,6 +29,16 @@ function buildTransactionWhereClause(
     conditions.push({ accountId });
   }
 
+  if (tagId) {
+    conditions.push({
+      tags: {
+        some: {
+          tagId,
+        },
+      },
+    });
+  }
+
   return conditions.length > 0 ? { AND: conditions } : {};
 }
 
@@ -37,9 +48,10 @@ export async function fetchFilteredTransactions(
   pageSize: number = DEFAULT_PAGE_SIZE,
   categoryId?: string,
   accountId?: string,
+  tagId?: string,
 ) {
   const offset = (currentPage - 1) * pageSize;
-  const where = buildTransactionWhereClause(query, categoryId, accountId);
+  const where = buildTransactionWhereClause(query, categoryId, accountId, tagId);
 
   try {
     const transactions = await prisma.transaction.findMany({
@@ -47,6 +59,11 @@ export async function fetchFilteredTransactions(
       include: {
         account: true,
         category: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
       },
       orderBy: {
         date: 'desc',
@@ -66,6 +83,10 @@ export async function fetchFilteredTransactions(
         id: t.account.id,
         name: t.account.name,
       },
+      tags: t.tags.map((tt) => ({
+        id: tt.tag.id,
+        name: tt.tag.name,
+      })),
     }));
   } catch (error) {
     console.error('Database Error:', error);
@@ -94,8 +115,9 @@ export async function fetchTransactionsPages(
   pageSize: number = DEFAULT_PAGE_SIZE,
   categoryId?: string,
   accountId?: string,
+  tagId?: string,
 ) {
-  const where = buildTransactionWhereClause(query, categoryId, accountId);
+  const where = buildTransactionWhereClause(query, categoryId, accountId, tagId);
 
   try {
     const count = await prisma.transaction.count({ where });
@@ -121,5 +143,21 @@ export async function fetchAccounts() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch accounts.');
+  }
+}
+
+export async function fetchTags() {
+  try {
+    const tags = await prisma.tag.findMany({
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return tags;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch tags.');
   }
 }

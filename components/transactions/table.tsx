@@ -6,9 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { fetchFilteredTransactions, fetchCategories } from '@/lib/data';
+import { fetchFilteredTransactions, fetchCategories, fetchTags } from '@/lib/data';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { CategoryCell } from './category-cell';
+import { TagsCell } from './tags-cell';
 import { TransactionActions } from './actions';
 
 export async function TransactionsTable({
@@ -17,16 +18,19 @@ export async function TransactionsTable({
   pageSize,
   categoryId,
   accountId,
+  tagId,
 }: {
   query: string;
   currentPage: number;
   pageSize: number;
   categoryId?: string;
   accountId?: string;
+  tagId?: string;
 }) {
-  const [transactions, categories] = await Promise.all([
-    fetchFilteredTransactions(query, currentPage, pageSize, categoryId, accountId),
+  const [transactions, categories, allTags] = await Promise.all([
+    fetchFilteredTransactions(query, currentPage, pageSize, categoryId, accountId, tagId),
     fetchCategories(),
+    fetchTags(),
   ]);
 
   return (
@@ -48,8 +52,15 @@ export async function TransactionsTable({
               <TableRow key={transaction.id}>
                 <TableCell>{formatDate(transaction.date)}</TableCell>
                 <TableCell>
-                  <div className="max-w-75 truncate" title={transaction.description}>
-                    {transaction.description}
+                  <div className="space-y-1">
+                    <div className="max-w-75 truncate" title={transaction.description}>
+                      {transaction.description}
+                    </div>
+                    <TagsCell
+                      transactionId={transaction.id}
+                      tags={transaction.tags}
+                      allTags={allTags}
+                    />
                   </div>
                 </TableCell>
                 <TableCell>

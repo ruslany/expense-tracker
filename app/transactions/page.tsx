@@ -2,9 +2,9 @@ import { AppShell } from '@/components/app-shell';
 import { TransactionsTable } from '@/components/transactions/table';
 import { SearchTransactions } from '@/components/transactions/search';
 import { TransactionsPagination } from '@/components/transactions/pagination';
-import { CategoryFilter, AccountFilter } from '@/components/transactions/filters';
+import { CategoryFilter, AccountFilter, TagFilter } from '@/components/transactions/filters';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchTransactionsPages, fetchCategories, fetchAccounts } from '@/lib/data';
+import { fetchTransactionsPages, fetchCategories, fetchAccounts, fetchTags } from '@/lib/data';
 
 export default async function TransactionsPage(props: {
   searchParams?: Promise<{
@@ -13,6 +13,7 @@ export default async function TransactionsPage(props: {
     pageSize?: string;
     categoryId?: string;
     accountId?: string;
+    tagId?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
@@ -21,11 +22,13 @@ export default async function TransactionsPage(props: {
   const pageSize = Number(searchParams?.pageSize) || 10;
   const categoryId = searchParams?.categoryId;
   const accountId = searchParams?.accountId;
+  const tagId = searchParams?.tagId;
 
-  const [totalPages, categories, accounts] = await Promise.all([
-    fetchTransactionsPages(query, pageSize, categoryId, accountId),
+  const [totalPages, categories, accounts, tags] = await Promise.all([
+    fetchTransactionsPages(query, pageSize, categoryId, accountId, tagId),
     fetchCategories(),
     fetchAccounts(),
+    fetchTags(),
   ]);
 
   return (
@@ -45,6 +48,7 @@ export default async function TransactionsPage(props: {
               <SearchTransactions placeholder="Search transactions..." />
               <CategoryFilter categories={categories} />
               <AccountFilter accounts={accounts} />
+              <TagFilter tags={tags} />
             </div>
             <TransactionsTable
               query={query}
@@ -52,6 +56,7 @@ export default async function TransactionsPage(props: {
               pageSize={pageSize}
               categoryId={categoryId}
               accountId={accountId}
+              tagId={tagId}
             />
             <div className="flex justify-center">
               <TransactionsPagination totalPages={totalPages} />
