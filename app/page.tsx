@@ -8,8 +8,8 @@ import { prisma } from '@/lib/prisma';
 
 async function getStats() {
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
 
   const transactions = await prisma.transaction.findMany({
     where: {
@@ -47,8 +47,8 @@ async function getStats() {
 
 async function getCategorySpendingTable() {
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
 
   // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
@@ -127,8 +127,8 @@ const MONTHLY_BUDGET = 7000;
 
 async function getSpendingOverTime() {
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
 
   // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
@@ -145,7 +145,7 @@ async function getSpendingOverTime() {
   const spendingByDate = new Map<string, { expenses: number; credits: number }>();
 
   for (const t of transactions) {
-    const dateKey = t.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const dateKey = t.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
     const current = spendingByDate.get(dateKey) ?? { expenses: 0, credits: 0 };
     if (t.amount < 0) {
       current.expenses += Math.abs(t.amount);
