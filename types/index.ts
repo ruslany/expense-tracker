@@ -12,6 +12,7 @@ export interface CSVFieldMapping {
   accountNumber?: string;
   transactionType?: string;
   memo?: string;
+  category?: string;
 }
 
 export interface ParsedTransaction {
@@ -19,6 +20,7 @@ export interface ParsedTransaction {
   description: string;
   amount: number;
   originalData: Record<string, unknown>;
+  category?: string;
 }
 
 export interface DashboardStats {
