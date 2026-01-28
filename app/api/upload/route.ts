@@ -75,9 +75,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Build a map of category names to IDs for CSV-provided categories
-      const categoryNameToId = new Map(
-        categories.map((c) => [c.name.toLowerCase(), c.id])
-      );
+      const categoryNameToId = new Map(categories.map((c) => [c.name.toLowerCase(), c.id]));
 
       // Compute hashes with sequence numbers for identical rows
       const contentHashes = computeSequencedHashes(parsedTransactions);
@@ -99,7 +97,7 @@ export async function POST(request: NextRequest) {
               create: { name: tagName },
             });
             tagNameToId.set(tagName, tag.id);
-          })
+          }),
         );
       }
 
@@ -110,7 +108,7 @@ export async function POST(request: NextRequest) {
           description: tx.description,
           amount: tx.amount,
           categoryId: tx.category
-            ? categoryNameToId.get(tx.category.toLowerCase()) ?? null
+            ? (categoryNameToId.get(tx.category.toLowerCase()) ?? null)
             : detectCategory(tx.description, categories),
           originalData: tx.originalData as Prisma.InputJsonValue,
           contentHash: contentHashes[index],
@@ -134,9 +132,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Build a map from contentHash to transaction ID
-        const hashToTxId = new Map(
-          createdTransactions.map((tx) => [tx.contentHash, tx.id])
-        );
+        const hashToTxId = new Map(createdTransactions.map((tx) => [tx.contentHash, tx.id]));
 
         // Build tag associations
         const tagAssociations: { transactionId: string; tagId: string }[] = [];

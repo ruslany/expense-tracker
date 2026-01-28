@@ -3,7 +3,9 @@ import { prisma } from '@/lib/prisma';
 
 function getUTCMonthRange(date: Date) {
   const startDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
-  const endDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+  const endDate = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0, 23, 59, 59, 999),
+  );
   return { startDate, endDate };
 }
 
@@ -85,7 +87,11 @@ export async function GET(request: NextRequest) {
     const spendingByDay = new Map<string, number>();
     transactions.forEach((t) => {
       if (t.amount < 0) {
-        const dateKey = t.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+        const dateKey = t.date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          timeZone: 'UTC',
+        });
         const current = spendingByDay.get(dateKey) || 0;
         spendingByDay.set(dateKey, current + Math.abs(t.amount));
       }

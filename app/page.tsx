@@ -9,7 +9,9 @@ import { prisma } from '@/lib/prisma';
 async function getStats() {
   const now = new Date();
   const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+  const endOfMonth = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
+  );
 
   const transactions = await prisma.transaction.findMany({
     where: {
@@ -48,7 +50,9 @@ async function getStats() {
 async function getCategorySpendingTable() {
   const now = new Date();
   const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+  const endOfMonth = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
+  );
 
   // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
@@ -94,12 +98,12 @@ async function getCategorySpendingTable() {
   // Calculate net spending per category (expenses - credits)
   const grandTotal = Array.from(categoryMap.values()).reduce(
     (sum, c) => sum + (c.expenses - c.credits),
-    0
+    0,
   );
   const totalCount = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.count, 0);
   const overallMaxTransaction = Math.max(
     ...Array.from(categoryMap.values()).map((c) => c.maxExpense),
-    0
+    0,
   );
 
   const data = Array.from(categoryMap.entries())
@@ -128,7 +132,9 @@ const MONTHLY_BUDGET = 7000;
 async function getSpendingOverTime() {
   const now = new Date();
   const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const endOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+  const endOfMonth = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
+  );
 
   // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
@@ -145,7 +151,11 @@ async function getSpendingOverTime() {
   const spendingByDate = new Map<string, { expenses: number; credits: number }>();
 
   for (const t of transactions) {
-    const dateKey = t.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    const dateKey = t.date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC',
+    });
     const current = spendingByDate.get(dateKey) ?? { expenses: 0, credits: 0 };
     if (t.amount < 0) {
       current.expenses += Math.abs(t.amount);
