@@ -91,7 +91,10 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
   }
 
   const grandTotal = Array.from(tagMap.values()).reduce((sum, t) => sum + t.total, 0);
-  const overallMaxTransaction = Math.max(...Array.from(tagMap.values()).map((t) => t.maxTransaction), 0);
+  const overallMaxTransaction = Math.max(
+    ...Array.from(tagMap.values()).map((t) => t.maxTransaction),
+    0,
+  );
 
   const data: TagExpense[] = Array.from(tagMap.entries())
     .map(([tagId, stats]) => ({
@@ -160,7 +163,10 @@ async function getCategoriesForTag(
 
   const grandTotal = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.total, 0);
   const totalCount = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.count, 0);
-  const overallMaxTransaction = Math.max(...Array.from(categoryMap.values()).map((c) => c.maxTransaction), 0);
+  const overallMaxTransaction = Math.max(
+    ...Array.from(categoryMap.values()).map((c) => c.maxTransaction),
+    0,
+  );
 
   const data: CategoryBreakdown[] = Array.from(categoryMap.entries())
     .map(([categoryName, stats]) => ({

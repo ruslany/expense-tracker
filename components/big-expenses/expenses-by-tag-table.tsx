@@ -50,7 +50,9 @@ export function ExpensesByTagTable({
             <TableCell className="font-medium">{row.tagName}</TableCell>
             <TableCell className="text-right">{formatCurrency(Math.abs(row.total))}</TableCell>
             <TableCell className="text-right">{row.percent.toFixed(2)}%</TableCell>
-            <TableCell className="text-right">{formatCurrency(Math.abs(row.maxTransaction))}</TableCell>
+            <TableCell className="text-right">
+              {formatCurrency(Math.abs(row.maxTransaction))}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -59,7 +61,9 @@ export function ExpensesByTagTable({
           <TableCell className="font-bold">Grand Total</TableCell>
           <TableCell className="text-right font-bold">{formatCurrency(grandTotal)}</TableCell>
           <TableCell className="text-right font-bold">100.00%</TableCell>
-          <TableCell className="text-right font-bold">{formatCurrency(overallMaxTransaction)}</TableCell>
+          <TableCell className="text-right font-bold">
+            {formatCurrency(overallMaxTransaction)}
+          </TableCell>
         </TableRow>
       </TableFooter>
     </Table>

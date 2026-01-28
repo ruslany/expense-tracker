@@ -5,11 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Settings } from 'lucide-react';
 
@@ -55,7 +51,10 @@ export function BigExpenseTagsManager({ tags }: BigExpenseTagsManagerProps) {
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="pb-3">
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full justify-between p-0 h-auto hover:bg-transparent">
+            <Button
+              variant="ghost"
+              className="w-full justify-between p-0 h-auto hover:bg-transparent"
+            >
               <CardTitle className="flex items-center gap-2 text-base">
                 <Settings className="h-4 w-4" />
                 Configure Big Expense Tags
@@ -63,11 +62,7 @@ export function BigExpenseTagsManager({ tags }: BigExpenseTagsManagerProps) {
                   ({selectedCount} selected)
                 </span>
               </CardTitle>
-              {isOpen ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
+              {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Button>
           </CollapsibleTrigger>
         </CardHeader>
@@ -85,10 +80,7 @@ export function BigExpenseTagsManager({ tags }: BigExpenseTagsManagerProps) {
                     disabled={isPending}
                     onCheckedChange={(checked) => handleToggle(tag.id, checked === true)}
                   />
-                  <Label
-                    htmlFor={`tag-${tag.id}`}
-                    className="text-sm font-normal cursor-pointer"
-                  >
+                  <Label htmlFor={`tag-${tag.id}`} className="text-sm font-normal cursor-pointer">
                     {tag.name}
                   </Label>
                 </div>
