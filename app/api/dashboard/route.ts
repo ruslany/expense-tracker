@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { startOfMonth, endOfMonth, format } from 'date-fns';
+
+function getUTCMonthRange(date: Date) {
+  const startDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+  const endDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+  return { startDate, endDate };
+}
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const monthParam = searchParams.get('month');
 
-    const now = new Date();
-    const startDate = monthParam ? startOfMonth(new Date(monthParam)) : startOfMonth(now);
-    const endDate = monthParam ? endOfMonth(new Date(monthParam)) : endOfMonth(now);
+    const baseDate = monthParam ? new Date(monthParam) : new Date();
+    const { startDate, endDate } = getUTCMonthRange(baseDate);
 
     // Fetch all transactions for the month
     const transactions = await prisma.transaction.findMany({
@@ -81,7 +85,7 @@ export async function GET(request: NextRequest) {
     const spendingByDay = new Map<string, number>();
     transactions.forEach((t) => {
       if (t.amount < 0) {
-        const dateKey = format(t.date, 'MMM d');
+        const dateKey = t.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
         const current = spendingByDay.get(dateKey) || 0;
         spendingByDay.set(dateKey, current + Math.abs(t.amount));
       }

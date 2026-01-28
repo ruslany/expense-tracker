@@ -123,11 +123,27 @@ function parseTransaction(row: Record<string, string>, config: CSVParserConfig):
     amount = -amount;
   }
 
+  // Parse category if present in CSV (check explicit mapping first, then common column names)
+  let category: string | undefined;
+  if (fieldMapping.category && row[fieldMapping.category]) {
+    category = row[fieldMapping.category].trim();
+  } else {
+    // Auto-detect common category column names
+    const categoryColumnNames = ['Category', 'category', 'CATEGORY'];
+    for (const colName of categoryColumnNames) {
+      if (row[colName]) {
+        category = row[colName].trim();
+        break;
+      }
+    }
+  }
+
   return {
     date,
     description,
     amount,
     originalData: row,
+    ...(category && { category }),
   };
 }
 

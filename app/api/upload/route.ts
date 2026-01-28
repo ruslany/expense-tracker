@@ -74,6 +74,11 @@ export async function POST(request: NextRequest) {
         select: { id: true, name: true, keywords: true },
       });
 
+      // Build a map of category names to IDs for CSV-provided categories
+      const categoryNameToId = new Map(
+        categories.map((c) => [c.name.toLowerCase(), c.id])
+      );
+
       // Compute hashes with sequence numbers for identical rows
       const contentHashes = computeSequencedHashes(parsedTransactions);
 
@@ -83,7 +88,9 @@ export async function POST(request: NextRequest) {
           date: tx.date,
           description: tx.description,
           amount: tx.amount,
-          categoryId: detectCategory(tx.description, categories),
+          categoryId: tx.category
+            ? categoryNameToId.get(tx.category.toLowerCase()) ?? null
+            : detectCategory(tx.description, categories),
           originalData: tx.originalData as Prisma.InputJsonValue,
           contentHash: contentHashes[index],
           importedAt: now,
