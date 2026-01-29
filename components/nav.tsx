@@ -12,6 +12,11 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
+    title: 'Big Expenses',
+    href: '/big-expenses',
+    icon: PieChart,
+  },
+  {
     title: 'Transactions',
     href: '/transactions',
     icon: CreditCard,
@@ -25,11 +30,6 @@ const navItems = [
     title: 'Accounts',
     href: '/accounts',
     icon: Wallet,
-  },
-  {
-    title: 'Big Expenses',
-    href: '/big-expenses',
-    icon: PieChart,
   },
 ];
 
