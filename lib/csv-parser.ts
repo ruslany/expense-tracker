@@ -114,7 +114,8 @@ function parseTransaction(row: Record<string, string>, config: CSVParserConfig):
   } else if (fieldMapping.debit && fieldMapping.credit) {
     // Separate debit/credit columns (Citi format)
     const debit = row[fieldMapping.debit] ? parseAmount(row[fieldMapping.debit]) : 0;
-    const credit = row[fieldMapping.credit] ? parseAmount(row[fieldMapping.credit]) : 0;
+    // Costco credit column always has negative numbers
+    const credit = row[fieldMapping.credit] ? parseAmount(row[fieldMapping.credit]) * -1 : 0;
     amount = credit - debit; // Credits are positive, debits are negative
   }
 
