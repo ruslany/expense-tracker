@@ -53,10 +53,10 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
   const yearStart = new Date(Date.UTC(year, 0, 1));
   const yearEnd = new Date(Date.UTC(year + 1, 0, 1));
 
+  // Include all transactions (expenses and refunds) to get net amounts
   const transactions = await prisma.transaction.findMany({
     where: {
       date: { gte: yearStart, lt: yearEnd },
-      amount: { lt: 0 },
       tags: {
         some: {
           tag: { isBigExpense: true },
@@ -76,15 +76,17 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
   for (const t of transactions) {
     for (const tt of t.tags) {
       const existing = tagMap.get(tt.tagId);
-      const amount = Math.abs(t.amount);
+      // Negate amount: expenses (-) become positive, refunds (+) become negative (deductions)
+      const netAmount = -t.amount;
+      const absAmount = Math.abs(t.amount);
       if (existing) {
-        existing.total += amount;
-        existing.maxTransaction = Math.max(existing.maxTransaction, amount);
+        existing.total += netAmount;
+        existing.maxTransaction = Math.max(existing.maxTransaction, absAmount);
       } else {
         tagMap.set(tt.tagId, {
           name: tt.tag.name,
-          total: amount,
-          maxTransaction: amount,
+          total: netAmount,
+          maxTransaction: absAmount,
         });
       }
     }
@@ -133,10 +135,10 @@ async function getCategoriesForTag(
   const yearStart = new Date(Date.UTC(year, 0, 1));
   const yearEnd = new Date(Date.UTC(year + 1, 0, 1));
 
+  // Include all transactions (expenses and refunds) to get net amounts
   const transactions = await prisma.transaction.findMany({
     where: {
       date: { gte: yearStart, lt: yearEnd },
-      amount: { lt: 0 },
       tags: { some: { tagId } },
     },
     include: { category: true },
@@ -146,17 +148,19 @@ async function getCategoriesForTag(
 
   for (const t of transactions) {
     const categoryName = t.category?.name ?? 'Uncategorized';
-    const amount = Math.abs(t.amount);
+    // Negate amount: expenses (-) become positive, refunds (+) become negative (deductions)
+    const netAmount = -t.amount;
+    const absAmount = Math.abs(t.amount);
     const existing = categoryMap.get(categoryName);
     if (existing) {
-      existing.total += amount;
+      existing.total += netAmount;
       existing.count += 1;
-      existing.maxTransaction = Math.max(existing.maxTransaction, amount);
+      existing.maxTransaction = Math.max(existing.maxTransaction, absAmount);
     } else {
       categoryMap.set(categoryName, {
-        total: amount,
+        total: netAmount,
         count: 1,
-        maxTransaction: amount,
+        maxTransaction: absAmount,
       });
     }
   }
