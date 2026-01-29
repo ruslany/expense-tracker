@@ -31,7 +31,7 @@ const COLORS = [
 export function ExpensesByTagChart({ data }: ExpensesByTagChartProps) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+      <div className="flex items-center justify-center h-75 text-muted-foreground">
         No data for selected big expense tags
       </div>
     );
