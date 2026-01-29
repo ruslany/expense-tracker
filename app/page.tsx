@@ -1,17 +1,37 @@
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DashboardCharts } from '@/components/dashboard-charts';
+import { DashboardCharts } from '@/components/dashboard/charts';
+import { DashboardPeriodFilter } from '@/components/dashboard/period-filter';
 import { SpendingByCategoryTable } from '@/components/spending-by-category-table';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 
-async function getStats() {
-  const now = new Date();
-  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const endOfMonth = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
-  );
+interface PageProps {
+  searchParams: Promise<{ year?: string; month?: string }>;
+}
+
+async function getAvailableYears() {
+  const result = await prisma.transaction.findMany({
+    select: { date: true },
+    distinct: ['date'],
+  });
+
+  const years = new Set<number>();
+  for (const t of result) {
+    years.add(t.date.getUTCFullYear());
+  }
+
+  const yearsArray = Array.from(years).sort((a, b) => b - a);
+  if (yearsArray.length === 0) {
+    yearsArray.push(new Date().getFullYear());
+  }
+  return yearsArray;
+}
+
+async function getStats(year: number, month: number) {
+  const startOfMonth = new Date(Date.UTC(year, month, 1));
+  const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
   const transactions = await prisma.transaction.findMany({
     where: {
@@ -47,12 +67,9 @@ async function getStats() {
   };
 }
 
-async function getCategorySpendingTable() {
-  const now = new Date();
-  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const endOfMonth = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
-  );
+async function getCategorySpendingTable(year: number, month: number) {
+  const startOfMonth = new Date(Date.UTC(year, month, 1));
+  const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
   // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
@@ -129,12 +146,9 @@ async function getCategorySpendingTable() {
 
 const MONTHLY_BUDGET = 7000;
 
-async function getSpendingOverTime() {
-  const now = new Date();
-  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const endOfMonth = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
-  );
+async function getSpendingOverTime(year: number, month: number) {
+  const startOfMonth = new Date(Date.UTC(year, month, 1));
+  const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
   // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
@@ -179,19 +193,28 @@ async function getSpendingOverTime() {
   });
 }
 
-export default async function Dashboard() {
-  const [stats, categorySpendingTable, spendingOverTime] = await Promise.all([
-    getStats(),
-    getCategorySpendingTable(),
-    getSpendingOverTime(),
+export default async function Dashboard({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const now = new Date();
+  const currentYear = params.year ? parseInt(params.year, 10) : now.getFullYear();
+  const currentMonth = params.month ? parseInt(params.month, 10) : now.getMonth();
+
+  const [availableYears, stats, categorySpendingTable, spendingOverTime] = await Promise.all([
+    getAvailableYears(),
+    getStats(currentYear, currentMonth),
+    getCategorySpendingTable(currentYear, currentMonth),
+    getSpendingOverTime(currentYear, currentMonth),
   ]);
 
   return (
     <AppShell>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your expenses and income</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">Overview of your expenses and income</p>
+          </div>
+          <DashboardPeriodFilter availableYears={availableYears} />
         </div>
 
         {/* Summary Cards */}
