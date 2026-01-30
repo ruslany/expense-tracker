@@ -1,5 +1,6 @@
 import { Nav } from './nav';
 import { ThemeToggle } from './theme-toggle';
+import { UserMenu } from './user-menu';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -25,6 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
+            <UserMenu />
           </div>
         </header>
 
