@@ -4,6 +4,8 @@ import { CSVUploader } from '@/components/csv-uploader';
 import { ImportHistory } from '@/components/import-history';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 async function getImportHistory() {
   const history = await prisma.importHistory.findMany({
     orderBy: { importedAt: 'desc' },
