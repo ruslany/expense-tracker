@@ -82,7 +82,7 @@ Azure Resource Group
 ## Resources Created
 
 | Resource | Purpose |
-|----------|---------|
+| ---------- | --------- |
 | Container Apps Environment | Managed Kubernetes hosting |
 | Container App | The running application |
 
