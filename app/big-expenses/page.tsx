@@ -2,6 +2,7 @@ import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { YearFilter } from '@/components/big-expenses/year-filter';
 import { TagSelector } from '@/components/big-expenses/tag-selector';
+import { ParamsInitializer } from '@/components/big-expenses/params-initializer';
 import { BigExpenseTagsManager } from '@/components/big-expenses/big-expense-tags-manager';
 import { ExpensesByTagChart } from '@/components/big-expenses/expenses-by-tag-chart';
 import { ExpensesByTagTable } from '@/components/big-expenses/expenses-by-tag-table';
@@ -209,6 +210,10 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
 
   return (
     <AppShell>
+      <ParamsInitializer
+        availableYears={availableYears}
+        availableTagIds={allTags.map((t) => t.id)}
+      />
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
