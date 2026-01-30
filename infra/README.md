@@ -19,7 +19,7 @@ docker login
 Environment variables (optional - defaults shown):
 
 | Variable | Default | Description |
-|----------|---------|-------------|
+| ---------- | --------- | ------------- |
 | `APP_NAME` | `expense-tracker` | Container App name |
 | `RESOURCE_GROUP` | `expense-tracker-rg` | Azure resource group |
 | `LOCATION` | `canadacentral` | Azure region |
@@ -34,6 +34,7 @@ just initial-deploy 'postgresql://user:pass@host:5432/db?sslmode=require'
 ```
 
 This will:
+
 1. Create the resource group
 2. Build and push Docker image (tagged with `latest` and commit ID)
 3. Deploy Azure infrastructure
@@ -53,7 +54,7 @@ just deploy-all 'postgresql://...'
 ## Commands Reference
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `just initial-deploy '<db_url>'` | First-time deployment |
 | `just build-push` | Build and push Docker image |
 | `just update-app` | Update container with new image |
@@ -69,7 +70,7 @@ just deploy-all 'postgresql://...'
 
 ## Architecture
 
-```
+```bash
 Azure Resource Group
 └── Container Apps Environment
     └── Container App
