@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { YEAR_STORAGE_KEY } from './params-initializer';
 
 interface YearFilterProps {
   availableYears: number[];
@@ -22,6 +23,7 @@ export function YearFilter({ availableYears }: YearFilterProps) {
   const handleChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set('year', value);
+    localStorage.setItem(YEAR_STORAGE_KEY, value);
     replace(`${pathname}?${params.toString()}`);
   };
 
