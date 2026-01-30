@@ -9,6 +9,8 @@ import { ExpensesByTagTable } from '@/components/big-expenses/expenses-by-tag-ta
 import { CategoriesForTagTable } from '@/components/big-expenses/categories-for-tag-table';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   searchParams: Promise<{ year?: string; tagId?: string }>;
 }
