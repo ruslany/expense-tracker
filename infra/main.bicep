@@ -8,6 +8,22 @@ param location string
 @secure()
 param databaseUrl string
 
+@description('Auth.js secret key')
+@secure()
+param authSecret string
+
+@description('Google OAuth client ID')
+@secure()
+param authGoogleId string
+
+@description('Google OAuth client secret')
+@secure()
+param authGoogleSecret string
+
+@description('Comma-separated list of allowed emails')
+@secure()
+param allowedEmails string = ''
+
 @description('Docker image to deploy (e.g., docker.io/username/expense-tracker:latest)')
 param dockerImage string
 
@@ -33,6 +49,10 @@ module containerApp 'modules/container-app.bicep' = {
     containerAppEnvId: containerAppEnv.outputs.id
     dockerImage: dockerImage
     databaseUrl: databaseUrl
+    authSecret: authSecret
+    authGoogleId: authGoogleId
+    authGoogleSecret: authGoogleSecret
+    allowedEmails: allowedEmails
     tags: tags
   }
 }
