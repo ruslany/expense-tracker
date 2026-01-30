@@ -6,9 +6,6 @@ resource_group := env_var_or_default("RESOURCE_GROUP", "expense-tracker-rg")
 location := env_var_or_default("LOCATION", "canadacentral")
 docker_image := env_var_or_default("DOCKER_IMAGE", "ruslany/yoet")
 
-# Git commit short hash
-commit_id := `git rev-parse --short HEAD`
-
 # Default recipe - show available commands
 default:
     @just --list
@@ -22,46 +19,48 @@ validate db_url:
     az deployment group validate \
         --resource-group {{resource_group}} \
         --template-file infra/main.bicep \
-        --parameters infra/main.bicepparam \
+        --parameters appName='{{app_name}}' \
+        --parameters location='{{location}}' \
         --parameters databaseUrl='{{db_url}}' \
-        --parameters dockerImage='{{docker_image}}:{{commit_id}}'
+        --parameters dockerImage='{{docker_image}}:latest'
 
 # Preview infrastructure changes
 what-if db_url:
     az deployment group what-if \
         --resource-group {{resource_group}} \
         --template-file infra/main.bicep \
-        --parameters infra/main.bicepparam \
+        --parameters appName='{{app_name}}' \
+        --parameters location='{{location}}' \
         --parameters databaseUrl='{{db_url}}' \
-        --parameters dockerImage='{{docker_image}}:{{commit_id}}'
+        --parameters dockerImage='{{docker_image}}:latest'
 
 # Deploy infrastructure
 deploy-infra db_url:
     az deployment group create \
         --resource-group {{resource_group}} \
         --template-file infra/main.bicep \
-        --parameters infra/main.bicepparam \
+        --parameters appName='{{app_name}}' \
+        --parameters location='{{location}}' \
         --parameters databaseUrl='{{db_url}}' \
-        --parameters dockerImage='{{docker_image}}:{{commit_id}}'
+        --parameters dockerImage='{{docker_image}}:latest'
 
-# Build Docker image with both latest and commit ID tags
+# Build Docker image
 build:
-    docker build -t {{docker_image}}:latest -t {{docker_image}}:{{commit_id}} .
+    docker build -t {{docker_image}}:latest .
 
-# Push Docker image to Docker Hub (both latest and commit ID tags)
+# Push Docker image to Docker Hub
 push:
     docker push {{docker_image}}:latest
-    docker push {{docker_image}}:{{commit_id}}
 
 # Build and push Docker image
 build-push: build push
 
-# Update Container App with new image (uses commit ID tag)
+# Update Container App with new image
 update-app:
     az containerapp update \
         --name {{app_name}} \
         --resource-group {{resource_group}} \
-        --image {{docker_image}}:{{commit_id}}
+        --image {{docker_image}}:latest
 
 # Initial deployment (create RG + deploy infra + build + push)
 initial-deploy db_url: create-rg build-push (deploy-infra db_url)
