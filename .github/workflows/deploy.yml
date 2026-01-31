@@ -66,7 +66,7 @@ jobs:
           template: ./infra/main.bicep
           parameters: >-
             appName=${{ env.APP_NAME }}
-            location=eastus
+            location=canadacentral
             dockerImage=docker.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
             databaseUrl=${{ secrets.DATABASE_URL }}
             authSecret=${{ secrets.AUTH_SECRET }}
