@@ -71,11 +71,7 @@ export async function TransactionsTable({
               </div>
 
               {/* Tags */}
-              <TagsCell
-                transactionId={transaction.id}
-                tags={transaction.tags}
-                allTags={allTags}
-              />
+              <TagsCell transactionId={transaction.id} tags={transaction.tags} allTags={allTags} />
 
               {/* Category and Account */}
               <div className="flex items-center justify-between gap-2">

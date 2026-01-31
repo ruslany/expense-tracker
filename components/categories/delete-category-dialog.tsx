@@ -20,11 +20,7 @@ interface DeleteCategoryDialogProps {
   category: { id: string; name: string; transactionCount: number } | null;
 }
 
-export function DeleteCategoryDialog({
-  open,
-  onOpenChange,
-  category,
-}: DeleteCategoryDialogProps) {
+export function DeleteCategoryDialog({ open, onOpenChange, category }: DeleteCategoryDialogProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -63,19 +59,15 @@ export function DeleteCategoryDialog({
               <>
                 {' '}
                 This category is assigned to{' '}
-                <strong>{category.transactionCount} transaction(s)</strong>. These transactions
-                will become uncategorized.
+                <strong>{category.transactionCount} transaction(s)</strong>. These transactions will
+                become uncategorized.
               </>
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
+          <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
             {isDeleting ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>
         </AlertDialogFooter>

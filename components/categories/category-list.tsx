@@ -151,9 +151,7 @@ export function CategoryList({ categories }: CategoryListProps) {
                             <span className="text-muted-foreground">No keywords</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-right">
-                          {category.transactionCount}
-                        </TableCell>
+                        <TableCell className="text-right">{category.transactionCount}</TableCell>
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

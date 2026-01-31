@@ -58,7 +58,9 @@ export function CategoryDialog({
 
   // Filter out current category's keywords from existingKeywords
   const filteredExistingKeywords = category
-    ? existingKeywords.filter((k) => !category.keywords.map((ck) => ck.toLowerCase()).includes(k.toLowerCase()))
+    ? existingKeywords.filter(
+        (k) => !category.keywords.map((ck) => ck.toLowerCase()).includes(k.toLowerCase()),
+      )
     : existingKeywords;
 
   const handleSubmit = async (e: React.FormEvent) => {
