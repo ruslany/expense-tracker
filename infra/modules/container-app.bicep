@@ -30,6 +30,9 @@ param authGoogleSecret string
 @secure()
 param allowedEmails string = ''
 
+@description('Auth.js base URL for OAuth redirects')
+param authUrl string
+
 @description('Tags to apply to resources')
 param tags object = {}
 
@@ -102,6 +105,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'AUTH_TRUST_HOST'
               value: 'true'
+            }
+            {
+              name: 'AUTH_URL'
+              value: authUrl
             }
           ]
         }
