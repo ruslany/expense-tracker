@@ -45,7 +45,7 @@ export function CategoryFilter({ categories }: { categories: Category[] }) {
 
   return (
     <Select value={currentCategoryId || 'all'} onValueChange={handleChange}>
-      <SelectTrigger className="w-45">
+      <SelectTrigger className="w-full sm:w-45">
         <SelectValue placeholder="All Categories" />
       </SelectTrigger>
       <SelectContent>
@@ -81,7 +81,7 @@ export function AccountFilter({ accounts }: { accounts: Account[] }) {
 
   return (
     <Select value={currentAccountId || 'all'} onValueChange={handleChange}>
-      <SelectTrigger className="w-45">
+      <SelectTrigger className="w-full sm:w-45">
         <SelectValue placeholder="All Accounts" />
       </SelectTrigger>
       <SelectContent>
@@ -117,7 +117,7 @@ export function TagFilter({ tags }: { tags: Tag[] }) {
 
   return (
     <Select value={currentTagId || 'all'} onValueChange={handleChange}>
-      <SelectTrigger className="w-45">
+      <SelectTrigger className="w-full sm:w-45">
         <SelectValue placeholder="All Tags" />
       </SelectTrigger>
       <SelectContent>

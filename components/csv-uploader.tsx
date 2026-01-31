@@ -137,7 +137,7 @@ export function CSVUploader() {
         onDragOver={handleDrag}
         onDrop={handleDrop}
         className={cn(
-          'relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors',
+          'relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 sm:p-12 transition-colors',
           isDragging
             ? 'border-primary bg-primary/5'
             : 'border-muted-foreground/25 hover:border-muted-foreground/50',
@@ -195,7 +195,23 @@ export function CSVUploader() {
       {preview && preview.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-sm font-medium">Preview (first 5 rows)</h3>
-          <div className="rounded-md border">
+
+          {/* Mobile Card View */}
+          <div className="space-y-3 md:hidden">
+            {preview.map((row, idx) => (
+              <div key={idx} className="rounded-lg border p-3 space-y-1">
+                {Object.entries(row).map(([key, value]) => (
+                  <div key={key} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{key}:</span>
+                    <span className="font-medium truncate ml-2 max-w-[60%] text-right">{value}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

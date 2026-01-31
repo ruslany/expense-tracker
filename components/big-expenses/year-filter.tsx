@@ -29,7 +29,7 @@ export function YearFilter({ availableYears }: YearFilterProps) {
 
   return (
     <Select value={currentYear} onValueChange={handleChange}>
-      <SelectTrigger className="w-32">
+      <SelectTrigger className="w-full sm:w-32">
         <SelectValue placeholder="Select Year" />
       </SelectTrigger>
       <SelectContent>
