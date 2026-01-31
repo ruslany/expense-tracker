@@ -24,6 +24,9 @@ param authGoogleSecret string
 @secure()
 param allowedEmails string = ''
 
+@description('Auth.js base URL for OAuth redirects')
+param authUrl string
+
 @description('Docker image to deploy (e.g., docker.io/username/expense-tracker:latest)')
 param dockerImage string
 
@@ -53,6 +56,7 @@ module containerApp 'modules/container-app.bicep' = {
     authGoogleId: authGoogleId
     authGoogleSecret: authGoogleSecret
     allowedEmails: allowedEmails
+    authUrl: authUrl
     tags: tags
   }
 }

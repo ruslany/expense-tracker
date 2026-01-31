@@ -77,3 +77,4 @@ jobs:
             authGoogleId=${{ secrets.AUTH_GOOGLE_ID }}
             authGoogleSecret=${{ secrets.AUTH_GOOGLE_SECRET }}
             allowedEmails=${{ secrets.ALLOWED_EMAILS }}
+            authUrl=${{ secrets.AUTH_URL }}
