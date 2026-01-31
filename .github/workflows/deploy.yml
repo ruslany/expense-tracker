@@ -80,4 +80,4 @@ jobs:
             authUrl=${{ secrets.AUTH_URL }}
 
       - name: 📋 Output deployed image tag
-        run: echo "Deployed image tag: ${{ steps.sha.outputs.short }}"
+        run: echo "Deployed image tag:" ${{ steps.sha.outputs.short }}
