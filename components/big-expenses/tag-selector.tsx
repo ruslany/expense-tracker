@@ -39,7 +39,7 @@ export function TagSelector({ tags }: TagSelectorProps) {
 
   return (
     <Select value={currentTagId || 'none'} onValueChange={handleChange}>
-      <SelectTrigger className="w-48">
+      <SelectTrigger className="w-full sm:w-48">
         <SelectValue placeholder="Select a tag" />
       </SelectTrigger>
       <SelectContent>

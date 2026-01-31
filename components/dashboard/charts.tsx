@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { useIsMobile } from '@/hooks/use-media-query';
 
 interface SpendingDataPoint {
   date: string;
@@ -24,21 +25,32 @@ interface DashboardChartsProps {
 }
 
 export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
+  const isMobile = useIsMobile();
+  const chartHeight = isMobile ? 200 : 300;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Spending Over Time</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <LineChart data={spendingOverTime}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="date"
               className="text-xs"
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 10 : 12 }}
+              interval={isMobile ? 'preserveStartEnd' : 0}
+              angle={isMobile ? -45 : 0}
+              textAnchor={isMobile ? 'end' : 'middle'}
+              height={isMobile ? 50 : 30}
             />
-            <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+            <YAxis
+              className="text-xs"
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 10 : 12 }}
+              width={isMobile ? 45 : 60}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
@@ -46,14 +58,14 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
                 borderRadius: '8px',
               }}
             />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
             <Line
               type="monotone"
               dataKey="amount"
               name="Daily Spending"
               stroke="hsl(var(--primary))"
               strokeWidth={2}
-              dot={{ fill: 'hsl(var(--primary))' }}
+              dot={isMobile ? false : { fill: 'hsl(var(--primary))' }}
             />
             <Line
               type="monotone"
@@ -61,7 +73,7 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
               name="Running Total"
               stroke="#10b981"
               strokeWidth={2}
-              dot={{ fill: '#10b981' }}
+              dot={isMobile ? false : { fill: '#10b981' }}
             />
             <Line
               type="monotone"

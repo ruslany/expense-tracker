@@ -1,4 +1,5 @@
 import { Nav } from './nav';
+import { MobileNav } from './mobile-nav';
 import { ThemeToggle } from './theme-toggle';
 import { UserMenu } from './user-menu';
 
@@ -20,8 +21,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         {/* Header */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background px-6">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6">
           <div className="flex items-center gap-4">
+            <MobileNav />
             <h1 className="text-xl font-bold lg:hidden">Expense Tracker</h1>
           </div>
           <div className="flex items-center gap-4">
@@ -32,7 +34,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Page content */}
         <main className="flex-1 overflow-auto">
-          <div className="container mx-auto p-6">{children}</div>
+          <div className="container mx-auto p-4 sm:p-6">{children}</div>
         </main>
       </div>
     </div>

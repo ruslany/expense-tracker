@@ -93,9 +93,9 @@ export function DashboardPeriodFilter({ availableYears }: DashboardPeriodFilterP
   const selectedMonthLabel = MONTHS.find((m) => m.value === currentMonth)?.label || 'Month';
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row">
       <Select value={currentMonth} onValueChange={handleMonthChange}>
-        <SelectTrigger className="w-36">
+        <SelectTrigger className="w-full sm:w-36">
           <SelectValue placeholder="Month">{selectedMonthLabel}</SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -108,7 +108,7 @@ export function DashboardPeriodFilter({ availableYears }: DashboardPeriodFilterP
       </Select>
 
       <Select value={currentYear} onValueChange={handleYearChange}>
-        <SelectTrigger className="w-24">
+        <SelectTrigger className="w-full sm:w-24">
           <SelectValue placeholder="Year" />
         </SelectTrigger>
         <SelectContent>

@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-media-query';
 
 interface TagExpense {
   tagId: string;
@@ -29,6 +30,8 @@ const COLORS = [
 ];
 
 export function ExpensesByTagChart({ data }: ExpensesByTagChartProps) {
+  const isMobile = useIsMobile();
+
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-75 text-muted-foreground">
@@ -43,16 +46,19 @@ export function ExpensesByTagChart({ data }: ExpensesByTagChartProps) {
     percent: item.percent,
   }));
 
+  const chartHeight = isMobile ? 250 : 350;
+  const outerRadius = isMobile ? 70 : 120;
+
   return (
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width="100%" height={chartHeight}>
       <PieChart>
         <Pie
           data={chartData}
           cx="50%"
           cy="50%"
-          labelLine={true}
-          label={({ name, percent }) => `${name} (${(percent ?? 0).toFixed(1)}%)`}
-          outerRadius={120}
+          labelLine={!isMobile}
+          label={isMobile ? false : ({ name, percent }) => `${name} (${(percent ?? 0).toFixed(1)}%)`}
+          outerRadius={outerRadius}
           fill="#8884d8"
           dataKey="value"
         >
@@ -75,7 +81,7 @@ export function ExpensesByTagChart({ data }: ExpensesByTagChartProps) {
             color: 'hsl(var(--card-foreground))',
           }}
         />
-        <Legend />
+        <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 14 }} />
       </PieChart>
     </ResponsiveContainer>
   );

@@ -217,7 +217,7 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
         availableTagIds={allTags.map((t) => t.id)}
       />
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Big Expenses</h1>
             <p className="text-muted-foreground">Track yearly expenses by tag</p>
@@ -245,7 +245,7 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <CardTitle>Category Breakdown for Tag</CardTitle>
               <TagSelector tags={allTags} />
             </div>
