@@ -59,6 +59,10 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Get short SHA
+        id: sha
+        run: echo "short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
       - name: Deploy Bicep template
         uses: azure/arm-deploy@v2
         with:
@@ -67,7 +71,7 @@ jobs:
           parameters: >-
             appName=${{ env.APP_NAME }}
             location=canadacentral
-            dockerImage=docker.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            dockerImage=docker.io/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }}
             databaseUrl=${{ secrets.DATABASE_URL }}
             authSecret=${{ secrets.AUTH_SECRET }}
             authGoogleId=${{ secrets.AUTH_GOOGLE_ID }}
