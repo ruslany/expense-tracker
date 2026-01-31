@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/expense-tracker
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/yoet
   AZURE_RESOURCE_GROUP: expense-tracker-rg
   APP_NAME: expense-tracker
 
