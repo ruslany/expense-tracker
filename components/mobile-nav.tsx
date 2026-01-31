@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, LayoutDashboard, CreditCard, Upload, Wallet, PieChart } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,34 +13,7 @@ import {
   SheetTitle,
   SheetClose,
 } from '@/components/ui/sheet';
-
-const navItems = [
-  {
-    title: 'Dashboard',
-    href: '/',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'Big Expenses',
-    href: '/big-expenses',
-    icon: PieChart,
-  },
-  {
-    title: 'Transactions',
-    href: '/transactions',
-    icon: CreditCard,
-  },
-  {
-    title: 'Import',
-    href: '/import',
-    icon: Upload,
-  },
-  {
-    title: 'Accounts',
-    href: '/accounts',
-    icon: Wallet,
-  },
-];
+import { navItems } from './nav-items';
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
