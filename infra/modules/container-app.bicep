@@ -99,6 +99,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               name: 'ALLOWED_EMAILS'
               secretRef: 'allowed-emails'
             }
+            {
+              name: 'AUTH_TRUST_HOST'
+              value: 'true'
+            }
           ]
         }
       ]
