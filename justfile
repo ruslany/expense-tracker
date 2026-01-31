@@ -14,34 +14,46 @@ default:
 create-rg:
     az group create --name {{resource_group}} --location {{location}}
 
-# Validate Bicep templates
-validate db_url:
+# Validate Bicep templates (requires: source .env first)
+validate:
     az deployment group validate \
         --resource-group {{resource_group}} \
         --template-file infra/main.bicep \
         --parameters appName='{{app_name}}' \
         --parameters location='{{location}}' \
-        --parameters databaseUrl='{{db_url}}' \
+        --parameters databaseUrl="$DATABASE_URL" \
+        --parameters authSecret="$AUTH_SECRET" \
+        --parameters authGoogleId="$AUTH_GOOGLE_ID" \
+        --parameters authGoogleSecret="$AUTH_GOOGLE_SECRET" \
+        --parameters allowedEmails="$ALLOWED_EMAILS" \
         --parameters dockerImage='{{docker_image}}:latest'
 
-# Preview infrastructure changes
-what-if db_url:
+# Preview infrastructure changes (requires: source .env first)
+what-if:
     az deployment group what-if \
         --resource-group {{resource_group}} \
         --template-file infra/main.bicep \
         --parameters appName='{{app_name}}' \
         --parameters location='{{location}}' \
-        --parameters databaseUrl='{{db_url}}' \
+        --parameters databaseUrl="$DATABASE_URL" \
+        --parameters authSecret="$AUTH_SECRET" \
+        --parameters authGoogleId="$AUTH_GOOGLE_ID" \
+        --parameters authGoogleSecret="$AUTH_GOOGLE_SECRET" \
+        --parameters allowedEmails="$ALLOWED_EMAILS" \
         --parameters dockerImage='{{docker_image}}:latest'
 
-# Deploy infrastructure
-deploy-infra db_url:
+# Deploy infrastructure (requires: source .env first)
+deploy-infra:
     az deployment group create \
         --resource-group {{resource_group}} \
         --template-file infra/main.bicep \
         --parameters appName='{{app_name}}' \
         --parameters location='{{location}}' \
-        --parameters databaseUrl='{{db_url}}' \
+        --parameters databaseUrl="$DATABASE_URL" \
+        --parameters authSecret="$AUTH_SECRET" \
+        --parameters authGoogleId="$AUTH_GOOGLE_ID" \
+        --parameters authGoogleSecret="$AUTH_GOOGLE_SECRET" \
+        --parameters allowedEmails="$ALLOWED_EMAILS" \
         --parameters dockerImage='{{docker_image}}:latest'
 
 # Build Docker image
@@ -63,10 +75,12 @@ update-app:
         --image {{docker_image}}:latest
 
 # Initial deployment (create RG + deploy infra + build + push)
-initial-deploy db_url: create-rg build-push (deploy-infra db_url)
+# Requires: source .env first
+initial-deploy: create-rg build-push deploy-infra
 
 # Full deployment (infra + build + push + update)
-deploy-all db_url: build-push (deploy-infra db_url)
+# Requires: source .env first
+deploy-all: build-push deploy-infra
 
 # Stream container logs
 logs:

@@ -14,6 +14,22 @@ param dockerImage string
 @secure()
 param databaseUrl string
 
+@description('Auth.js secret key')
+@secure()
+param authSecret string
+
+@description('Google OAuth client ID')
+@secure()
+param authGoogleId string
+
+@description('Google OAuth client secret')
+@secure()
+param authGoogleSecret string
+
+@description('Comma-separated list of allowed emails')
+@secure()
+param allowedEmails string = ''
+
 @description('Tags to apply to resources')
 param tags object = {}
 
@@ -35,6 +51,22 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'database-url'
           value: databaseUrl
         }
+        {
+          name: 'auth-secret'
+          value: authSecret
+        }
+        {
+          name: 'auth-google-id'
+          value: authGoogleId
+        }
+        {
+          name: 'auth-google-secret'
+          value: authGoogleSecret
+        }
+        {
+          name: 'allowed-emails'
+          value: allowedEmails
+        }
       ]
     }
     template: {
@@ -50,6 +82,22 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'DATABASE_URL'
               secretRef: 'database-url'
+            }
+            {
+              name: 'AUTH_SECRET'
+              secretRef: 'auth-secret'
+            }
+            {
+              name: 'AUTH_GOOGLE_ID'
+              secretRef: 'auth-google-id'
+            }
+            {
+              name: 'AUTH_GOOGLE_SECRET'
+              secretRef: 'auth-google-secret'
+            }
+            {
+              name: 'ALLOWED_EMAILS'
+              secretRef: 'allowed-emails'
             }
           ]
         }

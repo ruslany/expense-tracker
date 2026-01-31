@@ -27,17 +27,27 @@ Environment variables (optional - defaults shown):
 
 ## Deployment
 
+All deployment commands require environment variables to be loaded first. Create a `.env` file (gitignored) with your secrets:
+
+```bash
+DATABASE_URL="postgresql://user:pass@host:5432/db?sslmode=require"
+AUTH_SECRET="your-auth-secret"
+AUTH_GOOGLE_ID="your-google-client-id"
+AUTH_GOOGLE_SECRET="your-google-client-secret"
+ALLOWED_EMAILS="user1@example.com,user2@example.com"
+```
+
 ### First-time deployment
 
 ```bash
-just initial-deploy 'postgresql://user:pass@host:5432/db?sslmode=require'
+source .env && just initial-deploy
 ```
 
 This will:
 
 1. Create the resource group
-2. Build and push Docker image (tagged with `latest` and commit ID)
-3. Deploy Azure infrastructure
+2. Build and push Docker image
+3. Deploy Azure infrastructure with all secrets
 
 ### Deploy code changes
 
@@ -48,24 +58,24 @@ just build-push update-app
 ### Full redeployment
 
 ```bash
-just deploy-all 'postgresql://...'
+source .env && just deploy-all
 ```
 
 ## Commands Reference
 
 | Command | Description |
 | --------- | ------------- |
-| `just initial-deploy '<db_url>'` | First-time deployment |
+| `source .env && just initial-deploy` | First-time deployment |
 | `just build-push` | Build and push Docker image |
 | `just update-app` | Update container with new image |
-| `just deploy-all '<db_url>'` | Full redeployment |
+| `source .env && just deploy-all` | Full redeployment |
 | `just status` | Check deployment status |
 | `just logs` | Stream container logs |
 | `just app-url` | Get application URL |
 | `just revisions` | List container revisions |
 | `just restart` | Restart the container |
-| `just what-if '<db_url>'` | Preview infrastructure changes |
-| `just validate '<db_url>'` | Validate Bicep templates |
+| `source .env && just what-if` | Preview infrastructure changes |
+| `source .env && just validate` | Validate Bicep templates |
 | `just destroy` | Delete all resources |
 
 ## Architecture
@@ -88,4 +98,12 @@ Azure Resource Group
 
 ## Secrets
 
-- `DATABASE_URL` - Stored as Container Apps secret, passed via Bicep parameter
+All secrets are stored encrypted in Azure Container Apps and passed via Bicep parameters at deploy time:
+
+| Secret | Environment Variable | Description |
+| ------ | -------------------- | ----------- |
+| `database-url` | `DATABASE_URL` | PostgreSQL connection string |
+| `auth-secret` | `AUTH_SECRET` | Auth.js session encryption key |
+| `auth-google-id` | `AUTH_GOOGLE_ID` | Google OAuth client ID |
+| `auth-google-secret` | `AUTH_GOOGLE_SECRET` | Google OAuth client secret |
+| `allowed-emails` | `ALLOWED_EMAILS` | Comma-separated list of allowed emails |
