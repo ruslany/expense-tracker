@@ -9,9 +9,19 @@ app_name := env_var_or_default("APP_NAME", "et-app")
 resource_group := env_var_or_default("RESOURCE_GROUP", "et-rg")
 location := env_var_or_default("LOCATION", "canadacentral")
 
+# Production database connection
+prod_db_host := env_var_or_default("PROD_DB_HOST", "")
+prod_db_name := env_var_or_default("PROD_DB_NAME", "postgres")
+prod_db_user := env_var_or_default("PROD_DB_USER", "")
+
 # Default recipe - show available commands
 default:
     @just --list
+
+# Connect to production PostgreSQL using Azure managed identity
+pgconnect:
+    PGPASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv)" \
+    psql "host={{prod_db_host}} dbname={{prod_db_name}} user={{prod_db_user}} sslmode=require"
 
 # Deploy infrastructure with specified image
 # Usage: just deploy <image:tag>
