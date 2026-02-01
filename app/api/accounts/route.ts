@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { accountSchema } from '@/lib/validations';
 
 export async function GET() {
   try {
@@ -17,5 +18,31 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching accounts:', error);
     return NextResponse.json({ error: 'Failed to fetch accounts' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validated = accountSchema.parse(body);
+
+    const account = await prisma.account.create({
+      data: {
+        name: validated.name,
+        institution: validated.institution,
+        accountType: validated.accountType,
+      },
+      select: {
+        id: true,
+        name: true,
+        institution: true,
+        accountType: true,
+      },
+    });
+
+    return NextResponse.json(account, { status: 201 });
+  } catch (error) {
+    console.error('Error creating account:', error);
+    return NextResponse.json({ error: 'Failed to create account' }, { status: 500 });
   }
 }

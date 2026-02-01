@@ -9,7 +9,12 @@ import Papa from 'papaparse';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL?.includes('azure') ? { rejectUnauthorized: true } : undefined,
+});
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 

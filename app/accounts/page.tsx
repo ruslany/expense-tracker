@@ -1,7 +1,12 @@
 import { AppShell } from '@/components/app-shell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AccountList } from '@/components/accounts/account-list';
+import { fetchAccountsWithTransactionCount } from '@/lib/data';
 
-export default function AccountsPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function AccountsPage() {
+  const accounts = await fetchAccountsWithTransactionCount();
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -10,16 +15,7 @@ export default function AccountsPage() {
           <p className="text-muted-foreground">Manage your credit card and bank accounts</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Coming Soon</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Account management features will be available soon.
-            </p>
-          </CardContent>
-        </Card>
+        <AccountList accounts={accounts} />
       </div>
     </AppShell>
   );
