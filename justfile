@@ -18,6 +18,10 @@ prod_db_user := env_var_or_default("PROD_DB_USER", "")
 default:
     @just --list
 
+# Run Prisma migrations against production database using Azure managed identity
+migrate:
+    npx tsx scripts/migrate.ts
+
 # Connect to production PostgreSQL using Azure managed identity
 pgconnect:
     PGPASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv)" \
