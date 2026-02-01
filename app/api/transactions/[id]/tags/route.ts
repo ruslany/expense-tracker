@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { transactionTagsUpdateSchema } from '@/lib/validations';
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const prisma = await getPrisma();
     const { id } = await params;
     const body = await request.json();
     const validated = transactionTagsUpdateSchema.parse(body);

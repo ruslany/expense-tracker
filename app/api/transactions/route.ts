@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { transactionFilterSchema } from '@/lib/validations';
 import type { Prisma } from '@/lib/generated/prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
+    const prisma = await getPrisma();
     const searchParams = request.nextUrl.searchParams;
     const params = Object.fromEntries(searchParams.entries());
 

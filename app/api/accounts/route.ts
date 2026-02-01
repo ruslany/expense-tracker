@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { accountSchema } from '@/lib/validations';
 
 export async function GET() {
   try {
+    const prisma = await getPrisma();
     const accounts = await prisma.account.findMany({
       orderBy: { name: 'asc' },
       select: {
@@ -23,6 +24,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const prisma = await getPrisma();
     const body = await request.json();
     const validated = accountSchema.parse(body);
 

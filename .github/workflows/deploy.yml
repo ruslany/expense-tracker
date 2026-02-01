@@ -72,7 +72,7 @@ jobs:
             appName=${{ env.APP_NAME }}
             location=canadacentral
             dockerImage=docker.io/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }}
-            databaseUrl=${{ secrets.DATABASE_URL }}
+            postgresAdminPassword=${{ secrets.POSTGRES_ADMIN_PASSWORD }}
             authSecret=${{ secrets.AUTH_SECRET }}
             authGoogleId=${{ secrets.AUTH_GOOGLE_ID }}
             authGoogleSecret=${{ secrets.AUTH_GOOGLE_SECRET }}
