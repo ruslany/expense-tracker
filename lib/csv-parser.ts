@@ -49,7 +49,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     },
     dateFormat: 'MM/dd/yyyy',
     invertAmount: true, // AMEX shows expenses as positive, need to invert
-    skipPatterns: ['ONLINE PAYMENT - THANK YOU'],
+    skipPatterns: ['ONLINE PAYMENT - THANK YOU', 'MOBILE PAYMENT - THANK YOU'],
   },
 };
 
