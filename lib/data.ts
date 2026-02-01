@@ -211,3 +211,30 @@ export async function fetchTagsWithTransactionCount() {
     throw new Error('Failed to fetch tags.');
   }
 }
+
+export async function fetchAccountsWithTransactionCount() {
+  try {
+    const accounts = await prisma.account.findMany({
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        institution: true,
+        accountType: true,
+        _count: {
+          select: { transactions: true },
+        },
+      },
+    });
+    return accounts.map((a) => ({
+      id: a.id,
+      name: a.name,
+      institution: a.institution,
+      accountType: a.accountType,
+      transactionCount: a._count.transactions,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch accounts.');
+  }
+}
