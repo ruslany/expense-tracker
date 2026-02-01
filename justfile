@@ -23,9 +23,9 @@ deploy image:
         --parameters appName='{{app_name}}' \
         --parameters location='{{location}}' \
         --parameters dockerImage='docker.io/{{image}}' \
-        --parameters postgresAdminPassword='$POSTGRES_ADMIN_PASSWORD' \
-        --parameters authSecret='$AUTH_SECRET' \
-        --parameters authGoogleId='$AUTH_GOOGLE_ID' \
-        --parameters authGoogleSecret='$AUTH_GOOGLE_SECRET' \
-        --parameters allowedEmails='$ALLOWED_EMAILS' \
-        --parameters authUrl='$AUTH_URL'
+        --parameters postgresAdminPassword="$POSTGRES_ADMIN_PASSWORD" \
+        --parameters authSecret="$AUTH_SECRET" \
+        --parameters authGoogleId="$AUTH_GOOGLE_ID" \
+        --parameters authGoogleSecret="$AUTH_GOOGLE_SECRET" \
+        --parameters allowedEmails="$ALLOWED_EMAILS" \
+        --parameters authUrl="$AUTH_URL"
