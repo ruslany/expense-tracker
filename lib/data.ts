@@ -186,3 +186,28 @@ export async function fetchCategoriesWithKeywords() {
     throw new Error('Failed to fetch categories.');
   }
 }
+
+export async function fetchTagsWithTransactionCount() {
+  try {
+    const tags = await prisma.tag.findMany({
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        isBigExpense: true,
+        _count: {
+          select: { transactions: true },
+        },
+      },
+    });
+    return tags.map((t) => ({
+      id: t.id,
+      name: t.name,
+      isBigExpense: t.isBigExpense,
+      transactionCount: t._count.transactions,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch tags.');
+  }
+}

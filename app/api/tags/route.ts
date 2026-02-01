@@ -10,10 +10,20 @@ export async function GET() {
         id: true,
         name: true,
         isBigExpense: true,
+        _count: {
+          select: { transactions: true },
+        },
       },
     });
 
-    return NextResponse.json(tags);
+    return NextResponse.json(
+      tags.map((t) => ({
+        id: t.id,
+        name: t.name,
+        isBigExpense: t.isBigExpense,
+        transactionCount: t._count.transactions,
+      })),
+    );
   } catch (error) {
     console.error('Error fetching tags:', error);
     return NextResponse.json({ error: 'Failed to fetch tags' }, { status: 500 });
