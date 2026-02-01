@@ -25,17 +25,19 @@ export function KeywordInput({ keywords, onChange, existingKeywords, error }: Ke
   };
 
   const addKeyword = () => {
-    const keyword = inputValue.trim().toLowerCase();
+    const keyword = inputValue.trim();
     if (!keyword) return;
 
+    const keywordLower = keyword.toLowerCase();
+
     // Check if keyword already exists in this category's list
-    if (keywords.map((k) => k.toLowerCase()).includes(keyword)) {
+    if (keywords.map((k) => k.toLowerCase()).includes(keywordLower)) {
       setValidationError('Keyword already added');
       return;
     }
 
     // Check if keyword exists in other categories
-    if (existingKeywords.map((k) => k.toLowerCase()).includes(keyword)) {
+    if (existingKeywords.map((k) => k.toLowerCase()).includes(keywordLower)) {
       setValidationError('Keyword already exists in another category');
       return;
     }
