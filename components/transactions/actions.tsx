@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { DeleteTransactionDialog } from './delete-transaction-dialog';
 
 interface TransactionActionsProps {
   transactionId: string;
@@ -37,6 +38,7 @@ export function TransactionActions({
 }: TransactionActionsProps) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -98,10 +100,7 @@ export function TransactionActions({
             <Pencil />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem
-            variant="destructive"
-            onClick={() => console.log('Delete', transactionId)}
-          >
+          <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
             <Trash2 />
             Delete
           </DropdownMenuItem>
@@ -155,6 +154,12 @@ export function TransactionActions({
           </form>
         </DialogContent>
       </Dialog>
+
+      <DeleteTransactionDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        transaction={{ id: transactionId, description, amount }}
+      />
     </>
   );
 }
