@@ -58,3 +58,8 @@ export const tagSchema = z.object({
 export const transactionTagsUpdateSchema = z.object({
   tagIds: z.array(z.string()),
 });
+
+export const categoryUpdateSchema = z.object({
+  name: z.string().min(1, 'Category name is required').optional(),
+  keywords: z.array(z.string()).optional(),
+});

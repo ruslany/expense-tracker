@@ -57,7 +57,9 @@ export function ExpensesByTagChart({ data }: ExpensesByTagChartProps) {
           cx="50%"
           cy="50%"
           labelLine={!isMobile}
-          label={isMobile ? false : ({ name, percent }) => `${name} (${(percent ?? 0).toFixed(1)}%)`}
+          label={
+            isMobile ? false : ({ name, percent }) => `${name} (${(percent ?? 0).toFixed(1)}%)`
+          }
           outerRadius={outerRadius}
           fill="#8884d8"
           dataKey="value"

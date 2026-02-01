@@ -47,10 +47,7 @@ export function CategoriesForTagTable({
       {/* Mobile Card View */}
       <div className="space-y-3 md:hidden">
         {data.map((row) => (
-          <div
-            key={row.categoryName}
-            className="border rounded-lg p-3 space-y-2"
-          >
+          <div key={row.categoryName} className="border rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="font-medium">{row.categoryName}</span>
               <span className="font-semibold">{formatCurrency(Math.abs(row.total))}</span>

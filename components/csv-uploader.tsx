@@ -203,7 +203,9 @@ export function CSVUploader() {
                 {Object.entries(row).map(([key, value]) => (
                   <div key={key} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">{key}:</span>
-                    <span className="font-medium truncate ml-2 max-w-[60%] text-right">{value}</span>
+                    <span className="font-medium truncate ml-2 max-w-[60%] text-right">
+                      {value}
+                    </span>
                   </div>
                 ))}
               </div>
