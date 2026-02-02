@@ -96,8 +96,7 @@ module containerApp 'modules/container-app.bicep' = {
     location: location
     containerAppEnvId: containerAppEnv.outputs.id
     dockerImage: dockerImage
-    managedIdentityId: managedIdentity.outputs.id
-    managedIdentityClientId: managedIdentity.outputs.clientId
+    managedIdentityName: managedIdentity.outputs.name
     keyVaultUri: keyVault.outputs.uri
     postgresServerFqdn: postgresql.outputs.fqdn
     postgresDatabaseName: postgresql.outputs.databaseName

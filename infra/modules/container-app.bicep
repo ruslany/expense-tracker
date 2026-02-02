@@ -10,11 +10,8 @@ param containerAppEnvId string
 @description('Docker image to deploy')
 param dockerImage string
 
-@description('Resource ID of the user-assigned managed identity')
-param managedIdentityId string
-
-@description('Client ID of the user-assigned managed identity')
-param managedIdentityClientId string
+@description('Name of the user-assigned managed identity')
+param managedIdentityName string
 
 @description('URI of the Key Vault')
 param keyVaultUri string
@@ -31,9 +28,14 @@ param authUrl string
 @description('Tags to apply to resources')
 param tags object = {}
 
+// Reference existing managed identity to get its properties
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: managedIdentityName
+}
+
 // Construct DATABASE_URL for Azure AD authentication
-// Format: postgresql://<client-id>@<server-fqdn>:5432/<database>?sslmode=require
-var databaseUrl = 'postgresql://${managedIdentityClientId}@${postgresServerFqdn}:5432/${postgresDatabaseName}?sslmode=require'
+// Format: postgresql://<identity-name>@<server-fqdn>:5432/<database>?sslmode=require
+var databaseUrl = 'postgresql://${managedIdentityName}@${postgresServerFqdn}:5432/${postgresDatabaseName}?sslmode=require'
 
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: name
@@ -42,12 +44,13 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${managedIdentityId}': {}
+      '${managedIdentity.id}': {}
     }
   }
   properties: {
     managedEnvironmentId: containerAppEnvId
     configuration: {
+      maxInactiveRevisions: 3
       ingress: {
         external: true
         targetPort: 3000
@@ -58,22 +61,22 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         {
           name: 'auth-secret'
           keyVaultUrl: '${keyVaultUri}secrets/auth-secret'
-          identity: managedIdentityId
+          identity: managedIdentity.id
         }
         {
           name: 'auth-google-id'
           keyVaultUrl: '${keyVaultUri}secrets/auth-google-id'
-          identity: managedIdentityId
+          identity: managedIdentity.id
         }
         {
           name: 'auth-google-secret'
           keyVaultUrl: '${keyVaultUri}secrets/auth-google-secret'
-          identity: managedIdentityId
+          identity: managedIdentity.id
         }
         {
           name: 'allowed-emails'
           keyVaultUrl: '${keyVaultUri}secrets/allowed-emails'
-          identity: managedIdentityId
+          identity: managedIdentity.id
         }
       ]
     }
@@ -93,7 +96,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             }
             {
               name: 'AZURE_CLIENT_ID'
-              value: managedIdentityClientId
+              value: managedIdentity.properties.clientId
             }
             {
               name: 'AUTH_SECRET'
