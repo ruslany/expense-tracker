@@ -18,6 +18,10 @@ prod_db_user := env_var_or_default("PROD_DB_USER", "")
 default:
     @just --list
 
+# Build Docker image
+build:
+    docker build -t expense-tracker .
+
 # Run Prisma migrations against production database using Azure managed identity
 migrate:
     npx tsx scripts/migrate.ts

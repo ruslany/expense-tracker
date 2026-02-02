@@ -13,6 +13,9 @@ npm run lint         # ESLint check
 npx prisma generate              # Regenerate Prisma Client after schema changes
 npx prisma migrate dev --name X  # Create and apply new migration
 npx prisma studio                # Database GUI
+
+# Docker
+docker build -t expense-tracker .  # Build Docker image
 ```
 
 ## Architecture Overview

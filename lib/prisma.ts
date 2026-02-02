@@ -23,10 +23,7 @@ async function getAzureAccessToken(managedIdentityClientId?: string): Promise<st
 }
 
 async function createPrismaClient(): Promise<PrismaClient> {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL environment variable is not set');
-  }
+  const databaseUrl = process.env.DATABASE_URL!;
   const isAzureDb = databaseUrl.includes('azure');
 
   let connectionString: string;
@@ -81,9 +78,6 @@ function createSyncPrismaClient(): PrismaClient {
     throw new Error(
       'Cannot use synchronous prisma export with Azure database. Use getPrisma() instead.'
     );
-  }
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set');
   }
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
