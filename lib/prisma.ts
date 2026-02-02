@@ -22,29 +22,28 @@ async function getAzureAccessToken(): Promise<string> {
 
 async function createPrismaClient(): Promise<PrismaClient> {
   const isAzure = !!process.env.AZURE_CLIENT_ID;
+  const databaseUrl = process.env.DATABASE_URL!;
 
-  let poolConfig: {
-    connectionString: string;
-    ssl?: { rejectUnauthorized: boolean };
-    password?: string;
-  } = {
-    connectionString: process.env.DATABASE_URL!,
-  };
+  let connectionString: string;
+  let ssl: { rejectUnauthorized: boolean } | undefined;
 
   if (isAzure) {
-    // Azure environment: use Azure AD token as password
+    // Azure environment: embed Azure AD token in connection string
+    // This matches the approach used in scripts/import-categories.ts
     const accessToken = await getAzureAccessToken();
-    poolConfig = {
-      connectionString: process.env.DATABASE_URL!,
-      ssl: { rejectUnauthorized: true },
-      password: accessToken,
-    };
-  } else if (process.env.DATABASE_URL?.includes('azure')) {
+    const url = new URL(databaseUrl);
+    connectionString = `postgresql://${encodeURIComponent(url.username)}:${encodeURIComponent(accessToken)}@${url.hostname}:${url.port || 5432}${url.pathname}?sslmode=verify-full`;
+    ssl = { rejectUnauthorized: true };
+  } else if (databaseUrl.includes('azure')) {
     // Local development with Azure database (using az login)
-    poolConfig.ssl = { rejectUnauthorized: true };
+    connectionString = databaseUrl;
+    ssl = { rejectUnauthorized: true };
+  } else {
+    // Local development with local PostgreSQL
+    connectionString = databaseUrl;
   }
 
-  const pool = new Pool(poolConfig);
+  const pool = new Pool({ connectionString, ssl });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }
