@@ -5,7 +5,7 @@ import { DashboardPeriodFilter } from '@/components/dashboard/period-filter';
 import { SpendingByCategoryTable } from '@/components/spending-by-category-table';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from 'lucide-react';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +14,7 @@ interface PageProps {
 }
 
 async function getAvailableYears() {
+  const prisma = await getPrisma();
   const result = await prisma.transaction.findMany({
     select: { date: true },
     distinct: ['date'],
@@ -32,6 +33,7 @@ async function getAvailableYears() {
 }
 
 async function getStats(year: number, month: number) {
+  const prisma = await getPrisma();
   const startOfMonth = new Date(Date.UTC(year, month, 1));
   const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
@@ -70,6 +72,7 @@ async function getStats(year: number, month: number) {
 }
 
 async function getCategorySpendingTable(year: number, month: number) {
+  const prisma = await getPrisma();
   const startOfMonth = new Date(Date.UTC(year, month, 1));
   const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
@@ -149,6 +152,7 @@ async function getCategorySpendingTable(year: number, month: number) {
 const MONTHLY_BUDGET = 7000;
 
 async function getSpendingOverTime(year: number, month: number) {
+  const prisma = await getPrisma();
   const startOfMonth = new Date(Date.UTC(year, month, 1));
   const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 

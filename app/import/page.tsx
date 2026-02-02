@@ -2,11 +2,12 @@ import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CSVUploader } from '@/components/csv-uploader';
 import { ImportHistory } from '@/components/import-history';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
 async function getImportHistory() {
+  const prisma = await getPrisma();
   const history = await prisma.importHistory.findMany({
     orderBy: { importedAt: 'desc' },
     take: 50,
