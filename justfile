@@ -22,6 +22,10 @@ default:
 migrate:
     npx tsx scripts/migrate.ts
 
+# Import categories from CSV to production database using Azure managed identity
+import-categories:
+    npx tsx scripts/import-categories.ts
+
 # Connect to production PostgreSQL using Azure managed identity
 pgconnect:
     PGPASSWORD="$(az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv)" \

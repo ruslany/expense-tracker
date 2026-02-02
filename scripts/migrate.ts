@@ -10,7 +10,7 @@ async function runMigration() {
   const user = process.env.PROD_DB_USER; // Your Azure AD user/identity name
 
   // Construct the connection URL with the token as password
-  const url = `postgresql://${encodeURIComponent(user!)}:${encodeURIComponent(token.token)}@${host}:5432/${database}?sslmode=require`;
+  const url = `postgresql://${encodeURIComponent(user!)}:${encodeURIComponent(token.token)}@${host}:5432/${database}?sslmode=verify-full`;
 
   // Run prisma migrate with the constructed URL
   exec(`DATABASE_URL="${url}" npx prisma migrate deploy`, (error, stdout, stderr) => {
