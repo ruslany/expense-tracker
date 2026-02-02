@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { getPrisma } from './prisma';
 import type { TransactionWhereInput } from './generated/prisma/models/Transaction';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -54,6 +54,7 @@ export async function fetchFilteredTransactions(
   const where = buildTransactionWhereClause(query, categoryId, accountId, tagId);
 
   try {
+    const prisma = await getPrisma();
     const transactions = await prisma.transaction.findMany({
       where,
       include: {
@@ -96,6 +97,7 @@ export async function fetchFilteredTransactions(
 
 export async function fetchCategories() {
   try {
+    const prisma = await getPrisma();
     const categories = await prisma.category.findMany({
       orderBy: { name: 'asc' },
       select: {
@@ -120,6 +122,7 @@ export async function fetchTransactionsPages(
   const where = buildTransactionWhereClause(query, categoryId, accountId, tagId);
 
   try {
+    const prisma = await getPrisma();
     const count = await prisma.transaction.count({ where });
 
     const totalPages = Math.ceil(count / pageSize);
@@ -132,6 +135,7 @@ export async function fetchTransactionsPages(
 
 export async function fetchAccounts() {
   try {
+    const prisma = await getPrisma();
     const accounts = await prisma.account.findMany({
       orderBy: { name: 'asc' },
       select: {
@@ -148,6 +152,7 @@ export async function fetchAccounts() {
 
 export async function fetchTags() {
   try {
+    const prisma = await getPrisma();
     const tags = await prisma.tag.findMany({
       orderBy: { name: 'asc' },
       select: {
@@ -164,6 +169,7 @@ export async function fetchTags() {
 
 export async function fetchCategoriesWithKeywords() {
   try {
+    const prisma = await getPrisma();
     const categories = await prisma.category.findMany({
       orderBy: { name: 'asc' },
       select: {
@@ -189,6 +195,7 @@ export async function fetchCategoriesWithKeywords() {
 
 export async function fetchTagsWithTransactionCount() {
   try {
+    const prisma = await getPrisma();
     const tags = await prisma.tag.findMany({
       orderBy: { name: 'asc' },
       select: {
@@ -214,6 +221,7 @@ export async function fetchTagsWithTransactionCount() {
 
 export async function fetchAccountsWithTransactionCount() {
   try {
+    const prisma = await getPrisma();
     const accounts = await prisma.account.findMany({
       orderBy: { name: 'asc' },
       select: {
