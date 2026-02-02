@@ -72,7 +72,6 @@ export async function getPrisma(): Promise<PrismaClient> {
 }
 
 // For backwards compatibility in local development without Azure
-// This will throw if AZURE_CLIENT_ID is set (use getPrisma() instead)
 function createSyncPrismaClient(): PrismaClient {
   if (process.env.AZURE_CLIENT_ID) {
     throw new Error(
@@ -88,6 +87,11 @@ function createSyncPrismaClient(): PrismaClient {
 }
 
 // Export for backwards compatibility (local dev only)
-export const prisma = globalForPrisma.prisma ?? createSyncPrismaClient();
+// In Azure, this will be undefined - use getPrisma() instead
+export const prisma: PrismaClient = process.env.AZURE_CLIENT_ID
+  ? (undefined as unknown as PrismaClient)
+  : (globalForPrisma.prisma ?? createSyncPrismaClient());
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production' && !process.env.AZURE_CLIENT_ID) {
+  globalForPrisma.prisma = prisma;
+}
