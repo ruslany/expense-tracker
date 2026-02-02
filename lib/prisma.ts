@@ -10,33 +10,34 @@ const globalForPrisma = globalThis as unknown as {
 // Azure AD token scope for PostgreSQL
 const AZURE_POSTGRES_SCOPE = 'https://ossrdbms-aad.database.windows.net/.default';
 
-async function getAzureAccessToken(): Promise<string> {
+async function getAzureAccessToken(managedIdentityClientId?: string): Promise<string> {
   // Dynamic import to avoid bundling issues in non-Azure environments
   const { DefaultAzureCredential } = await import('@azure/identity');
-  const credential = new DefaultAzureCredential({
-    managedIdentityClientId: process.env.AZURE_CLIENT_ID,
-  });
+  // With clientId: use managed identity (Azure environment)
+  // Without clientId: use az login credentials (local dev)
+  const credential = managedIdentityClientId
+    ? new DefaultAzureCredential({ managedIdentityClientId })
+    : new DefaultAzureCredential();
   const token = await credential.getToken(AZURE_POSTGRES_SCOPE);
   return token.token;
 }
 
 async function createPrismaClient(): Promise<PrismaClient> {
-  const isAzure = !!process.env.AZURE_CLIENT_ID;
-  const databaseUrl = process.env.DATABASE_URL!;
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+  const isAzureDb = databaseUrl.includes('azure');
 
   let connectionString: string;
   let ssl: { rejectUnauthorized: boolean } | undefined;
 
-  if (isAzure) {
-    // Azure environment: embed Azure AD token in connection string
-    // This matches the approach used in scripts/import-categories.ts
-    const accessToken = await getAzureAccessToken();
+  if (process.env.AZURE_CLIENT_ID || isAzureDb) {
+    // Azure environment (managed identity) or local dev with Azure database (az login)
+    // Both require fetching an Azure AD token and embedding it in the connection string
+    const accessToken = await getAzureAccessToken(process.env.AZURE_CLIENT_ID);
     const url = new URL(databaseUrl);
     connectionString = `postgresql://${encodeURIComponent(url.username)}:${encodeURIComponent(accessToken)}@${url.hostname}:${url.port || 5432}${url.pathname}?sslmode=verify-full`;
-    ssl = { rejectUnauthorized: true };
-  } else if (databaseUrl.includes('azure')) {
-    // Local development with Azure database (using az login)
-    connectionString = databaseUrl;
     ssl = { rejectUnauthorized: true };
   } else {
     // Local development with local PostgreSQL
@@ -50,8 +51,9 @@ async function createPrismaClient(): Promise<PrismaClient> {
 
 /**
  * Get a Prisma client instance.
- * In Azure environment, this fetches an Azure AD token for authentication.
- * For local development, it uses the DATABASE_URL directly.
+ * - In Azure (AZURE_CLIENT_ID set): uses managed identity to fetch Azure AD token
+ * - Local dev with Azure DB: uses az login credentials to fetch Azure AD token
+ * - Local dev with local DB: uses DATABASE_URL directly
  */
 export async function getPrisma(): Promise<PrismaClient> {
   if (globalForPrisma.prisma) {
@@ -70,27 +72,32 @@ export async function getPrisma(): Promise<PrismaClient> {
   return globalForPrisma.prismaPromise;
 }
 
-// For backwards compatibility in local development without Azure
+// Check if we need Azure AD authentication (either in Azure or local dev with Azure DB)
+const requiresAzureAuth = !!process.env.AZURE_CLIENT_ID || !!process.env.DATABASE_URL?.includes('azure');
+
+// For backwards compatibility in local development with local PostgreSQL only
 function createSyncPrismaClient(): PrismaClient {
-  if (process.env.AZURE_CLIENT_ID) {
+  if (requiresAzureAuth) {
     throw new Error(
-      'Cannot use synchronous prisma export in Azure environment. Use getPrisma() instead.'
+      'Cannot use synchronous prisma export with Azure database. Use getPrisma() instead.'
     );
+  }
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL environment variable is not set');
   }
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL?.includes('azure') ? { rejectUnauthorized: true } : undefined,
   });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }
 
-// Export for backwards compatibility (local dev only)
-// In Azure, this will be undefined - use getPrisma() instead
-export const prisma: PrismaClient = process.env.AZURE_CLIENT_ID
+// Export for backwards compatibility (local dev with local PostgreSQL only)
+// When using Azure database, this will be undefined - use getPrisma() instead
+export const prisma: PrismaClient = requiresAzureAuth
   ? (undefined as unknown as PrismaClient)
   : (globalForPrisma.prisma ?? createSyncPrismaClient());
 
-if (process.env.NODE_ENV !== 'production' && !process.env.AZURE_CLIENT_ID) {
+if (process.env.NODE_ENV !== 'production' && !requiresAzureAuth) {
   globalForPrisma.prisma = prisma;
 }
