@@ -26,12 +26,6 @@ param authUrl string
 @description('Docker image to deploy (e.g., docker.io/username/expense-tracker:latest)')
 param dockerImage string
 
-@description('PostgreSQL administrator login name')
-param postgresAdminLogin string = 'pgadmin'
-
-@description('PostgreSQL administrator password')
-@secure()
-param postgresAdminPassword string
 
 var tags = {
   application: appName
@@ -65,8 +59,6 @@ module postgresql 'modules/postgresql.bicep' = {
   params: {
     name: '${appName}-postgres'
     location: location
-    administratorLogin: postgresAdminLogin
-    administratorPassword: postgresAdminPassword
     databaseName: 'expense_tracker'
     tags: tags
   }

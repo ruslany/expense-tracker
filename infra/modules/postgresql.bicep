@@ -4,13 +4,6 @@ param name string
 @description('Azure region for resources')
 param location string
 
-@description('PostgreSQL administrator login name')
-param administratorLogin string
-
-@description('PostgreSQL administrator password')
-@secure()
-param administratorPassword string
-
 @description('Name of the database to create')
 param databaseName string = 'expense_tracker'
 
@@ -27,8 +20,6 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-pr
   }
   properties: {
     version: '16'
-    administratorLogin: administratorLogin
-    administratorLoginPassword: administratorPassword
     storage: {
       storageSizeGB: 32
     }
@@ -41,7 +32,7 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-pr
     }
     authConfig: {
       activeDirectoryAuth: 'Enabled'
-      passwordAuth: 'Enabled'
+      passwordAuth: 'Disabled'
     }
   }
 }
