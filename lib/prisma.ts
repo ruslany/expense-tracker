@@ -73,6 +73,11 @@ export async function getPrisma(): Promise<PrismaClient> {
 
 // For backwards compatibility in local development without Azure
 function createSyncPrismaClient(): PrismaClient {
+  if (process.env.AZURE_CLIENT_ID) {
+    throw new Error(
+      'Cannot use synchronous prisma export in Azure environment. Use getPrisma() instead.'
+    );
+  }
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.DATABASE_URL?.includes('azure') ? { rejectUnauthorized: true } : undefined,
