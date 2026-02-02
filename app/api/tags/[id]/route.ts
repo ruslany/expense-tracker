@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const tagUpdateSchema = z.object({
@@ -9,6 +9,7 @@ const tagUpdateSchema = z.object({
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const prisma = await getPrisma();
     const { id } = await params;
     const body = await request.json();
     const validated = tagUpdateSchema.parse(body);
@@ -35,6 +36,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const prisma = await getPrisma();
     const { id } = await params;
 
     await prisma.tag.delete({

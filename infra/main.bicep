@@ -4,10 +4,6 @@ param appName string
 @description('Azure region for resources')
 param location string
 
-@description('Database connection URL')
-@secure()
-param databaseUrl string
-
 @description('Auth.js secret key')
 @secure()
 param authSecret string
@@ -30,11 +26,59 @@ param authUrl string
 @description('Docker image to deploy (e.g., docker.io/username/expense-tracker:latest)')
 param dockerImage string
 
+
 var tags = {
   application: appName
   managedBy: 'bicep'
 }
 
+// 1. User-Assigned Managed Identity
+module managedIdentity 'modules/managed-identity.bicep' = {
+  name: '${appName}-identity-deployment'
+  params: {
+    name: '${appName}-identity'
+    location: location
+    tags: tags
+  }
+}
+
+// 2. Key Vault (with RBAC for managed identity)
+module keyVault 'modules/key-vault.bicep' = {
+  name: '${appName}-kv-deployment'
+  params: {
+    name: '${appName}-kv'
+    location: location
+    managedIdentityPrincipalId: managedIdentity.outputs.principalId
+    tags: tags
+  }
+}
+
+// 3. PostgreSQL Flexible Server
+module postgresql 'modules/postgresql.bicep' = {
+  name: '${appName}-postgres-deployment'
+  params: {
+    name: '${appName}-postgres'
+    location: location
+    databaseName: 'expense_tracker'
+    tags: tags
+  }
+}
+
+// 4. Key Vault Secrets
+module keyVaultSecrets 'modules/key-vault-secrets.bicep' = {
+  name: '${appName}-secrets-deployment'
+  params: {
+    keyVaultName: keyVault.outputs.name
+    secrets: {
+      'auth-secret': authSecret
+      'auth-google-id': authGoogleId
+      'auth-google-secret': authGoogleSecret
+      'allowed-emails': allowedEmails
+    }
+  }
+}
+
+// 5. Container Apps Environment
 module containerAppEnv 'modules/container-app-env.bicep' = {
   name: '${appName}-env-deployment'
   params: {
@@ -44,6 +88,7 @@ module containerAppEnv 'modules/container-app-env.bicep' = {
   }
 }
 
+// 6. Container App (with identity + Key Vault secret references)
 module containerApp 'modules/container-app.bicep' = {
   name: '${appName}-app-deployment'
   params: {
@@ -51,14 +96,17 @@ module containerApp 'modules/container-app.bicep' = {
     location: location
     containerAppEnvId: containerAppEnv.outputs.id
     dockerImage: dockerImage
-    databaseUrl: databaseUrl
-    authSecret: authSecret
-    authGoogleId: authGoogleId
-    authGoogleSecret: authGoogleSecret
-    allowedEmails: allowedEmails
+    managedIdentityId: managedIdentity.outputs.id
+    managedIdentityClientId: managedIdentity.outputs.clientId
+    keyVaultUri: keyVault.outputs.uri
+    postgresServerFqdn: postgresql.outputs.fqdn
+    postgresDatabaseName: postgresql.outputs.databaseName
     authUrl: authUrl
     tags: tags
   }
+  dependsOn: [
+    keyVaultSecrets
+  ]
 }
 
 @description('The URL of the deployed application')

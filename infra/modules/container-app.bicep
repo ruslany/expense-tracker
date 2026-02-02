@@ -10,25 +10,20 @@ param containerAppEnvId string
 @description('Docker image to deploy')
 param dockerImage string
 
-@description('Database connection URL')
-@secure()
-param databaseUrl string
+@description('Resource ID of the user-assigned managed identity')
+param managedIdentityId string
 
-@description('Auth.js secret key')
-@secure()
-param authSecret string
+@description('Client ID of the user-assigned managed identity')
+param managedIdentityClientId string
 
-@description('Google OAuth client ID')
-@secure()
-param authGoogleId string
+@description('URI of the Key Vault')
+param keyVaultUri string
 
-@description('Google OAuth client secret')
-@secure()
-param authGoogleSecret string
+@description('FQDN of the PostgreSQL server')
+param postgresServerFqdn string
 
-@description('Comma-separated list of allowed emails')
-@secure()
-param allowedEmails string = ''
+@description('Name of the PostgreSQL database')
+param postgresDatabaseName string
 
 @description('Auth.js base URL for OAuth redirects')
 param authUrl string
@@ -36,10 +31,20 @@ param authUrl string
 @description('Tags to apply to resources')
 param tags object = {}
 
+// Construct DATABASE_URL for Azure AD authentication
+// Format: postgresql://<client-id>@<server-fqdn>:5432/<database>?sslmode=require
+var databaseUrl = 'postgresql://${managedIdentityClientId}@${postgresServerFqdn}:5432/${postgresDatabaseName}?sslmode=require'
+
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: name
   location: location
   tags: tags
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentityId}': {}
+    }
+  }
   properties: {
     managedEnvironmentId: containerAppEnvId
     configuration: {
@@ -51,24 +56,24 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
       }
       secrets: [
         {
-          name: 'database-url'
-          value: databaseUrl
-        }
-        {
           name: 'auth-secret'
-          value: authSecret
+          keyVaultUrl: '${keyVaultUri}secrets/auth-secret'
+          identity: managedIdentityId
         }
         {
           name: 'auth-google-id'
-          value: authGoogleId
+          keyVaultUrl: '${keyVaultUri}secrets/auth-google-id'
+          identity: managedIdentityId
         }
         {
           name: 'auth-google-secret'
-          value: authGoogleSecret
+          keyVaultUrl: '${keyVaultUri}secrets/auth-google-secret'
+          identity: managedIdentityId
         }
         {
           name: 'allowed-emails'
-          value: allowedEmails
+          keyVaultUrl: '${keyVaultUri}secrets/allowed-emails'
+          identity: managedIdentityId
         }
       ]
     }
@@ -84,7 +89,11 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           env: [
             {
               name: 'DATABASE_URL'
-              secretRef: 'database-url'
+              value: databaseUrl
+            }
+            {
+              name: 'AZURE_CLIENT_ID'
+              value: managedIdentityClientId
             }
             {
               name: 'AUTH_SECRET'

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { parseCSVFile, previewCSV, defaultMappings, detectCategory } from '@/lib/csv-parser';
 import { computeContentHash } from '@/lib/utils';
 import type { CSVFieldMapping, Institution, ParsedTransaction } from '@/types';
@@ -18,6 +18,7 @@ function computeSequencedHashes(transactions: ParsedTransaction[]): string[] {
 
 export async function POST(request: NextRequest) {
   try {
+    const prisma = await getPrisma();
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const institution = formData.get('institution') as Institution;

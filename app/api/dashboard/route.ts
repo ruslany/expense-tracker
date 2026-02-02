@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 
 function getUTCMonthRange(date: Date) {
   const startDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
@@ -11,6 +11,7 @@ function getUTCMonthRange(date: Date) {
 
 export async function GET(request: NextRequest) {
   try {
+    const prisma = await getPrisma();
     const searchParams = request.nextUrl.searchParams;
     const monthParam = searchParams.get('month');
 

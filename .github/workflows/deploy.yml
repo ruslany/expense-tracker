@@ -7,8 +7,8 @@ on:
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/yoet
-  AZURE_RESOURCE_GROUP: expense-tracker-rg
-  APP_NAME: expense-tracker
+  AZURE_RESOURCE_GROUP: et-rg
+  APP_NAME: et-app
 
 jobs:
   build-and-push:
@@ -72,7 +72,6 @@ jobs:
             appName=${{ env.APP_NAME }}
             location=canadacentral
             dockerImage=docker.io/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }}
-            databaseUrl=${{ secrets.DATABASE_URL }}
             authSecret=${{ secrets.AUTH_SECRET }}
             authGoogleId=${{ secrets.AUTH_GOOGLE_ID }}
             authGoogleSecret=${{ secrets.AUTH_GOOGLE_SECRET }}

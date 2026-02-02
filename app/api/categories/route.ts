@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { categorySchema } from '@/lib/validations';
 
 export async function GET() {
   try {
+    const prisma = await getPrisma();
     const categories = await prisma.category.findMany({
       orderBy: { name: 'asc' },
       select: {
@@ -32,6 +33,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const prisma = await getPrisma();
     const body = await request.json();
     const validated = categorySchema.parse(body);
 

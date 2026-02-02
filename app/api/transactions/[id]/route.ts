@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { transactionUpdateSchema } from '@/lib/validations';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const prisma = await getPrisma();
     const { id } = await params;
     const body = await request.json();
 
@@ -35,6 +36,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const prisma = await getPrisma();
     const { id } = await params;
 
     await prisma.transaction.delete({
