@@ -7,7 +7,7 @@ import { BigExpenseTagsManager } from '@/components/big-expenses/big-expense-tag
 import { ExpensesByTagChart } from '@/components/big-expenses/expenses-by-tag-chart';
 import { ExpensesByTagTable } from '@/components/big-expenses/expenses-by-tag-table';
 import { CategoriesForTagTable } from '@/components/big-expenses/categories-for-tag-table';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +16,7 @@ interface PageProps {
 }
 
 async function getAvailableYears() {
+  const prisma = await getPrisma();
   const result = await prisma.transaction.findMany({
     select: { date: true },
     distinct: ['date'],
@@ -34,6 +35,7 @@ async function getAvailableYears() {
 }
 
 async function getAllTags() {
+  const prisma = await getPrisma();
   return prisma.tag.findMany({
     orderBy: { name: 'asc' },
     select: { id: true, name: true, isBigExpense: true },
@@ -53,6 +55,7 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
   grandTotal: number;
   overallMaxTransaction: number;
 }> {
+  const prisma = await getPrisma();
   const yearStart = new Date(Date.UTC(year, 0, 1));
   const yearEnd = new Date(Date.UTC(year + 1, 0, 1));
 
@@ -135,6 +138,7 @@ async function getCategoriesForTag(
   totalCount: number;
   overallMaxTransaction: number;
 }> {
+  const prisma = await getPrisma();
   const yearStart = new Date(Date.UTC(year, 0, 1));
   const yearEnd = new Date(Date.UTC(year + 1, 0, 1));
 
