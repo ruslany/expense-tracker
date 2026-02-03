@@ -1,47 +1,83 @@
 import { PrismaClient } from './generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import type { AccessToken, DefaultAzureCredential as DefaultAzureCredentialType } from '@azure/identity';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
   prismaPromise: Promise<PrismaClient> | undefined;
+  tokenManager: AzureTokenManager | undefined;
 };
 
 // Azure AD token scope for PostgreSQL
 const AZURE_POSTGRES_SCOPE = 'https://ossrdbms-aad.database.windows.net/.default';
 
-async function getAzureAccessToken(managedIdentityClientId?: string): Promise<string> {
-  // Dynamic import to avoid bundling issues in non-Azure environments
-  const { DefaultAzureCredential } = await import('@azure/identity');
-  // With clientId: use managed identity (Azure environment)
-  // Without clientId: use az login credentials (local dev)
-  const credential = managedIdentityClientId
-    ? new DefaultAzureCredential({ managedIdentityClientId })
-    : new DefaultAzureCredential();
-  const token = await credential.getToken(AZURE_POSTGRES_SCOPE);
-  return token.token;
+/**
+ * Manages Azure AD tokens with caching and automatic refresh.
+ * Tokens are refreshed when they expire within 5 minutes.
+ */
+class AzureTokenManager {
+  private credential: DefaultAzureCredentialType | null = null;
+  private cachedToken: AccessToken | null = null;
+  private managedIdentityClientId?: string;
+
+  constructor(managedIdentityClientId?: string) {
+    this.managedIdentityClientId = managedIdentityClientId;
+  }
+
+  private async ensureCredential(): Promise<DefaultAzureCredentialType> {
+    if (!this.credential) {
+      const { DefaultAzureCredential } = await import('@azure/identity');
+      this.credential = this.managedIdentityClientId
+        ? new DefaultAzureCredential({ managedIdentityClientId: this.managedIdentityClientId })
+        : new DefaultAzureCredential();
+    }
+    return this.credential;
+  }
+
+  async getToken(): Promise<string> {
+    // Refresh if token expires in less than 5 minutes
+    const bufferMs = 5 * 60 * 1000;
+    if (!this.cachedToken || this.cachedToken.expiresOnTimestamp < Date.now() + bufferMs) {
+      const credential = await this.ensureCredential();
+      this.cachedToken = await credential.getToken(AZURE_POSTGRES_SCOPE);
+    }
+    return this.cachedToken.token;
+  }
+}
+
+function getTokenManager(managedIdentityClientId?: string): AzureTokenManager {
+  if (!globalForPrisma.tokenManager) {
+    globalForPrisma.tokenManager = new AzureTokenManager(managedIdentityClientId);
+  }
+  return globalForPrisma.tokenManager;
 }
 
 async function createPrismaClient(): Promise<PrismaClient> {
   const databaseUrl = process.env.DATABASE_URL!;
   const isAzureDb = databaseUrl.includes('azure');
 
-  let connectionString: string;
-  let ssl: { rejectUnauthorized: boolean } | undefined;
+  let pool: Pool;
 
   if (process.env.AZURE_CLIENT_ID || isAzureDb) {
     // Azure environment (managed identity) or local dev with Azure database (az login)
-    // Both require fetching an Azure AD token and embedding it in the connection string
-    const accessToken = await getAzureAccessToken(process.env.AZURE_CLIENT_ID);
+    // Use async password function for automatic token refresh on each new connection
     const url = new URL(databaseUrl);
-    connectionString = `postgresql://${encodeURIComponent(url.username)}:${encodeURIComponent(accessToken)}@${url.hostname}:${url.port || 5432}${url.pathname}?sslmode=verify-full`;
-    ssl = { rejectUnauthorized: true };
+    const tokenManager = getTokenManager(process.env.AZURE_CLIENT_ID);
+
+    pool = new Pool({
+      host: url.hostname,
+      port: parseInt(url.port || '5432'),
+      database: url.pathname.slice(1), // Remove leading slash
+      user: url.username,
+      password: () => tokenManager.getToken(), // pg 8.x supports async password
+      ssl: { rejectUnauthorized: true },
+    });
   } else {
     // Local development with local PostgreSQL
-    connectionString = databaseUrl;
+    pool = new Pool({ connectionString: databaseUrl });
   }
 
-  const pool = new Pool({ connectionString, ssl });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }
