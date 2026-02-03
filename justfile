@@ -53,4 +53,5 @@ deploy image:
         --parameters authGoogleSecret="$AUTH_GOOGLE_SECRET" \
         --parameters allowedEmails="$ALLOWED_EMAILS" \
         --parameters authUrl="$AUTH_URL" \
-        --parameters postgresAllowedIpAddresses='{{postgres_allowed_ips}}'
+        --parameters postgresAllowedIpAddresses='{{postgres_allowed_ips}}' \
+        --output none

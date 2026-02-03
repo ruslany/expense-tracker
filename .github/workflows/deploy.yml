@@ -65,20 +65,20 @@ jobs:
         run: echo "short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
       - name: 🚀 Deploy Bicep template
-        uses: azure/arm-deploy@v2
-        with:
-          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
-          template: ./infra/main.bicep
-          parameters: >-
-            appName=${{ env.APP_NAME }}
-            location=canadacentral
-            dockerImage=docker.io/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }}
-            authSecret=${{ secrets.AUTH_SECRET }}
-            authGoogleId=${{ secrets.AUTH_GOOGLE_ID }}
-            authGoogleSecret=${{ secrets.AUTH_GOOGLE_SECRET }}
-            allowedEmails=${{ secrets.ALLOWED_EMAILS }}
-            authUrl=${{ secrets.AUTH_URL }}
-            postgresAllowedIpAddresses=${{ secrets.POSTGRES_ALLOWED_IPS }}
+        run: |
+          az deployment group create \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --template-file ./infra/main.bicep \
+            --parameters appName='${{ env.APP_NAME }}' \
+            --parameters location='canadacentral' \
+            --parameters dockerImage='docker.io/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }}' \
+            --parameters authSecret='${{ secrets.AUTH_SECRET }}' \
+            --parameters authGoogleId='${{ secrets.AUTH_GOOGLE_ID }}' \
+            --parameters authGoogleSecret='${{ secrets.AUTH_GOOGLE_SECRET }}' \
+            --parameters allowedEmails='${{ secrets.ALLOWED_EMAILS }}' \
+            --parameters authUrl='${{ secrets.AUTH_URL }}' \
+            --parameters postgresAllowedIpAddresses='${{ secrets.POSTGRES_ALLOWED_IPS }}' \
+            --output none
 
       - name: 📋 Output deployed image tag
         run: echo "Deployed image tag:" ${{ steps.sha.outputs.short }}
