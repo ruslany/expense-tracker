@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File;
     const institution = formData.get('institution') as Institution;
     const accountId = formData.get('accountId') as string | null;
+    const cutoffDateStr = formData.get('cutoffDate') as string | null;
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -66,8 +67,20 @@ export async function POST(request: NextRequest) {
     const parsedTransactions = parseCSVFile(fileContent, config);
     const preview = previewCSV(fileContent, 5);
 
+    // Apply cutoff date filter
+    let filteredTransactions = parsedTransactions;
+    let skippedByCutoff = 0;
+    if (cutoffDateStr) {
+      const parsed = new Date(cutoffDateStr);
+      const cutoffDate = new Date(
+        Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate())
+      );
+      filteredTransactions = parsedTransactions.filter((t) => t.date >= cutoffDate);
+      skippedByCutoff = parsedTransactions.length - filteredTransactions.length;
+    }
+
     // If accountId is provided, import the transactions
-    if (accountId && parsedTransactions.length > 0) {
+    if (accountId && filteredTransactions.length > 0) {
       const now = new Date();
 
       // Fetch categories for automatic category detection
@@ -79,11 +92,11 @@ export async function POST(request: NextRequest) {
       const categoryNameToId = new Map(categories.map((c) => [c.name.toLowerCase(), c.id]));
 
       // Compute hashes with sequence numbers for identical rows
-      const contentHashes = computeSequencedHashes(parsedTransactions);
+      const contentHashes = computeSequencedHashes(filteredTransactions);
 
-      // Collect all unique tags from parsed transactions
+      // Collect all unique tags from filtered transactions
       const allTagNames = new Set<string>();
-      parsedTransactions.forEach((tx) => {
+      filteredTransactions.forEach((tx) => {
         tx.tags?.forEach((tag) => allTagNames.add(tag));
       });
 
@@ -103,7 +116,7 @@ export async function POST(request: NextRequest) {
       }
 
       const result = await prisma.transaction.createMany({
-        data: parsedTransactions.map((tx, index) => ({
+        data: filteredTransactions.map((tx, index) => ({
           accountId,
           date: tx.date,
           description: tx.description,
@@ -119,7 +132,7 @@ export async function POST(request: NextRequest) {
       });
 
       const importedCount = result.count;
-      const skippedCount = parsedTransactions.length - importedCount;
+      const skippedCount = filteredTransactions.length - importedCount;
 
       // Create tag associations for imported transactions
       if (tagNameToId.size > 0 && importedCount > 0) {
@@ -137,7 +150,7 @@ export async function POST(request: NextRequest) {
 
         // Build tag associations
         const tagAssociations: { transactionId: string; tagId: string }[] = [];
-        parsedTransactions.forEach((tx, index) => {
+        filteredTransactions.forEach((tx, index) => {
           const txId = hashToTxId.get(contentHashes[index]);
           if (txId && tx.tags) {
             tx.tags.forEach((tagName) => {
@@ -172,6 +185,7 @@ export async function POST(request: NextRequest) {
         success: true,
         imported: importedCount,
         skipped: skippedCount,
+        skippedByCutoff,
         total: parsedTransactions.length,
         preview,
       });
