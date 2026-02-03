@@ -78,6 +78,7 @@ jobs:
             authGoogleSecret=${{ secrets.AUTH_GOOGLE_SECRET }}
             allowedEmails=${{ secrets.ALLOWED_EMAILS }}
             authUrl=${{ secrets.AUTH_URL }}
+            postgresAllowedIpAddresses=${{ secrets.POSTGRES_ALLOWED_IPS }}
 
       - name: 📋 Output deployed image tag
         run: echo "Deployed image tag:" ${{ steps.sha.outputs.short }}

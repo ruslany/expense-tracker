@@ -14,6 +14,9 @@ prod_db_host := env_var_or_default("PROD_DB_HOST", "")
 prod_db_name := env_var_or_default("PROD_DB_NAME", "postgres")
 prod_db_user := env_var_or_default("PROD_DB_USER", "")
 
+# PostgreSQL allowed IP addresses (JSON array format, e.g., '["1.2.3.4", "5.6.7.8"]')
+postgres_allowed_ips := env_var_or_default("POSTGRES_ALLOWED_IPS", "[]")
+
 # Default recipe - show available commands
 default:
     @just --list
@@ -49,4 +52,5 @@ deploy image:
         --parameters authGoogleId="$AUTH_GOOGLE_ID" \
         --parameters authGoogleSecret="$AUTH_GOOGLE_SECRET" \
         --parameters allowedEmails="$ALLOWED_EMAILS" \
-        --parameters authUrl="$AUTH_URL"
+        --parameters authUrl="$AUTH_URL" \
+        --parameters postgresAllowedIpAddresses='{{postgres_allowed_ips}}'

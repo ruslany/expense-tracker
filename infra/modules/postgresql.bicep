@@ -10,6 +10,9 @@ param databaseName string = 'expense_tracker'
 @description('Tags to apply to resources')
 param tags object = {}
 
+@description('List of IP addresses to allow access (each entry should be a single IP or a range with startIp and endIp)')
+param allowedIpAddresses array = []
+
 resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
   name: name
   location: location
@@ -46,15 +49,17 @@ resource database 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-12-0
   }
 }
 
-// Allow Azure services to access the server
-resource firewallRule 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-12-01-preview' = {
-  parent: postgresServer
-  name: 'AllowAzureServices'
-  properties: {
-    startIpAddress: '0.0.0.0'
-    endIpAddress: '0.0.0.0'
+// Firewall rules for allowed IP addresses
+resource firewallRules 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-12-01-preview' = [
+  for (ip, i) in allowedIpAddresses: {
+    parent: postgresServer
+    name: 'AllowedIP-${i}'
+    properties: {
+      startIpAddress: ip
+      endIpAddress: ip
+    }
   }
-}
+]
 
 @description('The resource ID of the PostgreSQL server')
 output id string = postgresServer.id
