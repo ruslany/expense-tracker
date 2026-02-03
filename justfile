@@ -17,6 +17,10 @@ prod_db_user := env_var_or_default("PROD_DB_USER", "")
 # PostgreSQL allowed IP addresses (JSON array format, e.g., '["1.2.3.4", "5.6.7.8"]')
 postgres_allowed_ips := env_var_or_default("POSTGRES_ALLOWED_IPS", "[]")
 
+# Custom domain configuration (optional)
+custom_domain_name := env_var_or_default("CUSTOM_DOMAIN_NAME", "")
+custom_domain_certificate_id := env_var_or_default("CUSTOM_DOMAIN_CERTIFICATE_ID", "")
+
 # Default recipe - show available commands
 default:
     @just --list
@@ -54,4 +58,6 @@ deploy image:
         --parameters allowedEmails="$ALLOWED_EMAILS" \
         --parameters authUrl="$AUTH_URL" \
         --parameters postgresAllowedIpAddresses='{{postgres_allowed_ips}}' \
+        --parameters customDomainName='{{custom_domain_name}}' \
+        --parameters customDomainCertificateId='{{custom_domain_certificate_id}}' \
         --output none

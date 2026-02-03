@@ -29,6 +29,12 @@ param dockerImage string
 @description('List of IP addresses allowed to access PostgreSQL')
 param postgresAllowedIpAddresses array = []
 
+@description('Custom domain name for the Container App (optional)')
+param customDomainName string = ''
+
+@description('Managed certificate ID for custom domain (optional)')
+param customDomainCertificateId string = ''
+
 var tags = {
   application: appName
   managedBy: 'bicep'
@@ -105,6 +111,8 @@ module containerApp 'modules/container-app.bicep' = {
     postgresDatabaseName: postgresql.outputs.databaseName
     authUrl: authUrl
     tags: tags
+    customDomainName: customDomainName
+    customDomainCertificateId: customDomainCertificateId
   }
   dependsOn: [
     keyVaultSecrets

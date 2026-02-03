@@ -28,6 +28,12 @@ param authUrl string
 @description('Tags to apply to resources')
 param tags object = {}
 
+@description('Custom domain name (optional)')
+param customDomainName string = ''
+
+@description('Managed certificate ID for custom domain (optional)')
+param customDomainCertificateId string = ''
+
 // Reference existing managed identity to get its properties
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: managedIdentityName
@@ -56,6 +62,13 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 3000
         transport: 'http'
         allowInsecure: false
+        customDomains: !empty(customDomainName) ? [
+          {
+            name: customDomainName
+            certificateId: customDomainCertificateId
+            bindingType: 'SniEnabled'
+          }
+        ] : []
       }
       secrets: [
         {
