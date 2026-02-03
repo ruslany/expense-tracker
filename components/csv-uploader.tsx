@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Upload, FileText, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { Upload, FileText, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -35,6 +38,7 @@ export function CSVUploader() {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<Record<string, string>[] | null>(null);
+  const [cutoffDate, setCutoffDate] = useState<Date | undefined>(undefined);
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -89,6 +93,9 @@ export function CSVUploader() {
       formData.append('file', file);
       formData.append('institution', selectedAccount.institution);
       formData.append('accountId', selectedAccount.id);
+      if (cutoffDate) {
+        formData.append('cutoffDate', cutoffDate.toISOString());
+      }
 
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -128,6 +135,35 @@ export function CSVUploader() {
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Date Cutoff Filter */}
+      <div className="space-y-2">
+        <Label>Import transactions from (optional)</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              data-empty={!cutoffDate}
+              className="justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+            >
+              {cutoffDate ? format(cutoffDate, 'PPP') : <span>Pick a date</span>}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={cutoffDate}
+              onSelect={setCutoffDate}
+              defaultMonth={cutoffDate}
+              className="[--cell-size:--spacing(7)]"
+            />
+          </PopoverContent>
+        </Popover>
+        <p className="text-xs text-muted-foreground">
+          Transactions before this date will be skipped
+        </p>
       </div>
 
       {/* Drag and Drop Area */}

@@ -55,6 +55,7 @@ export const transactionFilterSchema = z.object({
 export const csvUploadSchema = z.object({
   institution: z.enum(['fidelity', 'citi', 'amex']),
   accountId: z.string().min(1, 'Account ID is required'),
+  cutoffDate: z.coerce.date().optional(),
 });
 
 export const tagSchema = z.object({
