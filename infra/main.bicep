@@ -26,6 +26,8 @@ param authUrl string
 @description('Docker image to deploy (e.g., docker.io/username/expense-tracker:latest)')
 param dockerImage string
 
+@description('List of IP addresses allowed to access PostgreSQL')
+param postgresAllowedIpAddresses array = []
 
 var tags = {
   application: appName
@@ -60,6 +62,7 @@ module postgresql 'modules/postgresql.bicep' = {
     name: '${appName}-postgres'
     location: location
     databaseName: 'expense_tracker'
+    allowedIpAddresses: postgresAllowedIpAddresses
     tags: tags
   }
 }
