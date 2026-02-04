@@ -73,9 +73,7 @@ export function CSVUploader() {
         return;
       }
       try {
-        const response = await fetch(
-          `/api/transactions?accountId=${selectedAccountId}&pageSize=3`,
-        );
+        const response = await fetch(`/api/transactions?accountId=${selectedAccountId}&pageSize=3`);
         if (response.ok) {
           const data = await response.json();
           setRecentTransactions(data.data);
