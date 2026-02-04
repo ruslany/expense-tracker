@@ -51,6 +51,28 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     invertAmount: true, // AMEX shows expenses as positive, need to invert
     skipPatterns: ['ONLINE PAYMENT - THANK YOU', 'MOBILE PAYMENT - THANK YOU'],
   },
+  firsttech: {
+    institution: 'firsttech',
+    fieldMapping: {
+      date: 'Effective Date',
+      description: 'Description',
+      amount: 'Amount',
+    },
+    dateFormat: 'MM/dd/yyyy',
+    invertAmount: false,
+    skipPatterns: [],
+  },
+  manualentry: {
+    institution: 'manualentry',
+    fieldMapping: {
+      date: 'Date',
+      description: 'Description',
+      amount: 'Amount',
+    },
+    dateFormat: 'MM/dd/yyyy',
+    invertAmount: true,
+    skipPatterns: [],
+  },
 };
 
 export function parseCSVFile(fileContent: string, config: CSVParserConfig): ParsedTransaction[] {

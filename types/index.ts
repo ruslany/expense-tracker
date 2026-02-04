@@ -1,4 +1,4 @@
-export type Institution = 'fidelity' | 'citi' | 'amex';
+export type Institution = 'fidelity' | 'citi' | 'amex' | 'firsttech' | 'manualentry';
 
 export interface CSVFieldMapping {
   date: string;

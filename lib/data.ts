@@ -22,7 +22,11 @@ function buildTransactionWhereClause(
   }
 
   if (categoryId) {
-    conditions.push({ categoryId });
+    if (categoryId === 'uncategorized') {
+      conditions.push({ categoryId: null });
+    } else {
+      conditions.push({ categoryId });
+    }
   }
 
   if (accountId) {

@@ -2,13 +2,13 @@ import { z } from 'zod';
 
 export const accountSchema = z.object({
   name: z.string().min(1, 'Account name is required'),
-  institution: z.enum(['fidelity', 'citi', 'amex']),
+  institution: z.enum(['fidelity', 'citi', 'amex', 'firsttech', 'manualentry']),
   accountType: z.enum(['credit_card', 'checking', 'savings']),
 });
 
 export const accountUpdateSchema = z.object({
   name: z.string().min(1, 'Account name is required').optional(),
-  institution: z.enum(['fidelity', 'citi', 'amex']).optional(),
+  institution: z.enum(['fidelity', 'citi', 'amex', 'firsttech', 'manualentry']).optional(),
   accountType: z.enum(['credit_card', 'checking', 'savings']).optional(),
 });
 
