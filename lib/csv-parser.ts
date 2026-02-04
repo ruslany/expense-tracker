@@ -62,6 +62,17 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     invertAmount: false,
     skipPatterns: [],
   },
+  manualentry: {
+    institution: 'manualentry',
+    fieldMapping: {
+      date: 'Date',
+      description: 'Description',
+      amount: 'Amount',
+    },
+    dateFormat: 'MM/dd/yyyy',
+    invertAmount: true,
+    skipPatterns: [],
+  },
 };
 
 export function parseCSVFile(fileContent: string, config: CSVParserConfig): ParsedTransaction[] {
