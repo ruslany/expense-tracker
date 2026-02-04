@@ -4,16 +4,15 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { formatCurrency } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-media-query';
 
-interface TagExpense {
-  tagId: string;
-  tagName: string;
+interface CategoryBreakdown {
+  categoryName: string;
   total: number;
-  maxTransaction: number;
+  percent: number;
   count: number;
 }
 
-interface ExpensesByTagChartProps {
-  data: TagExpense[];
+interface CategoryBreakdownChartProps {
+  data: CategoryBreakdown[];
 }
 
 const COLORS = [
@@ -29,19 +28,19 @@ const COLORS = [
   '#6366f1', // indigo
 ];
 
-export function ExpensesByTagChart({ data }: ExpensesByTagChartProps) {
+export function CategoryBreakdownChart({ data }: CategoryBreakdownChartProps) {
   const isMobile = useIsMobile();
 
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-75 text-muted-foreground">
-        No data for selected big expense tags
+        No data available
       </div>
     );
   }
 
   const chartData = data.map((item) => ({
-    name: item.tagName,
+    name: item.categoryName,
     value: Math.abs(item.total),
   }));
 

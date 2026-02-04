@@ -11,31 +11,31 @@ import {
 } from '@/components/ui/table';
 import { formatCurrency } from '@/lib/utils';
 
-interface TagExpense {
-  tagId: string;
-  tagName: string;
+interface CategoryBreakdown {
+  categoryName: string;
   total: number;
-  maxTransaction: number;
+  percent: number;
   count: number;
+  maxTransaction: number;
 }
 
-interface ExpensesByTagTableProps {
-  data: TagExpense[];
+interface CategoryDetailsTableProps {
+  data: CategoryBreakdown[];
   grandTotal: number;
   totalCount: number;
   overallMaxTransaction: number;
 }
 
-export function ExpensesByTagTable({
+export function CategoryDetailsTable({
   data,
   grandTotal,
   totalCount,
   overallMaxTransaction,
-}: ExpensesByTagTableProps) {
+}: CategoryDetailsTableProps) {
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        No expenses found for the selected year.
+        No category data available for the selected filters.
       </div>
     );
   }
@@ -45,14 +45,14 @@ export function ExpensesByTagTable({
       {/* Mobile Card View */}
       <div className="space-y-3 md:hidden">
         {data.map((row) => (
-          <div key={row.tagId} className="border rounded-lg p-3 space-y-2">
+          <div key={row.categoryName} className="border rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium">{row.tagName}</span>
-              <span className="font-semibold">{formatCurrency(Math.abs(row.total))}</span>
+              <span className="font-medium">{row.categoryName}</span>
+              <span className="font-semibold">{formatCurrency(row.total)}</span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>{row.count} txns</span>
-              <span>Max: {formatCurrency(Math.abs(row.maxTransaction))}</span>
+              <span>Max: {formatCurrency(row.maxTransaction)}</span>
             </div>
           </div>
         ))}
@@ -74,21 +74,19 @@ export function ExpensesByTagTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Tag</TableHead>
-              <TableHead className="text-right">Total Amount</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead className="text-right">Total Expenses</TableHead>
               <TableHead className="text-right">Count</TableHead>
               <TableHead className="text-right">Max Transaction</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((row) => (
-              <TableRow key={row.tagId}>
-                <TableCell className="font-medium">{row.tagName}</TableCell>
-                <TableCell className="text-right">{formatCurrency(Math.abs(row.total))}</TableCell>
+              <TableRow key={row.categoryName}>
+                <TableCell className="font-medium">{row.categoryName}</TableCell>
+                <TableCell className="text-right">{formatCurrency(row.total)}</TableCell>
                 <TableCell className="text-right">{row.count}</TableCell>
-                <TableCell className="text-right">
-                  {formatCurrency(Math.abs(row.maxTransaction))}
-                </TableCell>
+                <TableCell className="text-right">{formatCurrency(row.maxTransaction)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
