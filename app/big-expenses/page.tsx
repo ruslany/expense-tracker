@@ -68,7 +68,10 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
     },
   });
 
-  const tagMap = new Map<string, { name: string; total: number; maxTransaction: number; count: number }>();
+  const tagMap = new Map<
+    string,
+    { name: string; total: number; maxTransaction: number; count: number }
+  >();
 
   for (const t of transactions) {
     for (const tt of t.tags) {
@@ -127,10 +130,7 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
 
   return (
     <AppShell>
-      <ParamsInitializer
-        availableYears={availableYears}
-        availableTagIds={[]}
-      />
+      <ParamsInitializer availableYears={availableYears} availableTagIds={[]} />
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>

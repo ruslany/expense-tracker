@@ -20,16 +20,10 @@ export default async function AdministrationPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Administration</h1>
-          <p className="text-muted-foreground">
-            Manage accounts, categories, and tags
-          </p>
+          <p className="text-muted-foreground">Manage accounts, categories, and tags</p>
         </div>
 
-        <AdministrationTabs
-          accounts={accounts}
-          categories={categories}
-          tags={tags}
-        />
+        <AdministrationTabs accounts={accounts} categories={categories} tags={tags} />
       </div>
     </AppShell>
   );

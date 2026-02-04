@@ -128,9 +128,7 @@ export default async function TagsPage({ searchParams }: PageProps) {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
-          <p className="text-muted-foreground">
-            Analyze spending by tag with category breakdown
-          </p>
+          <p className="text-muted-foreground">Analyze spending by tag with category breakdown</p>
         </div>
 
         <FilterCard

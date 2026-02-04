@@ -47,7 +47,11 @@ export function FilterCard({ tags, selectedTagId, startDate, endDate }: FilterCa
       const savedFilters = localStorage.getItem(STORAGE_KEY);
       if (savedFilters) {
         try {
-          const { tagId: savedTagId, startDate: savedStart, endDate: savedEnd } = JSON.parse(savedFilters);
+          const {
+            tagId: savedTagId,
+            startDate: savedStart,
+            endDate: savedEnd,
+          } = JSON.parse(savedFilters);
           const params = new URLSearchParams(searchParams);
           let shouldUpdate = false;
 

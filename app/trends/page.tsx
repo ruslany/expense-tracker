@@ -186,9 +186,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Trends</h1>
-          <p className="text-muted-foreground">
-            Analyze spending patterns over time
-          </p>
+          <p className="text-muted-foreground">Analyze spending patterns over time</p>
         </div>
 
         <FilterCard
