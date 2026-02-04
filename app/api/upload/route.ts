@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     if (cutoffDateStr) {
       const parsed = new Date(cutoffDateStr);
       const cutoffDate = new Date(
-        Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate())
+        Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()),
       );
       filteredTransactions = parsedTransactions.filter((t) => t.date >= cutoffDate);
       skippedByCutoff = parsedTransactions.length - filteredTransactions.length;
