@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 
 interface Account {
   id: string;
@@ -183,9 +183,7 @@ export function CSVUploader() {
               <TableBody>
                 {recentTransactions.map((tx) => (
                   <TableRow key={tx.id}>
-                    <TableCell className="whitespace-nowrap">
-                      {format(new Date(tx.date), 'MMM d, yyyy')}
-                    </TableCell>
+                    <TableCell className="whitespace-nowrap">{formatDate(tx.date)}</TableCell>
                     <TableCell className="max-w-[200px] truncate">{tx.description}</TableCell>
                     <TableCell>{tx.category?.name ?? '—'}</TableCell>
                     <TableCell className="text-right whitespace-nowrap">
