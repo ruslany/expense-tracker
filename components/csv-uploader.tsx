@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { Upload, FileText, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,7 +32,16 @@ interface Account {
   accountType: string;
 }
 
+interface RecentTransaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  category: { id: string; name: string } | null;
+}
+
 export function CSVUploader() {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
@@ -39,6 +49,7 @@ export function CSVUploader() {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<Record<string, string>[] | null>(null);
   const [cutoffDate, setCutoffDate] = useState<Date | undefined>(undefined);
+  const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -54,6 +65,25 @@ export function CSVUploader() {
     }
     fetchAccounts();
   }, []);
+
+  useEffect(() => {
+    async function fetchRecentTransactions() {
+      if (!selectedAccountId) {
+        setRecentTransactions([]);
+        return;
+      }
+      try {
+        const response = await fetch(`/api/transactions?accountId=${selectedAccountId}&pageSize=3`);
+        if (response.ok) {
+          const data = await response.json();
+          setRecentTransactions(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching recent transactions:', error);
+      }
+    }
+    fetchRecentTransactions();
+  }, [selectedAccountId]);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -105,8 +135,7 @@ export function CSVUploader() {
       if (response.ok) {
         const data = await response.json();
         setPreview(data.preview);
-        // Handle success
-        console.log('Upload successful:', data);
+        router.refresh();
       } else {
         // Handle error
         console.error('Upload failed');
@@ -136,6 +165,42 @@ export function CSVUploader() {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Recent Transactions */}
+      {recentTransactions.length > 0 && (
+        <div className="space-y-2">
+          <Label>Recent Transactions</Label>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentTransactions.map((tx) => (
+                  <TableRow key={tx.id}>
+                    <TableCell className="whitespace-nowrap">
+                      {format(new Date(tx.date), 'MMM d, yyyy')}
+                    </TableCell>
+                    <TableCell className="max-w-[200px] truncate">{tx.description}</TableCell>
+                    <TableCell>{tx.category?.name ?? '—'}</TableCell>
+                    <TableCell className="text-right whitespace-nowrap">
+                      ${Math.abs(tx.amount).toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Use the cutoff date below to skip transactions before a certain date
+          </p>
+        </div>
+      )}
 
       {/* Date Cutoff Filter */}
       <div className="space-y-2">

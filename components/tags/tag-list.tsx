@@ -90,7 +90,10 @@ export function TagList({ tags }: TagListProps) {
                               <Pencil />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem variant="destructive" onClick={() => handleDelete(tag)}>
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onClick={() => handleDelete(tag)}
+                            >
                               <Trash2 />
                               Delete
                             </DropdownMenuItem>
@@ -155,7 +158,11 @@ export function TagList({ tags }: TagListProps) {
 
       <TagDialog open={dialogOpen} onOpenChange={setDialogOpen} tag={selectedTag} />
 
-      <DeleteTagDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} tag={selectedTag} />
+      <DeleteTagDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        tag={selectedTag}
+      />
     </>
   );
 }

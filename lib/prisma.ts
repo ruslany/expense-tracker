@@ -1,7 +1,10 @@
 import { PrismaClient } from './generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
-import type { AccessToken, DefaultAzureCredential as DefaultAzureCredentialType } from '@azure/identity';
+import type {
+  AccessToken,
+  DefaultAzureCredential as DefaultAzureCredentialType,
+} from '@azure/identity';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -106,13 +109,14 @@ export async function getPrisma(): Promise<PrismaClient> {
 }
 
 // Check if we need Azure AD authentication (either in Azure or local dev with Azure DB)
-const requiresAzureAuth = !!process.env.AZURE_CLIENT_ID || !!process.env.DATABASE_URL?.includes('azure');
+const requiresAzureAuth =
+  !!process.env.AZURE_CLIENT_ID || !!process.env.DATABASE_URL?.includes('azure');
 
 // For backwards compatibility in local development with local PostgreSQL only
 function createSyncPrismaClient(): PrismaClient {
   if (requiresAzureAuth) {
     throw new Error(
-      'Cannot use synchronous prisma export with Azure database. Use getPrisma() instead.'
+      'Cannot use synchronous prisma export with Azure database. Use getPrisma() instead.',
     );
   }
   const pool = new Pool({
