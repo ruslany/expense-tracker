@@ -37,6 +37,7 @@ const INSTITUTION_LABELS: Record<string, string> = {
   fidelity: 'Fidelity',
   citi: 'Citi',
   amex: 'American Express',
+  firsttech: "First Tech CU"
 };
 
 const ACCOUNT_TYPE_LABELS: Record<string, string> = {

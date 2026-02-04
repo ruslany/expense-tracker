@@ -39,6 +39,7 @@ const INSTITUTIONS = [
   { value: 'fidelity', label: 'Fidelity' },
   { value: 'citi', label: 'Citi' },
   { value: 'amex', label: 'American Express' },
+  { value: 'firsttech', label: 'FirstTech CU'}
 ];
 
 const ACCOUNT_TYPES = [
