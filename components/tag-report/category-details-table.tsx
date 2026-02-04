@@ -32,8 +32,6 @@ export function CategoryDetailsTable({
   totalCount,
   overallMaxTransaction,
 }: CategoryDetailsTableProps) {
-  const maxExpense = Math.max(...data.map((d) => d.total), 1);
-
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -51,17 +49,6 @@ export function CategoryDetailsTable({
             <div className="flex items-center justify-between">
               <span className="font-medium">{row.categoryName}</span>
               <span className="font-semibold">{formatCurrency(row.total)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-2 bg-muted rounded-sm overflow-hidden">
-                <div
-                  className="h-full bg-blue-500"
-                  style={{ width: `${(row.total / maxExpense) * 100}%` }}
-                />
-              </div>
-              <span className="text-sm text-muted-foreground w-14 text-right">
-                {row.percent.toFixed(1)}%
-              </span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>{row.count} txns</span>
@@ -89,7 +76,6 @@ export function CategoryDetailsTable({
             <TableRow>
               <TableHead>Category</TableHead>
               <TableHead className="text-right">Total Expenses</TableHead>
-              <TableHead className="text-right">Percent</TableHead>
               <TableHead className="text-right">Count</TableHead>
               <TableHead className="text-right">Max Transaction</TableHead>
             </TableRow>
@@ -98,18 +84,7 @@ export function CategoryDetailsTable({
             {data.map((row) => (
               <TableRow key={row.categoryName}>
                 <TableCell className="font-medium">{row.categoryName}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <div className="w-24 h-4 bg-muted rounded-sm overflow-hidden">
-                      <div
-                        className="h-full bg-blue-500"
-                        style={{ width: `${(row.total / maxExpense) * 100}%` }}
-                      />
-                    </div>
-                    <span className="w-24 text-right">{formatCurrency(row.total)}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">{row.percent.toFixed(2)}%</TableCell>
+                <TableCell className="text-right">{formatCurrency(row.total)}</TableCell>
                 <TableCell className="text-right">{row.count}</TableCell>
                 <TableCell className="text-right">{formatCurrency(row.maxTransaction)}</TableCell>
               </TableRow>
@@ -119,7 +94,6 @@ export function CategoryDetailsTable({
             <TableRow>
               <TableCell className="font-bold">Grand Total</TableCell>
               <TableCell className="text-right font-bold">{formatCurrency(grandTotal)}</TableCell>
-              <TableCell className="text-right font-bold">100.00%</TableCell>
               <TableCell className="text-right font-bold">{totalCount}</TableCell>
               <TableCell className="text-right font-bold">
                 {formatCurrency(overallMaxTransaction)}
