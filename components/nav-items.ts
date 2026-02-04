@@ -1,4 +1,4 @@
-import { LayoutDashboard, CreditCard, Upload, Wallet, PieChart, Tags, Tag } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Upload, PieChart, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -24,23 +24,13 @@ export const navItems: NavItem[] = [
     icon: CreditCard,
   },
   {
-    title: 'Categories',
-    href: '/categories',
-    icon: Tags,
-  },
-  {
-    title: 'Tags',
-    href: '/tags',
-    icon: Tag,
-  },
-  {
     title: 'Import',
     href: '/import',
     icon: Upload,
   },
   {
-    title: 'Accounts',
-    href: '/accounts',
-    icon: Wallet,
+    title: 'Administration',
+    href: '/administration',
+    icon: Settings,
   },
 ];
