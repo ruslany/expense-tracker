@@ -34,11 +34,7 @@ interface AdministrationTabsProps {
   tags: Tag[];
 }
 
-export function AdministrationTabs({
-  accounts,
-  categories,
-  tags,
-}: AdministrationTabsProps) {
+export function AdministrationTabs({ accounts, categories, tags }: AdministrationTabsProps) {
   return (
     <Tabs defaultValue="accounts">
       <TabsList>

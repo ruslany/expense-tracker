@@ -56,7 +56,12 @@ export function FilterCard({
       const savedFilters = localStorage.getItem(STORAGE_KEY);
       if (savedFilters) {
         try {
-          const { groupBy: savedGroupBy, categoryId: savedCategoryId, startDate: savedStart, endDate: savedEnd } = JSON.parse(savedFilters);
+          const {
+            groupBy: savedGroupBy,
+            categoryId: savedCategoryId,
+            startDate: savedStart,
+            endDate: savedEnd,
+          } = JSON.parse(savedFilters);
           const params = new URLSearchParams(searchParams);
           let shouldUpdate = false;
 
@@ -89,7 +94,12 @@ export function FilterCard({
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
-    const storageData: { groupBy?: string; categoryId?: string; startDate?: string; endDate?: string } = {};
+    const storageData: {
+      groupBy?: string;
+      categoryId?: string;
+      startDate?: string;
+      endDate?: string;
+    } = {};
 
     params.set('groupBy', groupBy);
     storageData.groupBy = groupBy;
@@ -130,7 +140,10 @@ export function FilterCard({
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-2">
             <Label htmlFor="group-by-select">Group By</Label>
-            <Select value={groupBy} onValueChange={(v) => setGroupBy(v as 'month' | 'quarter' | 'year')}>
+            <Select
+              value={groupBy}
+              onValueChange={(v) => setGroupBy(v as 'month' | 'quarter' | 'year')}
+            >
               <SelectTrigger id="group-by-select">
                 <SelectValue placeholder="Select grouping" />
               </SelectTrigger>

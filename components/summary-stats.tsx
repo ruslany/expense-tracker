@@ -8,7 +8,11 @@ interface SummaryStatsProps {
   maxTransaction: number;
 }
 
-export function SummaryStats({ totalExpenses, transactionCount, maxTransaction }: SummaryStatsProps) {
+export function SummaryStats({
+  totalExpenses,
+  transactionCount,
+  maxTransaction,
+}: SummaryStatsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-3">
       <StatCard
