@@ -9,7 +9,7 @@ interface TagExpense {
   tagName: string;
   total: number;
   maxTransaction: number;
-  percent: number;
+  count: number;
 }
 
 interface ExpensesByTagChartProps {
@@ -43,26 +43,23 @@ export function ExpensesByTagChart({ data }: ExpensesByTagChartProps) {
   const chartData = data.map((item) => ({
     name: item.tagName,
     value: Math.abs(item.total),
-    percent: item.percent,
   }));
 
-  const chartHeight = isMobile ? 250 : 350;
-  const outerRadius = isMobile ? 70 : 120;
+  const chartHeight = isMobile ? 300 : 400;
+  const outerRadius = isMobile ? 60 : 100;
 
   return (
     <ResponsiveContainer width="100%" height={chartHeight}>
-      <PieChart>
+      <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <Pie
           data={chartData}
           cx="50%"
           cy="50%"
-          labelLine={!isMobile}
-          label={
-            isMobile ? false : ({ name, percent }) => `${name} (${(percent ?? 0).toFixed(1)}%)`
-          }
           outerRadius={outerRadius}
           fill="#8884d8"
           dataKey="value"
+          label={({ percent }) => `${((percent ?? 0) * 100).toFixed(1)}%`}
+          labelLine={false}
         >
           {chartData.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

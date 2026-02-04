@@ -16,25 +16,29 @@ interface TagExpense {
   tagName: string;
   total: number;
   maxTransaction: number;
-  percent: number;
+  count: number;
 }
 
 interface ExpensesByTagTableProps {
   data: TagExpense[];
   grandTotal: number;
+  totalCount: number;
   overallMaxTransaction: number;
 }
 
 export function ExpensesByTagTable({
   data,
   grandTotal,
+  totalCount,
   overallMaxTransaction,
 }: ExpensesByTagTableProps) {
   if (data.length === 0) {
-    return null;
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        No expenses found for the selected year.
+      </div>
+    );
   }
-
-  const maxExpense = Math.max(...data.map((d) => Math.abs(d.total)), 1);
 
   return (
     <>
@@ -46,18 +50,8 @@ export function ExpensesByTagTable({
               <span className="font-medium">{row.tagName}</span>
               <span className="font-semibold">{formatCurrency(Math.abs(row.total))}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-2 bg-muted rounded-sm overflow-hidden">
-                <div
-                  className="h-full bg-amber-400"
-                  style={{ width: `${(Math.abs(row.total) / maxExpense) * 100}%` }}
-                />
-              </div>
-              <span className="text-sm text-muted-foreground w-14 text-right">
-                {row.percent.toFixed(1)}%
-              </span>
-            </div>
-            <div className="flex items-center justify-end text-sm text-muted-foreground">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>{row.count} txns</span>
               <span>Max: {formatCurrency(Math.abs(row.maxTransaction))}</span>
             </div>
           </div>
@@ -68,7 +62,8 @@ export function ExpensesByTagTable({
             <span>Grand Total</span>
             <span>{formatCurrency(grandTotal)}</span>
           </div>
-          <div className="flex items-center justify-end text-sm text-muted-foreground mt-1">
+          <div className="flex items-center justify-between text-sm text-muted-foreground mt-1">
+            <span>{totalCount} txns</span>
             <span>Max: {formatCurrency(overallMaxTransaction)}</span>
           </div>
         </div>
@@ -81,7 +76,7 @@ export function ExpensesByTagTable({
             <TableRow>
               <TableHead>Tag</TableHead>
               <TableHead className="text-right">Total Amount</TableHead>
-              <TableHead className="text-right">Percent</TableHead>
+              <TableHead className="text-right">Count</TableHead>
               <TableHead className="text-right">Max Transaction</TableHead>
             </TableRow>
           </TableHeader>
@@ -90,7 +85,7 @@ export function ExpensesByTagTable({
               <TableRow key={row.tagId}>
                 <TableCell className="font-medium">{row.tagName}</TableCell>
                 <TableCell className="text-right">{formatCurrency(Math.abs(row.total))}</TableCell>
-                <TableCell className="text-right">{row.percent.toFixed(2)}%</TableCell>
+                <TableCell className="text-right">{row.count}</TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(Math.abs(row.maxTransaction))}
                 </TableCell>
@@ -101,7 +96,7 @@ export function ExpensesByTagTable({
             <TableRow>
               <TableCell className="font-bold">Grand Total</TableCell>
               <TableCell className="text-right font-bold">{formatCurrency(grandTotal)}</TableCell>
-              <TableCell className="text-right font-bold">100.00%</TableCell>
+              <TableCell className="text-right font-bold">{totalCount}</TableCell>
               <TableCell className="text-right font-bold">
                 {formatCurrency(overallMaxTransaction)}
               </TableCell>

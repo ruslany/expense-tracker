@@ -4,6 +4,7 @@ import { YearFilter } from '@/components/big-expenses/year-filter';
 import { ParamsInitializer } from '@/components/big-expenses/params-initializer';
 import { ExpensesByTagChart } from '@/components/big-expenses/expenses-by-tag-chart';
 import { ExpensesByTagTable } from '@/components/big-expenses/expenses-by-tag-table';
+import { SummaryStats } from '@/components/summary-stats';
 import { getPrisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -36,12 +37,13 @@ interface TagExpense {
   tagName: string;
   total: number;
   maxTransaction: number;
-  percent: number;
+  count: number;
 }
 
 async function getExpensesByBigExpenseTags(year: number): Promise<{
   data: TagExpense[];
   grandTotal: number;
+  totalCount: number;
   overallMaxTransaction: number;
 }> {
   const prisma = await getPrisma();
@@ -66,7 +68,7 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
     },
   });
 
-  const tagMap = new Map<string, { name: string; total: number; maxTransaction: number }>();
+  const tagMap = new Map<string, { name: string; total: number; maxTransaction: number; count: number }>();
 
   for (const t of transactions) {
     for (const tt of t.tags) {
@@ -77,17 +79,20 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
       if (existing) {
         existing.total += netAmount;
         existing.maxTransaction = Math.max(existing.maxTransaction, absAmount);
+        existing.count += 1;
       } else {
         tagMap.set(tt.tagId, {
           name: tt.tag.name,
           total: netAmount,
           maxTransaction: absAmount,
+          count: 1,
         });
       }
     }
   }
 
   const grandTotal = Array.from(tagMap.values()).reduce((sum, t) => sum + t.total, 0);
+  const totalCount = Array.from(tagMap.values()).reduce((sum, t) => sum + t.count, 0);
   const overallMaxTransaction = Math.max(
     ...Array.from(tagMap.values()).map((t) => t.maxTransaction),
     0,
@@ -99,13 +104,14 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
       tagName: stats.name,
       total: stats.total,
       maxTransaction: stats.maxTransaction,
-      percent: grandTotal > 0 ? (stats.total / grandTotal) * 100 : 0,
+      count: stats.count,
     }))
     .sort((a, b) => b.total - a.total);
 
   return {
     data,
     grandTotal: Math.round(grandTotal * 100) / 100,
+    totalCount,
     overallMaxTransaction: Math.round(overallMaxTransaction * 100) / 100,
   };
 }
@@ -134,21 +140,36 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
           <YearFilter availableYears={availableYears} />
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Expenses by Tag ({currentYear})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ExpensesByTagChart data={expensesByTag.data} />
-            <div className="mt-6">
+        <SummaryStats
+          totalExpenses={expensesByTag.grandTotal}
+          transactionCount={expensesByTag.totalCount}
+          maxTransaction={expensesByTag.overallMaxTransaction}
+        />
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Expenses by Tag ({currentYear})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ExpensesByTagChart data={expensesByTag.data} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Tag Details</CardTitle>
+            </CardHeader>
+            <CardContent>
               <ExpensesByTagTable
                 data={expensesByTag.data}
                 grandTotal={expensesByTag.grandTotal}
+                totalCount={expensesByTag.totalCount}
                 overallMaxTransaction={expensesByTag.overallMaxTransaction}
               />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AppShell>
   );

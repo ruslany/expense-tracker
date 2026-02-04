@@ -1,7 +1,7 @@
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FilterCard } from '@/components/tag-report/filter-card';
-import { SummaryStats } from '@/components/tag-report/summary-stats';
+import { SummaryStats } from '@/components/summary-stats';
 import { CategoryBreakdownChart } from '@/components/tag-report/category-breakdown-chart';
 import { CategoryDetailsTable } from '@/components/tag-report/category-details-table';
 import { getPrisma } from '@/lib/prisma';
@@ -134,6 +134,7 @@ export default async function TagsPage({ searchParams }: PageProps) {
         </div>
 
         <FilterCard
+          key={`${selectedTagId}-${startDate?.toISOString()}-${endDate?.toISOString()}`}
           tags={tags}
           selectedTagId={selectedTagId}
           startDate={startDate}

@@ -37,19 +37,6 @@ export function FilterCard({ tags, selectedTagId, startDate, endDate }: FilterCa
   const [start, setStart] = useState<Date | undefined>(startDate ?? undefined);
   const [end, setEnd] = useState<Date | undefined>(endDate ?? undefined);
 
-  // Sync state with props when they change (e.g., from URL params)
-  useEffect(() => {
-    setTagId(selectedTagId || '');
-  }, [selectedTagId]);
-
-  useEffect(() => {
-    setStart(startDate ?? undefined);
-  }, [startDate]);
-
-  useEffect(() => {
-    setEnd(endDate ?? undefined);
-  }, [endDate]);
-
   // On mount, if no params in URL, check localStorage for saved selection
   useEffect(() => {
     const hasTagParam = searchParams.has('tagId');

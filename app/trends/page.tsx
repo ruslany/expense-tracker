@@ -192,6 +192,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
         </div>
 
         <FilterCard
+          key={`${groupBy}-${categoryId}-${startDate?.toISOString()}-${endDate?.toISOString()}`}
           categories={categories}
           selectedGroupBy={groupBy}
           selectedCategoryId={categoryId}

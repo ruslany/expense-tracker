@@ -57,7 +57,7 @@ export function CategoryBreakdownChart({ data }: CategoryBreakdownChartProps) {
           outerRadius={outerRadius}
           fill="#8884d8"
           dataKey="value"
-          label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
+          label={({ percent }) => `${((percent ?? 0) * 100).toFixed(1)}%`}
           labelLine={false}
         >
           {chartData.map((_, index) => (
