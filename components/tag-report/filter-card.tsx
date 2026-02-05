@@ -1,9 +1,8 @@
 'use client';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -11,10 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DatePicker } from '@/components/ui/date-picker';
 import { Label } from '@/components/ui/label';
 
 const STORAGE_KEY = 'tag-report-filters';
+const DATE_STORAGE_KEY = 'tag-report-dates';
 
 interface Tag {
   id: string;
@@ -24,90 +23,67 @@ interface Tag {
 interface FilterCardProps {
   tags: Tag[];
   selectedTagId: string | null;
-  startDate: Date | null;
-  endDate: Date | null;
 }
 
-export function FilterCard({ tags, selectedTagId, startDate, endDate }: FilterCardProps) {
+export function FilterCard({ tags, selectedTagId }: FilterCardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const [tagId, setTagId] = useState(selectedTagId || '');
-  const [start, setStart] = useState<Date | undefined>(startDate ?? undefined);
-  const [end, setEnd] = useState<Date | undefined>(endDate ?? undefined);
-
-  // On mount, if no params in URL, check localStorage for saved selection
+  // On mount, restore tagId and dates from localStorage in a single navigation
   useEffect(() => {
-    const hasTagParam = searchParams.has('tagId');
-    const hasStartParam = searchParams.has('startDate');
-    const hasEndParam = searchParams.has('endDate');
+    const hasTag = searchParams.has('tagId');
+    const hasDates = searchParams.has('startDate') || searchParams.has('endDate');
+    if (hasTag && hasDates) return;
 
-    if (!hasTagParam && !hasStartParam && !hasEndParam) {
-      const savedFilters = localStorage.getItem(STORAGE_KEY);
-      if (savedFilters) {
-        try {
-          const {
-            tagId: savedTagId,
-            startDate: savedStart,
-            endDate: savedEnd,
-          } = JSON.parse(savedFilters);
-          const params = new URLSearchParams(searchParams);
-          let shouldUpdate = false;
+    const params = new URLSearchParams(searchParams);
+    let shouldUpdate = false;
 
-          // Validate tag exists in available tags
+    if (!hasTag) {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const { tagId: savedTagId } = JSON.parse(saved);
           if (savedTagId && tags.some((t) => t.id === savedTagId)) {
             params.set('tagId', savedTagId);
             shouldUpdate = true;
           }
-          if (savedStart) {
-            params.set('startDate', savedStart);
-            shouldUpdate = true;
-          }
-          if (savedEnd) {
-            params.set('endDate', savedEnd);
-            shouldUpdate = true;
-          }
-
-          if (shouldUpdate) {
-            router.replace(`${pathname}?${params.toString()}`);
-          }
-        } catch {
-          localStorage.removeItem(STORAGE_KEY);
         }
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
       }
+    }
+
+    if (!hasDates) {
+      try {
+        const saved = localStorage.getItem(DATE_STORAGE_KEY);
+        if (saved) {
+          const { startDate, endDate } = JSON.parse(saved);
+          if (startDate) { params.set('startDate', startDate); shouldUpdate = true; }
+          if (endDate) { params.set('endDate', endDate); shouldUpdate = true; }
+        }
+      } catch {
+        localStorage.removeItem(DATE_STORAGE_KEY);
+      }
+    }
+
+    if (shouldUpdate) {
+      router.replace(`${pathname}?${params.toString()}`);
     }
   }, [searchParams, pathname, router, tags]);
 
-  const applyFilters = () => {
+  const handleTagChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
-    const storageData: { tagId?: string; startDate?: string; endDate?: string } = {};
 
-    if (tagId) {
-      params.set('tagId', tagId);
-      storageData.tagId = tagId;
+    if (value && value !== 'none') {
+      params.set('tagId', value);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ tagId: value }));
     } else {
       params.delete('tagId');
-    }
-    if (start) {
-      const startStr = start.toISOString().split('T')[0];
-      params.set('startDate', startStr);
-      storageData.startDate = startStr;
-    } else {
-      params.delete('startDate');
-    }
-    if (end) {
-      const endStr = end.toISOString().split('T')[0];
-      params.set('endDate', endStr);
-      storageData.endDate = endStr;
-    } else {
-      params.delete('endDate');
+      localStorage.removeItem(STORAGE_KEY);
     }
 
-    // Save to localStorage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
-
-    router.replace(`/tags?${params.toString()}`);
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -116,35 +92,21 @@ export function FilterCard({ tags, selectedTagId, startDate, endDate }: FilterCa
         <CardTitle>Filters</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-2">
-            <Label htmlFor="tag-select">Tag</Label>
-            <Select value={tagId} onValueChange={setTagId}>
-              <SelectTrigger id="tag-select">
-                <SelectValue placeholder="Select a tag" />
-              </SelectTrigger>
-              <SelectContent>
-                {tags.map((tag) => (
-                  <SelectItem key={tag.id} value={tag.id}>
-                    {tag.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Start Date</Label>
-            <DatePicker date={start} onDateChange={setStart} placeholder="Start date" />
-          </div>
-          <div className="space-y-2">
-            <Label>End Date</Label>
-            <DatePicker date={end} onDateChange={setEnd} placeholder="End date" />
-          </div>
-          <div className="flex items-end">
-            <Button onClick={applyFilters} className="w-full">
-              Apply Filters
-            </Button>
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="tag-select">Tag</Label>
+          <Select value={selectedTagId || 'none'} onValueChange={handleTagChange}>
+            <SelectTrigger id="tag-select" className="w-full sm:w-60">
+              <SelectValue placeholder="Select a tag" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Select a tag</SelectItem>
+              {tags.map((tag) => (
+                <SelectItem key={tag.id} value={tag.id}>
+                  {tag.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </CardContent>
     </Card>

@@ -1,6 +1,7 @@
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FilterCard } from '@/components/tag-report/filter-card';
+import { DateRangeFilter } from '@/components/date-range-filter';
 import { SummaryStats } from '@/components/summary-stats';
 import { CategoryBreakdownChart } from '@/components/tag-report/category-breakdown-chart';
 import { CategoryDetailsTable } from '@/components/tag-report/category-details-table';
@@ -126,17 +127,24 @@ export default async function TagsPage({ searchParams }: PageProps) {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
-          <p className="text-muted-foreground">Analyze spending by tag with category breakdown</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
+            <p className="text-muted-foreground">Analyze spending by tag with category breakdown</p>
+          </div>
+          <DateRangeFilter
+            key={`dates-${startDate?.toISOString()}-${endDate?.toISOString()}`}
+            startDate={startDate ?? undefined}
+            endDate={endDate ?? undefined}
+            storageKey="tag-report-dates"
+            restoreOnMount={false}
+          />
         </div>
 
         <FilterCard
-          key={`${selectedTagId}-${startDate?.toISOString()}-${endDate?.toISOString()}`}
+          key={selectedTagId ?? 'none'}
           tags={tags}
           selectedTagId={selectedTagId}
-          startDate={startDate}
-          endDate={endDate}
         />
 
         {report ? (

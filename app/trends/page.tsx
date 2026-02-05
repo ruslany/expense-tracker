@@ -1,6 +1,7 @@
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FilterCard } from '@/components/spending-trends/filter-card';
+import { DateRangeFilter } from '@/components/date-range-filter';
 import { SummaryStats } from '@/components/spending-trends/summary-stats';
 import { TrendsChart } from '@/components/spending-trends/trends-chart';
 import { getPrisma } from '@/lib/prisma';
@@ -184,18 +185,23 @@ export default async function TrendsPage({ searchParams }: PageProps) {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Trends</h1>
-          <p className="text-muted-foreground">Analyze spending patterns over time</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Trends</h1>
+            <p className="text-muted-foreground">Analyze spending patterns over time</p>
+          </div>
+          <DateRangeFilter
+            key={`dates-${startDate?.toISOString()}-${endDate?.toISOString()}`}
+            startDate={startDate ?? undefined}
+            endDate={endDate ?? undefined}
+          />
         </div>
 
         <FilterCard
-          key={`${groupBy}-${categoryId}-${startDate?.toISOString()}-${endDate?.toISOString()}`}
+          key={`${groupBy}-${categoryId}`}
           categories={categories}
           selectedGroupBy={groupBy}
           selectedCategoryId={categoryId}
-          startDate={startDate}
-          endDate={endDate}
         />
 
         <SummaryStats
