@@ -8,6 +8,8 @@ function buildTransactionWhereClause(
   categoryId?: string,
   accountId?: string,
   tagId?: string,
+  startDate?: string,
+  endDate?: string,
 ): TransactionWhereInput {
   const conditions: TransactionWhereInput[] = [];
 
@@ -43,6 +45,19 @@ function buildTransactionWhereClause(
     });
   }
 
+  const dateFilter: Record<string, Date> = {};
+  if (startDate) {
+    dateFilter.gte = new Date(startDate + 'T00:00:00Z');
+  }
+  if (endDate) {
+    const nextDay = new Date(endDate + 'T00:00:00Z');
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+    dateFilter.lt = nextDay;
+  }
+  if (Object.keys(dateFilter).length > 0) {
+    conditions.push({ date: dateFilter });
+  }
+
   return conditions.length > 0 ? { AND: conditions } : {};
 }
 
@@ -53,9 +68,18 @@ export async function fetchFilteredTransactions(
   categoryId?: string,
   accountId?: string,
   tagId?: string,
+  startDate?: string,
+  endDate?: string,
 ) {
   const offset = (currentPage - 1) * pageSize;
-  const where = buildTransactionWhereClause(query, categoryId, accountId, tagId);
+  const where = buildTransactionWhereClause(
+    query,
+    categoryId,
+    accountId,
+    tagId,
+    startDate,
+    endDate,
+  );
 
   try {
     const prisma = await getPrisma();
@@ -122,8 +146,17 @@ export async function fetchTransactionsPages(
   categoryId?: string,
   accountId?: string,
   tagId?: string,
+  startDate?: string,
+  endDate?: string,
 ) {
-  const where = buildTransactionWhereClause(query, categoryId, accountId, tagId);
+  const where = buildTransactionWhereClause(
+    query,
+    categoryId,
+    accountId,
+    tagId,
+    startDate,
+    endDate,
+  );
 
   try {
     const prisma = await getPrisma();
