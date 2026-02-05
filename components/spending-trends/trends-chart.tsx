@@ -24,18 +24,18 @@ export function TrendsChart({ data }: TrendsChartProps) {
     );
   }
 
-  const chartHeight = isMobile ? 250 : 350;
+  const chartHeight = isMobile ? 300 : 450;
 
   return (
     <ResponsiveContainer width="100%" height={chartHeight}>
-      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.3)" />
         <XAxis
           dataKey="label"
           tick={{ fontSize: isMobile ? 10 : 12, fill: 'hsl(var(--foreground))' }}
           angle={isMobile ? -45 : -30}
           textAnchor="end"
-          height={80}
+          height={50}
           dy={10}
           stroke="hsl(var(--muted-foreground))"
         />

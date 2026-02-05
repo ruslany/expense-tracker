@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/app-shell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { DashboardCharts } from '@/components/dashboard/charts';
 import { DashboardPeriodFilter } from '@/components/dashboard/period-filter';
 import { SpendingByCategoryTable } from '@/components/spending-by-category-table';
@@ -226,50 +226,50 @@ export default async function Dashboard({ searchParams }: PageProps) {
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Net Spent</CardTitle>
-              <ArrowDownIcon className="h-4 w-4 text-destructive" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-destructive">
+            <CardContent className="py-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">Net Spent</p>
+                <ArrowDownIcon className="h-4 w-4 text-destructive" />
+              </div>
+              <div className="text-2xl font-bold text-destructive mt-1">
                 {formatCurrency(stats.netSpent)}
               </div>
-              <p className="text-xs text-muted-foreground">After refunds</p>
+              <p className="text-xs text-muted-foreground mt-0.5">After refunds</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Credits</CardTitle>
-              <ArrowUpIcon className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+            <CardContent className="py-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">Total Credits</p>
+                <ArrowUpIcon className="h-4 w-4 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold text-green-600 mt-1">
                 {formatCurrency(stats.totalCredits)}
               </div>
-              <p className="text-xs text-muted-foreground">This month</p>
+              <p className="text-xs text-muted-foreground mt-0.5">This month</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Transactions</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.transactionCount}</div>
-              <p className="text-xs text-muted-foreground">This month</p>
+            <CardContent className="py-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">Transactions</p>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="text-2xl font-bold mt-1">{stats.transactionCount}</div>
+              <p className="text-xs text-muted-foreground mt-0.5">This month</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Max Transaction</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stats.maxTransaction)}</div>
-              <p className="text-xs text-muted-foreground">This month</p>
+            <CardContent className="py-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-muted-foreground">Max Transaction</p>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="text-2xl font-bold mt-1">{formatCurrency(stats.maxTransaction)}</div>
+              <p className="text-xs text-muted-foreground mt-0.5">This month</p>
             </CardContent>
           </Card>
         </div>
