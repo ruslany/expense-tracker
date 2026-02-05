@@ -1,8 +1,15 @@
 'use client';
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import * as React from 'react';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import { formatCurrency } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-media-query';
 
 interface TrendDataPoint {
   label: string;
@@ -13,51 +20,72 @@ interface TrendsChartProps {
   data: TrendDataPoint[];
 }
 
-export function TrendsChart({ data }: TrendsChartProps) {
-  const isMobile = useIsMobile();
+const chartConfig = {
+  amount: {
+    label: 'Spent',
+    color: 'var(--chart-1)',
+  },
+} satisfies ChartConfig;
 
+export function TrendsChart({ data }: TrendsChartProps) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-75 text-muted-foreground">
-        No data available for the selected period
-      </div>
+      <Card>
+        <CardContent>
+          <div className="flex items-center justify-center h-[250px] text-muted-foreground">
+            No data available for the selected period
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
-  const chartHeight = isMobile ? 250 : 350;
-
   return (
-    <ResponsiveContainer width="100%" height={chartHeight}>
-      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.3)" />
-        <XAxis
-          dataKey="label"
-          tick={{ fontSize: isMobile ? 10 : 12, fill: 'hsl(var(--foreground))' }}
-          angle={isMobile ? -45 : -30}
-          textAnchor="end"
-          height={80}
-          dy={10}
-          stroke="hsl(var(--muted-foreground))"
-        />
-        <YAxis
-          tick={{ fontSize: isMobile ? 10 : 12, fill: 'hsl(var(--foreground))' }}
-          tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-          stroke="hsl(var(--muted-foreground))"
-        />
-        <Tooltip
-          formatter={(value) => [formatCurrency(value as number), 'Spent']}
-          contentStyle={{
-            backgroundColor: 'hsl(var(--card))',
-            border: '1px solid hsl(var(--border))',
-            borderRadius: '8px',
-            color: 'hsl(var(--card-foreground))',
-          }}
-          labelStyle={{
-            color: 'hsl(var(--card-foreground))',
-          }}
-        />
-        <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
+    <Card>
+      <CardContent className="px-2 sm:p-6">
+        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+          <BarChart
+            accessibilityLayer
+            data={data}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              minTickGap={32}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  className="w-[150px]"
+                  labelFormatter={(value) => String(value)}
+                  formatter={(value) => (
+                    <div className="flex w-full items-center gap-2">
+                      <div
+                        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                        style={{ backgroundColor: 'var(--color-amount)' }}
+                      />
+                      <div className="flex flex-1 justify-between items-center leading-none">
+                        <span className="text-muted-foreground">Spent</span>
+                        <span className="text-foreground font-mono font-medium tabular-nums">
+                          {formatCurrency(value as number)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                />
+              }
+            />
+            <Bar dataKey="amount" fill="var(--color-amount)" />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

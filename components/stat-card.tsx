@@ -19,13 +19,13 @@ const colorClasses = {
 export function StatCard({ label, value, valueColor = 'default', subtext, icon }: StatCardProps) {
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardContent className="py-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
           {icon && <div className="text-muted-foreground">{icon}</div>}
         </div>
-        <p className={cn('text-2xl font-bold mt-2', colorClasses[valueColor])}>{value}</p>
-        {subtext && <p className="text-xs text-muted-foreground mt-1">{subtext}</p>}
+        <p className={cn('text-2xl font-bold mt-1', colorClasses[valueColor])}>{value}</p>
+        {subtext && <p className="text-xs text-muted-foreground mt-0.5">{subtext}</p>}
       </CardContent>
     </Card>
   );

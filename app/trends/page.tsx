@@ -1,5 +1,4 @@
 import { AppShell } from '@/components/app-shell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FilterCard } from '@/components/spending-trends/filter-card';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { SummaryStats } from '@/components/spending-trends/summary-stats';
@@ -179,9 +178,6 @@ export default async function TrendsPage({ searchParams }: PageProps) {
     getSpendingTrends(groupBy, categoryId, startDate, endDate),
   ]);
 
-  const groupByLabel =
-    groupBy === 'month' ? 'Monthly' : groupBy === 'quarter' ? 'Quarterly' : 'Yearly';
-
   return (
     <AppShell>
       <div className="space-y-6">
@@ -211,14 +207,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
           periodsAnalyzed={trends.periodsAnalyzed}
         />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{groupByLabel} Spending Trends</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TrendsChart data={trends.data} />
-          </CardContent>
-        </Card>
+        <TrendsChart data={trends.data} />
       </div>
     </AppShell>
   );

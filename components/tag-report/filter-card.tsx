@@ -2,7 +2,12 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   Select,
   SelectContent,
@@ -11,6 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { ChevronDownIcon } from 'lucide-react';
 
 const STORAGE_KEY = 'tag-report-filters';
 const DATE_STORAGE_KEY = 'tag-report-dates';
@@ -94,26 +101,33 @@ export function FilterCard({ tags, selectedTagId }: FilterCardProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Filters</CardTitle>
-      </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <Label htmlFor="tag-select">Tag</Label>
-          <Select value={selectedTagId || 'none'} onValueChange={handleTagChange}>
-            <SelectTrigger id="tag-select" className="w-full sm:w-60">
-              <SelectValue placeholder="Select a tag" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Select a tag</SelectItem>
-              {tags.map((tag) => (
-                <SelectItem key={tag.id} value={tag.id}>
-                  {tag.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="group w-full justify-start px-0">
+              <span className="text-base font-semibold">Filters</span>
+              <ChevronDownIcon className="ml-auto size-4 transition-transform group-data-[state=open]:rotate-180" />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="tag-select">Tag</Label>
+              <Select value={selectedTagId || 'none'} onValueChange={handleTagChange}>
+                <SelectTrigger id="tag-select" className="w-full sm:w-60">
+                  <SelectValue placeholder="Select a tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Select a tag</SelectItem>
+                  {tags.map((tag) => (
+                    <SelectItem key={tag.id} value={tag.id}>
+                      {tag.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </CardContent>
     </Card>
   );
