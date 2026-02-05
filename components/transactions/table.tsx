@@ -33,7 +33,16 @@ export async function TransactionsTable({
   endDate?: string;
 }) {
   const [transactions, categories, allTags] = await Promise.all([
-    fetchFilteredTransactions(query, currentPage, pageSize, categoryId, accountId, tagId, startDate, endDate),
+    fetchFilteredTransactions(
+      query,
+      currentPage,
+      pageSize,
+      categoryId,
+      accountId,
+      tagId,
+      startDate,
+      endDate,
+    ),
     fetchCategories(),
     fetchTags(),
   ]);

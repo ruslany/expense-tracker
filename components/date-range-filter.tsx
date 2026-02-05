@@ -33,7 +33,12 @@ export function DateRangeFilter({
 
   // On mount, if no date params in URL and storageKey is set, restore from localStorage
   useEffect(() => {
-    if (!storageKey || !restoreOnMount || searchParams.has('startDate') || searchParams.has('endDate'))
+    if (
+      !storageKey ||
+      !restoreOnMount ||
+      searchParams.has('startDate') ||
+      searchParams.has('endDate')
+    )
       return;
 
     const saved = localStorage.getItem(storageKey);

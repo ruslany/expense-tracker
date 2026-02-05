@@ -141,11 +141,7 @@ export default async function TagsPage({ searchParams }: PageProps) {
           />
         </div>
 
-        <FilterCard
-          key={selectedTagId ?? 'none'}
-          tags={tags}
-          selectedTagId={selectedTagId}
-        />
+        <FilterCard key={selectedTagId ?? 'none'} tags={tags} selectedTagId={selectedTagId} />
 
         {report ? (
           <>

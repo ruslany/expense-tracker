@@ -59,8 +59,14 @@ export function FilterCard({ tags, selectedTagId }: FilterCardProps) {
         const saved = localStorage.getItem(DATE_STORAGE_KEY);
         if (saved) {
           const { startDate, endDate } = JSON.parse(saved);
-          if (startDate) { params.set('startDate', startDate); shouldUpdate = true; }
-          if (endDate) { params.set('endDate', endDate); shouldUpdate = true; }
+          if (startDate) {
+            params.set('startDate', startDate);
+            shouldUpdate = true;
+          }
+          if (endDate) {
+            params.set('endDate', endDate);
+            shouldUpdate = true;
+          }
         }
       } catch {
         localStorage.removeItem(DATE_STORAGE_KEY);

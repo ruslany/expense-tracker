@@ -72,7 +72,14 @@ export async function fetchFilteredTransactions(
   endDate?: string,
 ) {
   const offset = (currentPage - 1) * pageSize;
-  const where = buildTransactionWhereClause(query, categoryId, accountId, tagId, startDate, endDate);
+  const where = buildTransactionWhereClause(
+    query,
+    categoryId,
+    accountId,
+    tagId,
+    startDate,
+    endDate,
+  );
 
   try {
     const prisma = await getPrisma();
@@ -142,7 +149,14 @@ export async function fetchTransactionsPages(
   startDate?: string,
   endDate?: string,
 ) {
-  const where = buildTransactionWhereClause(query, categoryId, accountId, tagId, startDate, endDate);
+  const where = buildTransactionWhereClause(
+    query,
+    categoryId,
+    accountId,
+    tagId,
+    startDate,
+    endDate,
+  );
 
   try {
     const prisma = await getPrisma();
