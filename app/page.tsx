@@ -149,14 +149,11 @@ async function getCategorySpendingTable(year: number, month: number) {
   };
 }
 
-const MONTHLY_BUDGET = 7000;
-
-async function getSpendingOverTime(year: number, month: number) {
+async function getRunningTotalForMonth(year: number, month: number) {
   const prisma = await getPrisma();
   const startOfMonth = new Date(Date.UTC(year, month, 1));
   const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
 
-  // Include all transactions (expenses and credits/refunds)
   const transactions = await prisma.transaction.findMany({
     where: {
       date: {
@@ -167,34 +164,49 @@ async function getSpendingOverTime(year: number, month: number) {
     orderBy: { date: 'asc' },
   });
 
-  // Group by date and calculate net spending (expenses - credits)
-  const spendingByDate = new Map<string, { expenses: number; credits: number }>();
-
+  // Group net spending by day-of-month
+  const spendingByDay = new Map<number, number>();
   for (const t of transactions) {
-    const dateKey = t.date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      timeZone: 'UTC',
-    });
-    const current = spendingByDate.get(dateKey) ?? { expenses: 0, credits: 0 };
+    const day = t.date.getUTCDate();
+    const current = spendingByDay.get(day) ?? 0;
     if (t.amount < 0) {
-      current.expenses += Math.abs(t.amount);
+      spendingByDay.set(day, current + Math.abs(t.amount));
     } else {
-      current.credits += t.amount;
+      spendingByDay.set(day, current - t.amount);
     }
-    spendingByDate.set(dateKey, current);
   }
 
-  // Calculate running total of net spending
+  // Build running total across all days in the month
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const lastDayWithData = spendingByDay.size > 0 ? Math.max(...spendingByDay.keys()) : 0;
+  const result = new Map<number, number>();
   let runningTotal = 0;
-  return Array.from(spendingByDate.entries()).map(([date, { expenses, credits }]) => {
-    const netAmount = expenses - credits;
-    runningTotal += netAmount;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const daySpending = spendingByDay.get(day) ?? 0;
+    runningTotal += daySpending;
+    result.set(day, Math.round(runningTotal * 100) / 100);
+  }
+  return { totals: result, lastDayWithData };
+}
+
+async function getSpendingOverTime(year: number, month: number) {
+  const [current, prevYear] = await Promise.all([
+    getRunningTotalForMonth(year, month),
+    getRunningTotalForMonth(year - 1, month),
+  ]);
+
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const monthName = new Date(Date.UTC(year, month, 1)).toLocaleDateString('en-US', {
+    month: 'short',
+    timeZone: 'UTC',
+  });
+
+  return Array.from({ length: daysInMonth }, (_, i) => {
+    const day = i + 1;
     return {
-      date,
-      amount: Math.round(netAmount * 100) / 100,
-      runningTotal: Math.round(runningTotal * 100) / 100,
-      budget: MONTHLY_BUDGET,
+      date: `${monthName} ${day}`,
+      runningTotal: day <= current.lastDayWithData ? (current.totals.get(day) ?? 0) : null,
+      prevYearRunningTotal: prevYear.lastDayWithData > 0 ? (prevYear.totals.get(day) ?? 0) : null,
     };
   });
 }

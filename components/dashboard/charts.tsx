@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  LineChart,
+  ComposedChart,
+  Area,
   Line,
   XAxis,
   YAxis,
@@ -15,9 +16,8 @@ import { useIsMobile } from '@/hooks/use-media-query';
 
 interface SpendingDataPoint {
   date: string;
-  amount: number;
-  runningTotal: number;
-  budget: number;
+  runningTotal: number | null;
+  prevYearRunningTotal: number | null;
 }
 
 interface DashboardChartsProps {
@@ -27,6 +27,7 @@ interface DashboardChartsProps {
 export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
+  const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
 
   return (
     <Card>
@@ -35,13 +36,13 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={chartHeight}>
-          <LineChart data={spendingOverTime}>
+          <ComposedChart data={spendingOverTime}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="date"
               className="text-xs"
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 10 : 12 }}
-              interval={isMobile ? 'preserveStartEnd' : 0}
+              interval={isMobile ? 'preserveStartEnd' : Math.floor(spendingOverTime.length / 8)}
               angle={isMobile ? -45 : 0}
               textAnchor={isMobile ? 'end' : 'middle'}
               height={isMobile ? 50 : 30}
@@ -57,34 +58,41 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
               }}
+              formatter={(value: number, name: string) => {
+                const label =
+                  name === 'runningTotal'
+                    ? 'This Year'
+                    : 'Last Year';
+                return [`$${value.toLocaleString()}`, label];
+              }}
             />
-            <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
-            <Line
-              type="monotone"
-              dataKey="amount"
-              name="Daily Spending"
-              stroke="hsl(var(--primary))"
-              strokeWidth={2}
-              dot={isMobile ? false : { fill: 'hsl(var(--primary))' }}
+            <Legend
+              wrapperStyle={{ fontSize: isMobile ? 10 : 12 }}
+              formatter={(value: string) =>
+                value === 'runningTotal' ? 'This Year' : 'Last Year'
+              }
             />
-            <Line
+            {hasPrevYearData && (
+              <Line
+                type="monotone"
+                dataKey="prevYearRunningTotal"
+                name="prevYearRunningTotal"
+                stroke="hsl(var(--muted-foreground))"
+                strokeWidth={2}
+                dot={false}
+                connectNulls={false}
+              />
+            )}
+            <Area
               type="monotone"
               dataKey="runningTotal"
-              name="Running Total"
-              stroke="#10b981"
+              name="runningTotal"
+              stroke="var(--chart-1)"
               strokeWidth={2}
-              dot={isMobile ? false : { fill: '#10b981' }}
-            />
-            <Line
-              type="monotone"
-              dataKey="budget"
-              name="Budget"
-              stroke="#ef4444"
-              strokeWidth={2}
-              strokeDasharray="5 5"
+              fill="color-mix(in srgb, var(--chart-1) 15%, transparent)"
               dot={false}
             />
-          </LineChart>
+          </ComposedChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>

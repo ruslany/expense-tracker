@@ -194,7 +194,6 @@ export default async function TrendsPage({ searchParams }: PageProps) {
         </div>
 
         <FilterCard
-          key={`${groupBy}-${categoryId}`}
           categories={categories}
           selectedGroupBy={groupBy}
           selectedCategoryId={categoryId}
