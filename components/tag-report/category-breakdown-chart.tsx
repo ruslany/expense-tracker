@@ -39,10 +39,20 @@ export function CategoryBreakdownChart({ data }: CategoryBreakdownChartProps) {
     );
   }
 
-  const chartData = data.map((item) => ({
+  const MAX_SLICES = 7;
+  const allSlices = data.map((item) => ({
     name: item.categoryName,
     value: Math.abs(item.total),
   }));
+
+  let chartData: { name: string; value: number }[];
+  if (allSlices.length <= MAX_SLICES) {
+    chartData = allSlices;
+  } else {
+    const topSlices = allSlices.slice(0, MAX_SLICES - 1);
+    const otherTotal = allSlices.slice(MAX_SLICES - 1).reduce((sum, s) => sum + s.value, 0);
+    chartData = [...topSlices, { name: 'Other', value: otherTotal }];
+  }
 
   const chartHeight = isMobile ? 300 : 400;
   const outerRadius = isMobile ? 60 : 100;
@@ -60,8 +70,11 @@ export function CategoryBreakdownChart({ data }: CategoryBreakdownChartProps) {
           label={({ percent }) => `${((percent ?? 0) * 100).toFixed(1)}%`}
           labelLine={false}
         >
-          {chartData.map((_, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          {chartData.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={entry.name === 'Other' ? '#9ca3af' : COLORS[index % COLORS.length]}
+            />
           ))}
         </Pie>
         <Tooltip
