@@ -59,18 +59,13 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
                 borderRadius: '8px',
               }}
               formatter={(value: number, name: string) => {
-                const label =
-                  name === 'runningTotal'
-                    ? 'This Year'
-                    : 'Last Year';
+                const label = name === 'runningTotal' ? 'This Year' : 'Last Year';
                 return [`$${value.toLocaleString()}`, label];
               }}
             />
             <Legend
               wrapperStyle={{ fontSize: isMobile ? 10 : 12 }}
-              formatter={(value: string) =>
-                value === 'runningTotal' ? 'This Year' : 'Last Year'
-              }
+              formatter={(value: string) => (value === 'runningTotal' ? 'This Year' : 'Last Year')}
             />
             {hasPrevYearData && (
               <Line
