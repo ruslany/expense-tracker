@@ -46,8 +46,8 @@ export default async function TransactionsPage(props: {
           </div>
           <DateRangeFilter
             key={`dates-${startDate}-${endDate}`}
-            startDate={startDate ? new Date(startDate + 'T00:00:00Z') : undefined}
-            endDate={endDate ? new Date(endDate + 'T00:00:00Z') : undefined}
+            startDate={startDate ? new Date(startDate + 'T00:00:00') : undefined}
+            endDate={endDate ? new Date(endDate + 'T00:00:00') : undefined}
           />
         </div>
 

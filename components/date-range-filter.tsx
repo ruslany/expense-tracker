@@ -64,14 +64,14 @@ export function DateRangeFilter({
         localStorage.removeItem(storageKey);
       }
     }
-  }, [storageKey, searchParams, pathname, router]);
+  }, [storageKey, restoreOnMount, searchParams, pathname, router]);
 
   const applyDateRange = () => {
     const params = new URLSearchParams(searchParams);
     const storageData: { startDate?: string; endDate?: string } = {};
 
     if (date?.from) {
-      const startStr = date.from.toISOString().split('T')[0];
+      const startStr = format(date.from, 'yyyy-MM-dd');
       params.set('startDate', startStr);
       storageData.startDate = startStr;
     } else {
@@ -79,7 +79,7 @@ export function DateRangeFilter({
     }
 
     if (date?.to) {
-      const endStr = date.to.toISOString().split('T')[0];
+      const endStr = format(date.to, 'yyyy-MM-dd');
       params.set('endDate', endStr);
       storageData.endDate = endStr;
     } else {
