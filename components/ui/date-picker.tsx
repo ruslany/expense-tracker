@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ export function DatePicker({ date, onDateChange, placeholder = 'Pick a date' }: 
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, 'PPP') : <span>{placeholder}</span>}
+          {date ? formatInTimeZone(date, 'UTC', 'PPP') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
