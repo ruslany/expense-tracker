@@ -82,9 +82,9 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
               type="monotone"
               dataKey="runningTotal"
               name="runningTotal"
-              stroke="var(--chart-1)"
+              stroke="var(--chart-3)"
               strokeWidth={2}
-              fill="color-mix(in srgb, var(--chart-1) 15%, transparent)"
+              fill="color-mix(in srgb, var(--chart-3) 15%, transparent)"
               dot={false}
             />
           </ComposedChart>
