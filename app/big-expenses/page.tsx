@@ -7,6 +7,12 @@ import { ExpensesByTagTable } from '@/components/big-expenses/expenses-by-tag-ta
 import { SummaryStats } from '@/components/summary-stats';
 import { getPrisma } from '@/lib/prisma';
 
+export async function generateMetadata({ searchParams }: PageProps) {
+  const { year } = await searchParams;
+  const displayYear = year || new Date().getFullYear();
+  return { title: `${displayYear} Big Expenses` };
+}
+
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
@@ -134,7 +140,7 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Big Expenses</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{currentYear} Big Expenses</h1>
             <p className="text-muted-foreground">Track yearly expenses by tag</p>
           </div>
           <YearFilter availableYears={availableYears} />

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent } from '@/components/ui/card';
 import { DashboardCharts } from '@/components/dashboard/charts';
@@ -7,6 +8,7 @@ import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from 'lucide-react';
 import { getPrisma } from '@/lib/prisma';
 
+export const metadata: Metadata = { title: 'Dashboard' };
 export const dynamic = 'force-dynamic';
 
 interface PageProps {

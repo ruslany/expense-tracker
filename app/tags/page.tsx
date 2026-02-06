@@ -7,6 +7,14 @@ import { CategoryBreakdownChart } from '@/components/tag-report/category-breakdo
 import { CategoryDetailsTable } from '@/components/tag-report/category-details-table';
 import { getPrisma } from '@/lib/prisma';
 
+export async function generateMetadata({ searchParams }: PageProps) {
+  const { tagId } = await searchParams;
+  if (!tagId) return { title: 'Tag Report' };
+  const prisma = await getPrisma();
+  const tag = await prisma.tag.findUnique({ where: { id: tagId }, select: { name: true } });
+  return { title: tag ? `Tag Report - ${tag.name}` : 'Tag Report' };
+}
+
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
@@ -129,7 +137,9 @@ export default async function TagsPage({ searchParams }: PageProps) {
       <div className="space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {report ? `Tag Report - ${report.tagName}` : 'Tags'}
+            </h1>
             <p className="text-muted-foreground">Analyze spending by tag with category breakdown</p>
           </div>
           <DateRangeFilter

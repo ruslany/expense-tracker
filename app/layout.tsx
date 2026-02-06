@@ -14,7 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Expense Tracker',
+  title: {
+    default: 'Expense Tracker',
+    template: '%s | Expense Tracker',
+  },
   description: 'Personal expense tracking and management application',
 };
 

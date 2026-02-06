@@ -1,7 +1,9 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { CategoryList } from '@/components/categories/category-list';
 import { fetchCategoriesWithKeywords } from '@/lib/data';
 
+export const metadata: Metadata = { title: 'Categories' };
 export const dynamic = 'force-dynamic';
 
 export default async function CategoriesPage() {

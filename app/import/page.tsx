@@ -1,9 +1,11 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CSVUploader } from '@/components/csv-uploader';
 import { ImportHistory } from '@/components/import-history';
 import { getPrisma } from '@/lib/prisma';
 
+export const metadata: Metadata = { title: 'Import' };
 export const dynamic = 'force-dynamic';
 
 async function getImportHistory() {
