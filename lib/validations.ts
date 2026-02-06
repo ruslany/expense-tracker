@@ -40,6 +40,15 @@ export const transactionUpdateSchema = z.object({
   amount: z.number().optional(),
 });
 
+export const manualTransactionCreateSchema = z.object({
+  accountId: z.string().min(1, 'Account is required'),
+  date: z.coerce.date(),
+  description: z.string().min(1, 'Description is required'),
+  amount: z.number(),
+  categoryId: z.string().nullable().optional(),
+  tagIds: z.array(z.string()).optional(),
+});
+
 export const transactionFilterSchema = z.object({
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),

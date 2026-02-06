@@ -4,6 +4,7 @@ import { SearchTransactions } from '@/components/transactions/search';
 import { TransactionsPagination } from '@/components/transactions/pagination';
 import { CategoryFilter, AccountFilter, TagFilter } from '@/components/transactions/filters';
 import { DateRangeFilter } from '@/components/date-range-filter';
+import { AddTransactionButton } from '@/components/transactions/add-transaction-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchTransactionsPages, fetchCategories, fetchAccounts, fetchTags } from '@/lib/data';
 
@@ -56,11 +57,14 @@ export default async function TransactionsPage(props: {
             <CardTitle>All Transactions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <SearchTransactions placeholder="Search transactions..." />
               <CategoryFilter categories={categories} />
               <AccountFilter accounts={accounts} />
               <TagFilter tags={tags} />
+              <div className="ml-auto">
+                <AddTransactionButton accounts={accounts} categories={categories} />
+              </div>
             </div>
             <TransactionsTable
               query={query}
