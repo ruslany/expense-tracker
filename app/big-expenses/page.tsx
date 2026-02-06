@@ -7,6 +7,12 @@ import { ExpensesByTagTable } from '@/components/big-expenses/expenses-by-tag-ta
 import { SummaryStats } from '@/components/summary-stats';
 import { getPrisma } from '@/lib/prisma';
 
+export async function generateMetadata({ searchParams }: PageProps) {
+  const { year } = await searchParams;
+  const displayYear = year || new Date().getFullYear();
+  return { title: `${displayYear} Big Expenses` };
+}
+
 export const dynamic = 'force-dynamic';
 
 interface PageProps {

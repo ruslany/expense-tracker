@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { AdministrationTabs } from '@/components/administration/administration-tabs';
 import {
@@ -6,6 +7,7 @@ import {
   fetchTagsWithTransactionCount,
 } from '@/lib/data';
 
+export const metadata: Metadata = { title: 'Administration' };
 export const dynamic = 'force-dynamic';
 
 export default async function AdministrationPage() {

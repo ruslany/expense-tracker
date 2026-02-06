@@ -1,7 +1,9 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { AccountList } from '@/components/accounts/account-list';
 import { fetchAccountsWithTransactionCount } from '@/lib/data';
 
+export const metadata: Metadata = { title: 'Accounts' };
 export const dynamic = 'force-dynamic';
 
 export default async function AccountsPage() {

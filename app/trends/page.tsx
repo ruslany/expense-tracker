@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { FilterCard } from '@/components/spending-trends/filter-card';
 import { DateRangeFilter } from '@/components/date-range-filter';
@@ -5,6 +6,7 @@ import { SummaryStats } from '@/components/spending-trends/summary-stats';
 import { TrendsChart } from '@/components/spending-trends/trends-chart';
 import { getPrisma } from '@/lib/prisma';
 
+export const metadata: Metadata = { title: 'Spending Trends' };
 export const dynamic = 'force-dynamic';
 
 interface PageProps {

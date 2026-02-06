@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { TransactionsTable } from '@/components/transactions/table';
 import { SearchTransactions } from '@/components/transactions/search';
@@ -7,6 +8,8 @@ import { DateRangeFilter } from '@/components/date-range-filter';
 import { AddTransactionButton } from '@/components/transactions/add-transaction-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchTransactionsPages, fetchCategories, fetchAccounts, fetchTags } from '@/lib/data';
+
+export const metadata: Metadata = { title: 'Transactions' };
 
 export default async function TransactionsPage(props: {
   searchParams?: Promise<{

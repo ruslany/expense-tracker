@@ -7,6 +7,14 @@ import { CategoryBreakdownChart } from '@/components/tag-report/category-breakdo
 import { CategoryDetailsTable } from '@/components/tag-report/category-details-table';
 import { getPrisma } from '@/lib/prisma';
 
+export async function generateMetadata({ searchParams }: PageProps) {
+  const { tagId } = await searchParams;
+  if (!tagId) return { title: 'Tag Report' };
+  const prisma = await getPrisma();
+  const tag = await prisma.tag.findUnique({ where: { id: tagId }, select: { name: true } });
+  return { title: tag ? `Tag Report - ${tag.name}` : 'Tag Report' };
+}
+
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
