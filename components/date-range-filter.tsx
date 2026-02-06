@@ -9,6 +9,12 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface DateRangeFilterProps {
   startDate: Date | undefined;
@@ -139,12 +145,26 @@ export function DateRangeFilter({
           />
         </PopoverContent>
       </Popover>
-      <Button size="icon" variant="outline" onClick={applyDateRange} title="Apply date range">
-        <PlayIcon className="h-4 w-4" />
-      </Button>
-      <Button size="icon" variant="outline" onClick={resetDateRange} title="Reset date range">
-        <XIcon className="h-4 w-4" />
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="icon" variant="outline" onClick={applyDateRange}>
+              <PlayIcon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Apply date range</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="icon" variant="outline" onClick={resetDateRange}>
+              <XIcon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Reset date range</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }
