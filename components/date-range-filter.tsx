@@ -64,7 +64,7 @@ export function DateRangeFilter({
         localStorage.removeItem(storageKey);
       }
     }
-  }, [storageKey, searchParams, pathname, router]);
+  }, [storageKey, restoreOnMount, searchParams, pathname, router]);
 
   const applyDateRange = () => {
     const params = new URLSearchParams(searchParams);
