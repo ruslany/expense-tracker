@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Table,
   TableBody,
@@ -6,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatDate } from '@/lib/utils';
 
 interface ImportHistoryItem {
   id: string;
@@ -43,8 +44,10 @@ export function ImportHistory({ history }: ImportHistoryProps) {
               <span>{item.rowsImported} rows</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              {formatDate(item.importedAt)} at{' '}
-              {item.importedAt.toLocaleTimeString([], {
+              {new Date(item.importedAt).toLocaleString([], {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
               })}
@@ -71,8 +74,10 @@ export function ImportHistory({ history }: ImportHistoryProps) {
                 <TableCell className="capitalize">{item.institution}</TableCell>
                 <TableCell>{item.rowsImported}</TableCell>
                 <TableCell>
-                  {formatDate(item.importedAt)} at{' '}
-                  {item.importedAt.toLocaleTimeString([], {
+                  {new Date(item.importedAt).toLocaleString([], {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                   })}

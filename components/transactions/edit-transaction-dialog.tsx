@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -128,7 +128,7 @@ export function EditTransactionDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {editDate ? format(editDate, 'PPP') : <span>Pick a date</span>}
+                    {editDate ? formatInTimeZone(editDate, 'UTC', 'PPP') : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

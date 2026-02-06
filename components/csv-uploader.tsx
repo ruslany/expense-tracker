@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { Upload, FileText, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -210,7 +210,7 @@ export function CSVUploader() {
               data-empty={!cutoffDate}
               className="justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
             >
-              {cutoffDate ? format(cutoffDate, 'PPP') : <span>Pick a date</span>}
+              {cutoffDate ? formatInTimeZone(cutoffDate, 'UTC', 'PPP') : <span>Pick a date</span>}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </PopoverTrigger>

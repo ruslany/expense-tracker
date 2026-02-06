@@ -47,10 +47,10 @@ function buildTransactionWhereClause(
 
   const dateFilter: Record<string, Date> = {};
   if (startDate) {
-    dateFilter.gte = new Date(startDate + 'T00:00:00Z');
+    dateFilter.gte = new Date(startDate);
   }
   if (endDate) {
-    const nextDay = new Date(endDate + 'T00:00:00Z');
+    const nextDay = new Date(endDate);
     nextDay.setUTCDate(nextDay.getUTCDate() + 1);
     dateFilter.lt = nextDay;
   }

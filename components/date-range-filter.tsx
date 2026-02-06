@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { formatInTimeZone } from 'date-fns-tz';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { CalendarIcon, PlayIcon, XIcon } from 'lucide-react';
@@ -120,10 +121,11 @@ export function DateRangeFilter({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, 'LLL dd, y')} - {format(date.to, 'LLL dd, y')}
+                  {formatInTimeZone(date.from, 'UTC', 'LLL dd, y')} -{' '}
+                  {formatInTimeZone(date.to, 'UTC', 'LLL dd, y')}
                 </>
               ) : (
-                format(date.from, 'LLL dd, y')
+                formatInTimeZone(date.from, 'UTC', 'LLL dd, y')
               )
             ) : (
               <span>Pick a date range</span>

@@ -126,8 +126,8 @@ async function getTagReport(
 export default async function TagsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const selectedTagId = params.tagId || null;
-  const startDate = params.startDate ? new Date(params.startDate + 'T00:00:00') : null;
-  const endDate = params.endDate ? new Date(params.endDate + 'T00:00:00') : null;
+  const startDate = params.startDate ? new Date(params.startDate) : null;
+  const endDate = params.endDate ? new Date(params.endDate) : null;
 
   const tags = await getAllTags();
   const report = selectedTagId ? await getTagReport(selectedTagId, startDate, endDate) : null;
