@@ -106,6 +106,8 @@ export async function TransactionsTable({
                   date={transaction.date}
                   description={transaction.description}
                   amount={transaction.amount}
+                  categoryId={transaction.categoryId}
+                  categories={categories}
                 />
               </div>
             </CardContent>
@@ -168,6 +170,8 @@ export async function TransactionsTable({
                     date={transaction.date}
                     description={transaction.description}
                     amount={transaction.amount}
+                    categoryId={transaction.categoryId}
+                    categories={categories}
                   />
                 </TableCell>
               </TableRow>

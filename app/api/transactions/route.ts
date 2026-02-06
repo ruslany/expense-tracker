@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
 import { getPrisma } from '@/lib/prisma';
-import { transactionFilterSchema } from '@/lib/validations';
+import { transactionFilterSchema, manualTransactionCreateSchema } from '@/lib/validations';
+import { computeContentHash } from '@/lib/utils';
 import type { Prisma } from '@/lib/generated/prisma/client';
+import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
   try {
@@ -93,5 +96,60 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching transactions:', error);
     return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const prisma = await getPrisma();
+    const body = await request.json();
+    const validated = manualTransactionCreateSchema.parse(body);
+
+    const account = await prisma.account.findUnique({
+      where: { id: validated.accountId },
+    });
+
+    if (!account) {
+      return NextResponse.json({ error: 'Account not found' }, { status: 404 });
+    }
+
+    const originalData = { source: 'manual', _id: randomUUID() };
+    const contentHash = computeContentHash(originalData);
+
+    const transaction = await prisma.transaction.create({
+      data: {
+        accountId: validated.accountId,
+        date: validated.date,
+        description: validated.description,
+        amount: validated.amount,
+        categoryId: validated.categoryId ?? null,
+        originalData,
+        contentHash,
+        importedAt: new Date(),
+        ...(validated.tagIds && validated.tagIds.length > 0
+          ? {
+              tags: {
+                create: validated.tagIds.map((tagId) => ({ tagId })),
+              },
+            }
+          : {}),
+      },
+      include: {
+        account: { select: { id: true, name: true, institution: true } },
+        category: { select: { id: true, name: true } },
+        tags: { include: { tag: true } },
+      },
+    });
+
+    return NextResponse.json(transaction, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.issues },
+        { status: 400 },
+      );
+    }
+    console.error('Error creating transaction:', error);
+    return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
   }
 }
