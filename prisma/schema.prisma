@@ -93,3 +93,12 @@ model TransactionTag {
   @@id([transactionId, tagId])
   @@index([tagId])
 }
+
+model WatchlistItem {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  name      String
+  fundType  String   // "etf" | "mutual_fund" | "stock"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

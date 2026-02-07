@@ -6,6 +6,7 @@ import {
   Settings,
   Tag,
   TrendingUp,
+  LineChart,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -20,6 +21,11 @@ export const navItems: NavItem[] = [
     title: 'Dashboard',
     href: '/',
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Investments',
+    href: '/investments',
+    icon: LineChart,
   },
   {
     title: 'Big Expenses',
