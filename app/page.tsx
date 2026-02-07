@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
-import { Card, CardContent } from '@/components/ui/card';
 import { DashboardCharts } from '@/components/dashboard/charts';
 import { DashboardPeriodFilter } from '@/components/dashboard/period-filter';
 import { SpendingByCategoryTable } from '@/components/spending-by-category-table';
+import { StatCard } from '@/components/stat-card';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from 'lucide-react';
 import { getPrisma } from '@/lib/prisma';
@@ -239,53 +239,33 @@ export default async function Dashboard({ searchParams }: PageProps) {
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardContent className="py-3">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">Net Spent</p>
-                <ArrowDownIcon className="h-4 w-4 text-destructive" />
-              </div>
-              <div className="text-2xl font-bold text-destructive mt-1">
-                {formatCurrency(stats.netSpent)}
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">After refunds</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="py-3">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">Total Credits</p>
-                <ArrowUpIcon className="h-4 w-4 text-green-600" />
-              </div>
-              <div className="text-2xl font-bold text-green-600 mt-1">
-                {formatCurrency(stats.totalCredits)}
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">This month</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="py-3">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">Transactions</p>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div className="text-2xl font-bold mt-1">{stats.transactionCount}</div>
-              <p className="text-xs text-muted-foreground mt-0.5">This month</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="py-3">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">Max Transaction</p>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div className="text-2xl font-bold mt-1">{formatCurrency(stats.maxTransaction)}</div>
-              <p className="text-xs text-muted-foreground mt-0.5">This month</p>
-            </CardContent>
-          </Card>
+          <StatCard
+            label="Net Spent"
+            value={formatCurrency(stats.netSpent)}
+            valueColor="red"
+            subtext="After refunds"
+            icon={<ArrowDownIcon className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Total Credits"
+            value={formatCurrency(stats.totalCredits)}
+            valueColor="green"
+            subtext="This month"
+            icon={<ArrowUpIcon className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Transactions"
+            value={stats.transactionCount}
+            subtext="This month"
+            icon={<TrendingUp className="h-4 w-4" />}
+          />
+          <StatCard
+            label="Max Transaction"
+            value={formatCurrency(stats.maxTransaction)}
+            valueColor="amber"
+            subtext="This month"
+            icon={<DollarSign className="h-4 w-4" />}
+          />
         </div>
 
         {/* Charts */}

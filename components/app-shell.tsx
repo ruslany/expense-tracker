@@ -7,7 +7,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="hidden w-64 border-r bg-card lg:block">
+      <aside className="hidden w-52 border-r bg-card lg:block">
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b px-6">
             <h1 className="text-xl font-bold">Expense Tracker</h1>
