@@ -70,7 +70,7 @@ export async function TransactionsTable({
                 <span
                   className={cn(
                     'font-semibold',
-                    transaction.amount < 0 ? 'text-destructive' : 'text-green-600',
+                    transaction.amount < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400',
                   )}
                 >
                   {transaction.amount < 0 ? '' : '+'}
@@ -157,7 +157,7 @@ export async function TransactionsTable({
                   <span
                     className={cn(
                       'font-medium',
-                      transaction.amount < 0 ? 'text-destructive' : 'text-green-600',
+                      transaction.amount < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400',
                     )}
                   >
                     {transaction.amount < 0 ? '' : '+'}
