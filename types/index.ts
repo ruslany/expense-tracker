@@ -64,3 +64,29 @@ export interface PaginatedResponse<T> {
   pageSize: number;
   totalPages: number;
 }
+
+export type FundType = 'etf' | 'mutual_fund' | 'stock';
+
+export interface MarketQuote {
+  symbol: string;
+  name: string;
+  price: number;
+  changePercent: number;
+  ytdReturn: number | null;
+  fiftyTwoWeekHigh: number;
+  fiftyTwoWeekLow: number;
+  lastTradeTime: Date | null;
+}
+
+export interface WatchlistEntry {
+  id: string;
+  symbol: string;
+  name: string;
+  fundType: FundType;
+  price: number | null;
+  changePercent: number | null;
+  ytdReturn: number | null;
+  fiftyTwoWeekHigh: number | null;
+  fiftyTwoWeekLow: number | null;
+  lastTradeTime: Date | null;
+}

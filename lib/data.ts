@@ -1,5 +1,6 @@
 import { getPrisma } from './prisma';
 import type { TransactionWhereInput } from './generated/prisma/models/Transaction';
+import type { FundType } from '@/types';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -281,5 +282,23 @@ export async function fetchAccountsWithTransactionCount() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch accounts.');
+  }
+}
+
+export async function fetchWatchlistItems() {
+  try {
+    const prisma = await getPrisma();
+    const items = await prisma.watchlistItem.findMany({
+      orderBy: { symbol: 'asc' },
+    });
+    return items.map((item) => ({
+      id: item.id,
+      symbol: item.symbol,
+      name: item.name,
+      fundType: item.fundType as FundType,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch watchlist items.');
   }
 }
