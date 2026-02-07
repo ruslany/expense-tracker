@@ -65,4 +65,5 @@ jobs:
           az containerapp revision copy \
             --name ${{ env.APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --image docker.io/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }}
+            --image docker.io/${{ env.IMAGE_NAME }}:${{ steps.sha.outputs.short }} \
+            --output none
