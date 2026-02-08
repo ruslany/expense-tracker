@@ -182,7 +182,9 @@ export function CSVUploader() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Description:</span>
-                  <span className="font-medium truncate ml-2 max-w-[60%] text-right">{tx.description}</span>
+                  <span className="font-medium truncate ml-2 max-w-[60%] text-right">
+                    {tx.description}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Category:</span>
@@ -332,7 +334,9 @@ export function CSVUploader() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Description:</span>
-                  <span className="font-medium truncate ml-2 max-w-[60%] text-right">{tx.description}</span>
+                  <span className="font-medium truncate ml-2 max-w-[60%] text-right">
+                    {tx.description}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Category:</span>

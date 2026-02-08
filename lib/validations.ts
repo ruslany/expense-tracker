@@ -81,7 +81,11 @@ export const categoryUpdateSchema = z.object({
 });
 
 export const watchlistItemSchema = z.object({
-  symbol: z.string().min(1, 'Symbol is required').max(10).transform(s => s.toUpperCase()),
+  symbol: z
+    .string()
+    .min(1, 'Symbol is required')
+    .max(10)
+    .transform((s) => s.toUpperCase()),
   name: z.string().min(1, 'Name is required'),
   fundType: z.enum(['etf', 'mutual_fund', 'stock']),
 });

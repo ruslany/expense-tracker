@@ -51,7 +51,11 @@ function formatTime(date: Date | null): string {
 function ChangeText({ value }: { value: number | null }) {
   if (value === null) return <span className="text-muted-foreground">—</span>;
   return (
-    <span className={value >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+    <span
+      className={
+        value >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+      }
+    >
       {formatPercent(value)}
     </span>
   );
@@ -175,9 +179,7 @@ export function WatchlistTable({ entries }: WatchlistTableProps) {
                           <div className="font-medium">{entry.symbol}</div>
                           <div className="text-xs text-muted-foreground">{entry.name}</div>
                         </TableCell>
-                        <TableCell>
-                          {FUND_TYPE_LABELS[entry.fundType] || entry.fundType}
-                        </TableCell>
+                        <TableCell>{FUND_TYPE_LABELS[entry.fundType] || entry.fundType}</TableCell>
                         <TableCell className="text-right font-medium">
                           {formatPrice(entry.price)}
                         </TableCell>
