@@ -12,7 +12,7 @@ async function getImportHistory() {
   const prisma = await getPrisma();
   const history = await prisma.importHistory.findMany({
     orderBy: { importedAt: 'desc' },
-    take: 50,
+    take: 10,
   });
   return history;
 }

@@ -17,7 +17,10 @@ export async function fetchMarketQuotes(symbols: string[]): Promise<MarketQuote[
 
   const cacheKey = symbols.sort().join(',');
   if (cache && cache.timestamp > Date.now() - CACHE_TTL_MS) {
-    const cachedSymbols = cache.data.map(q => q.symbol).sort().join(',');
+    const cachedSymbols = cache.data
+      .map((q) => q.symbol)
+      .sort()
+      .join(',');
     if (cachedSymbols === cacheKey) {
       return cache.data;
     }
@@ -72,12 +75,22 @@ export async function searchSymbols(query: string): Promise<SearchResult[]> {
     return (result.quotes || [])
       .filter((q: { isYahooFinance?: boolean }) => q.isYahooFinance)
       .slice(0, 10)
-      .map((q: { symbol: string; shortname?: string; longname?: string; typeDisp?: string; quoteType?: string; exchDisp?: string; exchange?: string }) => ({
-        symbol: q.symbol,
-        name: q.shortname || q.longname || q.symbol,
-        type: q.typeDisp || q.quoteType || 'Unknown',
-        exchange: q.exchDisp || q.exchange || '',
-      }));
+      .map(
+        (q: {
+          symbol: string;
+          shortname?: string;
+          longname?: string;
+          typeDisp?: string;
+          quoteType?: string;
+          exchDisp?: string;
+          exchange?: string;
+        }) => ({
+          symbol: q.symbol,
+          name: q.shortname || q.longname || q.symbol,
+          type: q.typeDisp || q.quoteType || 'Unknown',
+          exchange: q.exchDisp || q.exchange || '',
+        }),
+      );
   } catch (error) {
     console.error('Failed to search symbols:', error);
     return [];

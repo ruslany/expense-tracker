@@ -147,9 +147,7 @@ export function AddWatchlistDialog({ open, onOpenChange }: AddWatchlistDialogPro
             )}
 
             {!isSearching && results.length === 0 && query.length > 0 && (
-              <div className="py-4 text-center text-sm text-muted-foreground">
-                No results found
-              </div>
+              <div className="py-4 text-center text-sm text-muted-foreground">No results found</div>
             )}
 
             {!isSearching &&
