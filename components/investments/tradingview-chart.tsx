@@ -38,7 +38,7 @@ function TradingViewChartInner() {
       symbol: 'FOREXCOM:SPXUSD',
       interval: 'D',
       theme: resolvedTheme,
-      style: '2',
+      style: '1',
       locale: 'en',
       allow_symbol_change: true,
       hide_side_toolbar: false,
