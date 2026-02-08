@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatInTimeZone } from 'date-fns-tz';
+import { toast } from 'sonner';
 import { Upload, FileText, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -47,7 +48,7 @@ export function CSVUploader() {
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [preview, setPreview] = useState<Record<string, string>[] | null>(null);
+  const [preview, setPreview] = useState<RecentTransaction[] | null>(null);
   const [cutoffDate, setCutoffDate] = useState<Date | undefined>(undefined);
   const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
 
@@ -135,13 +136,14 @@ export function CSVUploader() {
       if (response.ok) {
         const data = await response.json();
         setPreview(data.preview);
+        toast.success(`Imported ${data.imported} transaction${data.imported === 1 ? '' : 's'}`);
         router.refresh();
       } else {
-        // Handle error
-        console.error('Upload failed');
+        toast.error('Upload failed');
       }
     } catch (error) {
       console.error('Error uploading file:', error);
+      toast.error('Error uploading file');
     } finally {
       setIsUploading(false);
     }
@@ -170,7 +172,32 @@ export function CSVUploader() {
       {recentTransactions.length > 0 && (
         <div className="space-y-2">
           <Label>Recent Transactions</Label>
-          <div className="rounded-md border">
+          {/* Mobile Card View */}
+          <div className="space-y-3 md:hidden">
+            {recentTransactions.map((tx) => (
+              <div key={tx.id} className="rounded-lg border p-3 space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Date:</span>
+                  <span className="font-medium">{formatDate(tx.date)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Description:</span>
+                  <span className="font-medium truncate ml-2 max-w-[60%] text-right">{tx.description}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Category:</span>
+                  <span className="font-medium">{tx.category?.name ?? '—'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Amount:</span>
+                  <span className="font-medium">${Math.abs(tx.amount).toFixed(2)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -290,43 +317,55 @@ export function CSVUploader() {
         {isUploading ? 'Uploading...' : 'Upload and Import'}
       </Button>
 
-      {/* Preview */}
+      {/* Imported Transactions Preview */}
       {preview && preview.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-medium">Preview (first 5 rows)</h3>
+          <h3 className="text-sm font-medium">Imported Transactions</h3>
 
           {/* Mobile Card View */}
           <div className="space-y-3 md:hidden">
-            {preview.map((row, idx) => (
-              <div key={idx} className="rounded-lg border p-3 space-y-1">
-                {Object.entries(row).map(([key, value]) => (
-                  <div key={key} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{key}:</span>
-                    <span className="font-medium truncate ml-2 max-w-[60%] text-right">
-                      {value}
-                    </span>
-                  </div>
-                ))}
+            {preview.map((tx) => (
+              <div key={tx.id} className="rounded-lg border p-3 space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Date:</span>
+                  <span className="font-medium">{formatDate(tx.date)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Description:</span>
+                  <span className="font-medium truncate ml-2 max-w-[60%] text-right">{tx.description}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Category:</span>
+                  <span className="font-medium">{tx.category?.name ?? '—'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Amount:</span>
+                  <span className="font-medium">${Math.abs(tx.amount).toFixed(2)}</span>
+                </div>
               </div>
             ))}
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden md:block rounded-md border overflow-x-auto">
+          <div className="hidden md:block rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  {Object.keys(preview[0]).map((header) => (
-                    <TableHead key={header}>{header}</TableHead>
-                  ))}
+                  <TableHead>Date</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {preview.map((row, idx) => (
-                  <TableRow key={idx}>
-                    {Object.values(row).map((value, cellIdx) => (
-                      <TableCell key={cellIdx}>{value}</TableCell>
-                    ))}
+                {preview.map((tx) => (
+                  <TableRow key={tx.id}>
+                    <TableCell className="whitespace-nowrap">{formatDate(tx.date)}</TableCell>
+                    <TableCell className="max-w-[200px] truncate">{tx.description}</TableCell>
+                    <TableCell>{tx.category?.name ?? '—'}</TableCell>
+                    <TableCell className="text-right whitespace-nowrap">
+                      ${Math.abs(tx.amount).toFixed(2)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrisma } from '@/lib/prisma';
-import { parseCSVFile, previewCSV, defaultMappings, detectCategory } from '@/lib/csv-parser';
+import { parseCSVFile, defaultMappings, detectCategory } from '@/lib/csv-parser';
 import { computeContentHash } from '@/lib/utils';
 import type { CSVFieldMapping, Institution, ParsedTransaction } from '@/types';
 import type { Prisma } from '@/lib/generated/prisma/client';
@@ -65,7 +65,6 @@ export async function POST(request: NextRequest) {
     };
 
     const parsedTransactions = parseCSVFile(fileContent, config);
-    const preview = previewCSV(fileContent, 5);
 
     // Apply cutoff date filter
     let filteredTransactions = parsedTransactions;
@@ -181,6 +180,19 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Query back up to 5 of the just-imported transactions for preview
+      const preview = await prisma.transaction.findMany({
+        where: {
+          accountId,
+          importedAt: now,
+        },
+        include: {
+          category: { select: { name: true } },
+        },
+        orderBy: { date: 'desc' },
+        take: 5,
+      });
+
       return NextResponse.json({
         success: true,
         imported: importedCount,
@@ -191,10 +203,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Just return preview if no accountId
+    // Just return parsed count if no accountId (no import happened)
     return NextResponse.json({
       success: true,
-      preview,
+      preview: [],
       parsedCount: parsedTransactions.length,
     });
   } catch (error) {
