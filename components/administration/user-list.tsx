@@ -253,8 +253,6 @@ export function UserList({ users }: UserListProps) {
     setDeleteDialogOpen(true);
   };
 
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.toLowerCase();
-
   return (
     <>
       <Card>
@@ -333,14 +331,7 @@ export function UserList({ users }: UserListProps) {
                     {users.map((user) => (
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            {user.email}
-                            {adminEmail && user.email === adminEmail && (
-                              <Badge variant="outline" className="text-[10px]">
-                                Primary
-                              </Badge>
-                            )}
-                          </div>
+                          {user.email}
                         </TableCell>
                         <TableCell>
                           <RoleBadge role={user.role} />
