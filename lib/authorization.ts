@@ -6,9 +6,7 @@ export function isAdmin(session: Session): boolean {
   return session.user?.role === 'admin';
 }
 
-export async function requireAuth(): Promise<
-  { session: Session } | { response: NextResponse }
-> {
+export async function requireAuth(): Promise<{ session: Session } | { response: NextResponse }> {
   const session = await auth();
   if (!session?.user) {
     return { response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -16,9 +14,7 @@ export async function requireAuth(): Promise<
   return { session };
 }
 
-export async function requireAdmin(): Promise<
-  { session: Session } | { response: NextResponse }
-> {
+export async function requireAdmin(): Promise<{ session: Session } | { response: NextResponse }> {
   const result = await requireAuth();
   if ('response' in result) {
     return result;

@@ -330,9 +330,7 @@ export function UserList({ users }: UserListProps) {
                   <TableBody>
                     {users.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell className="font-medium">
-                          {user.email}
-                        </TableCell>
+                        <TableCell className="font-medium">{user.email}</TableCell>
                         <TableCell>
                           <RoleBadge role={user.role} />
                         </TableCell>
@@ -350,10 +348,7 @@ export function UserList({ users }: UserListProps) {
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
                                 onClick={() =>
-                                  handleChangeRole(
-                                    user,
-                                    user.role === 'admin' ? 'reader' : 'admin',
-                                  )
+                                  handleChangeRole(user, user.role === 'admin' ? 'reader' : 'admin')
                                 }
                               >
                                 <Shield />

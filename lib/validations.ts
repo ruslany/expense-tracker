@@ -81,7 +81,10 @@ export const categoryUpdateSchema = z.object({
 });
 
 export const userRoleCreateSchema = z.object({
-  email: z.string().email('Valid email is required').transform((s) => s.toLowerCase()),
+  email: z
+    .string()
+    .email('Valid email is required')
+    .transform((s) => s.toLowerCase()),
   role: z.enum(['admin', 'reader']).default('reader'),
 });
 

@@ -3,10 +3,7 @@ import { getPrisma } from '@/lib/prisma';
 import { userRoleUpdateSchema } from '@/lib/validations';
 import { requireAdmin } from '@/lib/authorization';
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireAdmin();
   if ('response' in authResult) return authResult.response;
 
@@ -34,10 +31,7 @@ export async function PATCH(
     if (user.role === 'admin' && validated.role !== 'admin') {
       const adminCount = await prisma.userRole.count({ where: { role: 'admin' } });
       if (adminCount <= 1) {
-        return NextResponse.json(
-          { error: 'Cannot demote the last admin' },
-          { status: 400 },
-        );
+        return NextResponse.json({ error: 'Cannot demote the last admin' }, { status: 400 });
       }
     }
 
@@ -72,20 +66,14 @@ export async function DELETE(
     // Prevent deleting the ADMIN_EMAIL user
     const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
     if (adminEmail && user.email === adminEmail) {
-      return NextResponse.json(
-        { error: 'Cannot delete the primary admin' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Cannot delete the primary admin' }, { status: 400 });
     }
 
     // Prevent deleting the last admin
     if (user.role === 'admin') {
       const adminCount = await prisma.userRole.count({ where: { role: 'admin' } });
       if (adminCount <= 1) {
-        return NextResponse.json(
-          { error: 'Cannot delete the last admin' },
-          { status: 400 },
-        );
+        return NextResponse.json({ error: 'Cannot delete the last admin' }, { status: 400 });
       }
     }
 
