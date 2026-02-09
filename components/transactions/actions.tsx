@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,8 +35,13 @@ export function TransactionActions({
   categoryId,
   categories,
 }: TransactionActionsProps) {
+  const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  if (session?.user?.role !== 'admin') {
+    return null;
+  }
 
   return (
     <>

@@ -22,6 +22,9 @@ param postgresServerFqdn string
 @description('Name of the PostgreSQL database')
 param postgresDatabaseName string
 
+@description('Admin email address')
+param adminEmail string
+
 @description('Auth.js base URL for OAuth redirects')
 param authUrl string
 
@@ -86,11 +89,6 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
           keyVaultUrl: '${keyVaultUri}secrets/auth-google-secret'
           identity: managedIdentity.id
         }
-        {
-          name: 'allowed-emails'
-          keyVaultUrl: '${keyVaultUri}secrets/allowed-emails'
-          identity: managedIdentity.id
-        }
       ]
     }
     template: {
@@ -124,8 +122,8 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               secretRef: 'auth-google-secret'
             }
             {
-              name: 'ALLOWED_EMAILS'
-              secretRef: 'allowed-emails'
+              name: 'ADMIN_EMAIL'
+              value: adminEmail
             }
             {
               name: 'AUTH_TRUST_HOST'

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchSymbols } from '@/lib/market-data';
+import { requireAuth } from '@/lib/authorization';
 
 export async function GET(request: NextRequest) {
+  const authResult = await requireAuth();
+  if ('response' in authResult) return authResult.response;
+
   const q = request.nextUrl.searchParams.get('q');
 
   if (!q || q.length < 1) {

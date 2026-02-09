@@ -72,7 +72,7 @@ jobs:
             --parameters authSecret='${{ secrets.AUTH_SECRET }}' \
             --parameters authGoogleId='${{ secrets.AUTH_GOOGLE_ID }}' \
             --parameters authGoogleSecret='${{ secrets.AUTH_GOOGLE_SECRET }}' \
-            --parameters allowedEmails='${{ secrets.ALLOWED_EMAILS }}' \
+            --parameters adminEmail='${{ secrets.ADMIN_EMAIL }}' \
             --parameters authUrl='${{ secrets.AUTH_URL }}' \
             --parameters postgresAllowedIpAddresses='${{ secrets.POSTGRES_ALLOWED_IPS }}' \
             --parameters customDomainName='${{ secrets.CUSTOM_DOMAIN_NAME }}' \

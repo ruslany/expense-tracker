@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { PlusIcon, XIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -25,6 +26,8 @@ interface TagsCellProps {
 }
 
 export function TagsCell({ transactionId, tags, allTags }: TagsCellProps) {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'admin';
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -120,6 +123,18 @@ export function TagsCell({ transactionId, tags, allTags }: TagsCellProps) {
   const inputMatchesExisting = availableTags.some(
     (tag) => tag.name.toLowerCase() === inputValue.trim().toLowerCase(),
   );
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-wrap items-center gap-1">
+        {localTags.map((tag) => (
+          <Badge key={tag.id} variant="secondary" className="text-xs">
+            {tag.name}
+          </Badge>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-1">

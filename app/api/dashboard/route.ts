@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/authorization';
 
 function getUTCMonthRange(date: Date) {
   const startDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
@@ -10,6 +11,9 @@ function getUTCMonthRange(date: Date) {
 }
 
 export async function GET(request: NextRequest) {
+  const authResult = await requireAuth();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const searchParams = request.nextUrl.searchParams;

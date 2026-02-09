@@ -16,9 +16,8 @@ param authGoogleId string
 @secure()
 param authGoogleSecret string
 
-@description('Comma-separated list of allowed emails')
-@secure()
-param allowedEmails string = ''
+@description('Admin email address (bootstraps the first admin user)')
+param adminEmail string
 
 @description('Auth.js base URL for OAuth redirects')
 param authUrl string
@@ -82,7 +81,6 @@ module keyVaultSecrets 'modules/key-vault-secrets.bicep' = {
       'auth-secret': authSecret
       'auth-google-id': authGoogleId
       'auth-google-secret': authGoogleSecret
-      'allowed-emails': allowedEmails
     }
   }
 }
@@ -109,6 +107,7 @@ module containerApp 'modules/container-app.bicep' = {
     keyVaultUri: keyVault.outputs.uri
     postgresServerFqdn: postgresql.outputs.fqdn
     postgresDatabaseName: postgresql.outputs.databaseName
+    adminEmail: adminEmail
     authUrl: authUrl
     tags: tags
     customDomainName: customDomainName

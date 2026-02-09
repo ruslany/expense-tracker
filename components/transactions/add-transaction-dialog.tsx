@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { formatInTimeZone } from 'date-fns-tz';
 import { CalendarIcon, Plus } from 'lucide-react';
@@ -216,7 +217,12 @@ interface AddTransactionButtonProps {
 }
 
 export function AddTransactionButton({ accounts, categories }: AddTransactionButtonProps) {
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+
+  if (session?.user?.role !== 'admin') {
+    return null;
+  }
 
   return (
     <>

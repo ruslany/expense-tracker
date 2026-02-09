@@ -1,10 +1,11 @@
 'use client';
 
-import { Wallet, Tags, Tag } from 'lucide-react';
+import { Wallet, Tags, Tag, Users } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AccountList } from '@/components/accounts/account-list';
 import { CategoryList } from '@/components/categories/category-list';
 import { TagList } from '@/components/tags/tag-list';
+import { UserList } from '@/components/administration/user-list';
 
 interface Account {
   id: string;
@@ -28,13 +29,21 @@ interface Tag {
   transactionCount: number;
 }
 
+interface User {
+  id: string;
+  email: string;
+  role: string;
+  createdAt: Date;
+}
+
 interface AdministrationTabsProps {
   accounts: Account[];
   categories: Category[];
   tags: Tag[];
+  users: User[];
 }
 
-export function AdministrationTabs({ accounts, categories, tags }: AdministrationTabsProps) {
+export function AdministrationTabs({ accounts, categories, tags, users }: AdministrationTabsProps) {
   return (
     <Tabs defaultValue="accounts">
       <TabsList>
@@ -50,6 +59,10 @@ export function AdministrationTabs({ accounts, categories, tags }: Administratio
           <Tag />
           Tags
         </TabsTrigger>
+        <TabsTrigger value="users">
+          <Users />
+          Users
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="accounts">
         <AccountList accounts={accounts} />
@@ -59,6 +72,9 @@ export function AdministrationTabs({ accounts, categories, tags }: Administratio
       </TabsContent>
       <TabsContent value="tags">
         <TagList tags={tags} />
+      </TabsContent>
+      <TabsContent value="users">
+        <UserList users={users} />
       </TabsContent>
     </Tabs>
   );
