@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { MoreHorizontal, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
@@ -66,6 +67,8 @@ interface WatchlistTableProps {
 }
 
 export function WatchlistTable({ entries }: WatchlistTableProps) {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'admin';
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WatchlistEntry | null>(null);
@@ -80,12 +83,14 @@ export function WatchlistTable({ entries }: WatchlistTableProps) {
       <Card>
         <CardHeader>
           <CardTitle>Watchlist</CardTitle>
-          <CardAction>
-            <Button onClick={() => setAddDialogOpen(true)}>
-              <Plus />
-              Add Fund
-            </Button>
-          </CardAction>
+          {isAdmin && (
+            <CardAction>
+              <Button onClick={() => setAddDialogOpen(true)}>
+                <Plus />
+                Add Fund
+              </Button>
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
@@ -104,23 +109,25 @@ export function WatchlistTable({ entries }: WatchlistTableProps) {
                           <div className="font-medium">{entry.symbol}</div>
                           <div className="text-xs text-muted-foreground">{entry.name}</div>
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon-xs">
-                              <MoreHorizontal className="size-4" />
-                              <span className="sr-only">Open menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              variant="destructive"
-                              onClick={() => handleRemove(entry)}
-                            >
-                              <Trash2 />
-                              Remove
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {isAdmin && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon-xs">
+                                <MoreHorizontal className="size-4" />
+                                <span className="sr-only">Open menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => handleRemove(entry)}
+                              >
+                                <Trash2 />
+                                Remove
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
@@ -198,25 +205,27 @@ export function WatchlistTable({ entries }: WatchlistTableProps) {
                         <TableCell className="text-right text-sm text-muted-foreground">
                           {formatTime(entry.lastTradeTime)}
                         </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon-xs">
-                                <MoreHorizontal className="size-4" />
-                                <span className="sr-only">Open menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                variant="destructive"
-                                onClick={() => handleRemove(entry)}
-                              >
-                                <Trash2 />
-                                Remove
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
+                        {isAdmin && (
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon-xs">
+                                  <MoreHorizontal className="size-4" />
+                                  <span className="sr-only">Open menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  variant="destructive"
+                                  onClick={() => handleRemove(entry)}
+                                >
+                                  <Trash2 />
+                                  Remove
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>

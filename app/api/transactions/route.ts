@@ -5,8 +5,12 @@ import { transactionFilterSchema, manualTransactionCreateSchema } from '@/lib/va
 import { computeContentHash } from '@/lib/utils';
 import type { Prisma } from '@/lib/generated/prisma/client';
 import { z } from 'zod';
+import { requireAuth, requireAdmin } from '@/lib/authorization';
 
 export async function GET(request: NextRequest) {
+  const authResult = await requireAuth();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const searchParams = request.nextUrl.searchParams;
@@ -100,6 +104,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAdmin();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const body = await request.json();

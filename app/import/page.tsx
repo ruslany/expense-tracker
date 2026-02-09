@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CSVUploader } from '@/components/csv-uploader';
@@ -18,6 +20,11 @@ async function getImportHistory() {
 }
 
 export default async function ImportPage() {
+  const session = await auth();
+  if (!session?.user || session.user.role !== 'admin') {
+    redirect('/');
+  }
+
   const history = await getImportHistory();
   return (
     <AppShell>

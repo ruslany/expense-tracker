@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import {
   Combobox,
   ComboboxInput,
@@ -29,6 +30,8 @@ export function CategoryCell({
   categoryName,
   categories,
 }: CategoryCellProps) {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'admin';
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -71,6 +74,19 @@ export function CategoryCell({
   };
 
   if (!isOpen) {
+    if (!isAdmin) {
+      return (
+        <span
+          className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+          style={{
+            backgroundColor: categoryName ? 'hsl(var(--secondary))' : 'transparent',
+            color: categoryName ? 'inherit' : 'hsl(var(--muted-foreground))',
+          }}
+        >
+          {categoryName || 'Uncategorized'}
+        </span>
+      );
+    }
     return (
       <button
         onClick={() => {

@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrisma } from '@/lib/prisma';
 import { watchlistItemSchema } from '@/lib/validations';
+import { requireAuth, requireAdmin } from '@/lib/authorization';
 
 export async function GET() {
+  const authResult = await requireAuth();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const items = await prisma.watchlistItem.findMany({
@@ -17,6 +21,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAdmin();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const body = await request.json();

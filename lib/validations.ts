@@ -80,6 +80,15 @@ export const categoryUpdateSchema = z.object({
   keywords: z.array(z.string()).optional(),
 });
 
+export const userRoleCreateSchema = z.object({
+  email: z.string().email('Valid email is required').transform((s) => s.toLowerCase()),
+  role: z.enum(['admin', 'reader']).default('reader'),
+});
+
+export const userRoleUpdateSchema = z.object({
+  role: z.enum(['admin', 'reader']),
+});
+
 export const watchlistItemSchema = z.object({
   symbol: z
     .string()

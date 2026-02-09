@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { requireAdmin } from '@/lib/authorization';
 
 const tagUpdateSchema = z.object({
   isBigExpense: z.boolean().optional(),
@@ -8,6 +9,9 @@ const tagUpdateSchema = z.object({
 });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requireAdmin();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const { id } = await params;
@@ -35,6 +39,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const authResult = await requireAdmin();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const { id } = await params;

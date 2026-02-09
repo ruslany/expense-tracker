@@ -302,3 +302,21 @@ export async function fetchWatchlistItems() {
     throw new Error('Failed to fetch watchlist items.');
   }
 }
+
+export async function fetchUsers() {
+  try {
+    const prisma = await getPrisma();
+    const users = await prisma.userRole.findMany({
+      orderBy: { createdAt: 'asc' },
+    });
+    return users.map((u) => ({
+      id: u.id,
+      email: u.email,
+      role: u.role,
+      createdAt: u.createdAt,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch users.');
+  }
+}

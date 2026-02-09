@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,10 @@ import { navItems } from './nav-items';
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'admin';
+
+  const visibleItems = navItems.filter((item) => !item.requireAdmin || isAdmin);
 
   return (
     <div className="lg:hidden">
@@ -30,7 +35,7 @@ export function MobileNav() {
             <SheetTitle>Expense Tracker</SheetTitle>
           </SheetHeader>
           <nav className="mt-4 space-y-1 px-2">
-            {navItems.map((item) => {
+            {visibleItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
 

@@ -102,3 +102,11 @@ model WatchlistItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model UserRole {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      String   @default("reader") // "admin" | "reader"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

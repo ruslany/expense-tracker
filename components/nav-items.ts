@@ -14,6 +14,7 @@ export interface NavItem {
   title: string;
   href: string;
   icon: LucideIcon;
+  requireAdmin?: boolean;
 }
 
 export const navItems: NavItem[] = [
@@ -51,10 +52,12 @@ export const navItems: NavItem[] = [
     title: 'Import',
     href: '/import',
     icon: Upload,
+    requireAdmin: true,
   },
   {
     title: 'Administration',
     href: '/administration',
     icon: Settings,
+    requireAdmin: true,
   },
 ];

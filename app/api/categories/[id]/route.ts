@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrisma } from '@/lib/prisma';
 import { categoryUpdateSchema } from '@/lib/validations';
+import { requireAdmin } from '@/lib/authorization';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await requireAdmin();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const { id } = await params;
@@ -55,6 +59,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const authResult = await requireAdmin();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const { id } = await params;

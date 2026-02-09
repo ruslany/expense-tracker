@@ -4,6 +4,7 @@ import { parseCSVFile, defaultMappings, detectCategory } from '@/lib/csv-parser'
 import { computeContentHash } from '@/lib/utils';
 import type { CSVFieldMapping, Institution, ParsedTransaction } from '@/types';
 import type { Prisma } from '@/lib/generated/prisma/client';
+import { requireAdmin } from '@/lib/authorization';
 
 function computeSequencedHashes(transactions: ParsedTransaction[]): string[] {
   const baseHashCounts = new Map<string, number>();
@@ -17,6 +18,9 @@ function computeSequencedHashes(transactions: ParsedTransaction[]): string[] {
 }
 
 export async function POST(request: NextRequest) {
+  const authResult = await requireAdmin();
+  if ('response' in authResult) return authResult.response;
+
   try {
     const prisma = await getPrisma();
     const formData = await request.formData();
