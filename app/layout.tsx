@@ -13,12 +13,28 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const siteUrl = process.env.AUTH_URL || undefined;
+
 export const metadata: Metadata = {
+  ...(siteUrl && { metadataBase: new URL(siteUrl) }),
   title: {
     default: 'Expense Tracker',
     template: '%s | Expense Tracker',
   },
   description: 'Personal expense tracking and management application',
+  openGraph: {
+    title: 'Expense Tracker',
+    description: 'Personal expense tracking and management application',
+    ...(siteUrl && { url: siteUrl }),
+    siteName: 'Expense Tracker',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Expense Tracker',
+    description: 'Personal expense tracking and management application',
+  },
 };
 
 export default function RootLayout({
