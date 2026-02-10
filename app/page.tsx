@@ -94,7 +94,7 @@ async function getCategorySpendingTable(year: number, month: number) {
   // Group by category with net totals (expenses - credits), count, and max expense
   const categoryMap = new Map<
     string,
-    { expenses: number; credits: number; count: number; maxExpense: number }
+    { id: string | null; expenses: number; credits: number; count: number; maxExpense: number }
   >();
 
   for (const t of transactions) {
@@ -111,6 +111,7 @@ async function getCategorySpendingTable(year: number, month: number) {
       existing.count += 1;
     } else {
       categoryMap.set(categoryName, {
+        id: t.category?.id ?? null,
         expenses: t.amount < 0 ? Math.abs(t.amount) : 0,
         credits: t.amount > 0 ? t.amount : 0,
         count: 1,
@@ -134,6 +135,7 @@ async function getCategorySpendingTable(year: number, month: number) {
     .map(([name, stats]) => {
       const netSpending = stats.expenses - stats.credits;
       return {
+        id: stats.id,
         name,
         totalExpenses: Math.round(netSpending * 100) / 100,
         percent: grandTotal > 0 ? (netSpending / grandTotal) * 100 : 0,
@@ -277,6 +279,8 @@ export default async function Dashboard({ searchParams }: PageProps) {
           grandTotal={categorySpendingTable.grandTotal}
           totalCount={categorySpendingTable.totalCount}
           overallMaxTransaction={categorySpendingTable.overallMaxTransaction}
+          year={currentYear}
+          month={currentMonth}
         />
       </div>
     </AppShell>

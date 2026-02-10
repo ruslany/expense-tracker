@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -13,6 +14,7 @@ import {
 import { formatCurrency } from '@/lib/utils';
 
 interface CategorySpending {
+  id: string | null;
   name: string;
   totalExpenses: number;
   percent: number;
@@ -25,6 +27,8 @@ interface SpendingByCategoryTableProps {
   grandTotal: number;
   totalCount: number;
   overallMaxTransaction: number;
+  year: number;
+  month: number;
 }
 
 export function SpendingByCategoryTable({
@@ -32,8 +36,17 @@ export function SpendingByCategoryTable({
   grandTotal,
   totalCount,
   overallMaxTransaction,
+  year,
+  month,
 }: SpendingByCategoryTableProps) {
   const maxExpense = Math.max(...data.map((d) => d.totalExpenses), 1);
+
+  function getCategoryHref(row: CategorySpending) {
+    const startDate = new Date(Date.UTC(year, month, 1)).toISOString().split('T')[0];
+    const endDate = new Date(Date.UTC(year, month + 1, 0)).toISOString().split('T')[0];
+    const categoryId = row.id ?? 'uncategorized';
+    return `/transactions?categoryId=${categoryId}&startDate=${startDate}&endDate=${endDate}`;
+  }
 
   return (
     <Card>
@@ -46,7 +59,9 @@ export function SpendingByCategoryTable({
           {data.map((row) => (
             <div key={row.name} className="border rounded-lg p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-medium">{row.name}</span>
+                <Link href={getCategoryHref(row)} className="font-medium hover:underline">
+                  {row.name}
+                </Link>
                 <span className="font-semibold">{formatCurrency(row.totalExpenses)}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -94,7 +109,11 @@ export function SpendingByCategoryTable({
             <TableBody>
               {data.map((row) => (
                 <TableRow key={row.name}>
-                  <TableCell className="font-medium">{row.name}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link href={getCategoryHref(row)} className="hover:underline">
+                      {row.name}
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       <div className="w-24 h-4 bg-muted rounded-sm overflow-hidden">
