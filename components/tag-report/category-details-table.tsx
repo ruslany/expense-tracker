@@ -26,6 +26,7 @@ interface CategoryDetailsTableProps {
   grandTotal: number;
   totalCount: number;
   overallMaxTransaction: number;
+  tagId?: string;
   startDate?: string;
   endDate?: string;
 }
@@ -35,12 +36,14 @@ export function CategoryDetailsTable({
   grandTotal,
   totalCount,
   overallMaxTransaction,
+  tagId,
   startDate,
   endDate,
 }: CategoryDetailsTableProps) {
   function getCategoryHref(row: CategoryBreakdown) {
     const categoryId = row.categoryId ?? 'uncategorized';
     const params = new URLSearchParams({ categoryId });
+    if (tagId) params.set('tagId', tagId);
     if (startDate) params.set('startDate', startDate);
     if (endDate) params.set('endDate', endDate);
     return `/transactions?${params.toString()}`;
