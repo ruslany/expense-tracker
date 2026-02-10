@@ -92,8 +92,9 @@ async function getSpendingTrends(
     where: {
       ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
       ...(categoryId ? { categoryId } : {}),
-      // Only include expenses (negative amounts)
-      amount: { lt: 0 },
+      // Include expenses (negative amounts) and refunds (positive amounts)
+      // so that refunds reduce the period total
+      amount: { not: 0 },
     },
     select: { date: true, amount: true },
     orderBy: { date: 'asc' },
