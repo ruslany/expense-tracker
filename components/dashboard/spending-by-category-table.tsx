@@ -45,7 +45,8 @@ export function SpendingByCategoryTable({
     const startDate = new Date(Date.UTC(year, month, 1)).toISOString().split('T')[0];
     const endDate = new Date(Date.UTC(year, month + 1, 0)).toISOString().split('T')[0];
     const categoryId = row.id ?? 'uncategorized';
-    return `/transactions?categoryId=${categoryId}&startDate=${startDate}&endDate=${endDate}`;
+    const params = new URLSearchParams({ categoryId, startDate, endDate });
+    return `/transactions?${params.toString()}`;
   }
 
   return (

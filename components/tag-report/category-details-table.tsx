@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import {
 import { formatCurrency } from '@/lib/utils';
 
 interface CategoryBreakdown {
+  categoryId: string | null;
   categoryName: string;
   total: number;
   percent: number;
@@ -24,6 +26,8 @@ interface CategoryDetailsTableProps {
   grandTotal: number;
   totalCount: number;
   overallMaxTransaction: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export function CategoryDetailsTable({
@@ -31,7 +35,17 @@ export function CategoryDetailsTable({
   grandTotal,
   totalCount,
   overallMaxTransaction,
+  startDate,
+  endDate,
 }: CategoryDetailsTableProps) {
+  function getCategoryHref(row: CategoryBreakdown) {
+    const categoryId = row.categoryId ?? 'uncategorized';
+    const params = new URLSearchParams({ categoryId });
+    if (startDate) params.set('startDate', startDate);
+    if (endDate) params.set('endDate', endDate);
+    return `/transactions?${params.toString()}`;
+  }
+
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -47,7 +61,7 @@ export function CategoryDetailsTable({
         {data.map((row) => (
           <div key={row.categoryName} className="border rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium">{row.categoryName}</span>
+              <Link href={getCategoryHref(row)} className="font-medium hover:underline">{row.categoryName}</Link>
               <span className="font-semibold">{formatCurrency(row.total)}</span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -83,7 +97,9 @@ export function CategoryDetailsTable({
           <TableBody>
             {data.map((row) => (
               <TableRow key={row.categoryName}>
-                <TableCell className="font-medium">{row.categoryName}</TableCell>
+                <TableCell className="font-medium">
+                    <Link href={getCategoryHref(row)} className="hover:underline">{row.categoryName}</Link>
+                  </TableCell>
                 <TableCell className="text-right">{formatCurrency(row.total)}</TableCell>
                 <TableCell className="text-right">{row.count}</TableCell>
                 <TableCell className="text-right">{formatCurrency(row.maxTransaction)}</TableCell>

@@ -30,6 +30,7 @@ async function getAllTags() {
 }
 
 interface CategoryBreakdown {
+  categoryId: string | null;
   categoryName: string;
   total: number;
   percent: number;
@@ -76,7 +77,7 @@ async function getTagReport(
     include: { category: true },
   });
 
-  const categoryMap = new Map<string, { total: number; count: number; maxTransaction: number }>();
+  const categoryMap = new Map<string, { id: string | null; total: number; count: number; maxTransaction: number }>();
 
   for (const t of transactions) {
     const categoryName = t.category?.name ?? 'Uncategorized';
@@ -90,6 +91,7 @@ async function getTagReport(
       existing.maxTransaction = Math.max(existing.maxTransaction, absAmount);
     } else {
       categoryMap.set(categoryName, {
+        id: t.category?.id ?? null,
         total: netAmount,
         count: 1,
         maxTransaction: absAmount,
@@ -106,6 +108,7 @@ async function getTagReport(
 
   const data: CategoryBreakdown[] = Array.from(categoryMap.entries())
     .map(([categoryName, stats]) => ({
+      categoryId: stats.id,
       categoryName,
       total: Math.round(stats.total * 100) / 100,
       percent: grandTotal > 0 ? (stats.total / grandTotal) * 100 : 0,
@@ -181,6 +184,8 @@ export default async function TagsPage({ searchParams }: PageProps) {
                     grandTotal={report.grandTotal}
                     totalCount={report.totalCount}
                     overallMaxTransaction={report.overallMaxTransaction}
+                    startDate={params.startDate}
+                    endDate={params.endDate}
                   />
                 </CardContent>
               </Card>

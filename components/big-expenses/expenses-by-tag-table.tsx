@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -24,6 +25,7 @@ interface ExpensesByTagTableProps {
   grandTotal: number;
   totalCount: number;
   overallMaxTransaction: number;
+  year: number;
 }
 
 export function ExpensesByTagTable({
@@ -31,7 +33,15 @@ export function ExpensesByTagTable({
   grandTotal,
   totalCount,
   overallMaxTransaction,
+  year,
 }: ExpensesByTagTableProps) {
+  function getTagHref(row: TagExpense) {
+    const startDate = new Date(Date.UTC(year, 0, 1)).toISOString().split('T')[0];
+    const endDate = new Date(Date.UTC(year, 11, 31)).toISOString().split('T')[0];
+    const params = new URLSearchParams({ tagId: row.tagId, startDate, endDate });
+    return `/transactions?${params.toString()}`;
+  }
+
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -47,7 +57,7 @@ export function ExpensesByTagTable({
         {data.map((row) => (
           <div key={row.tagId} className="border rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium">{row.tagName}</span>
+              <Link href={getTagHref(row)} className="font-medium hover:underline">{row.tagName}</Link>
               <span className="font-semibold">{formatCurrency(Math.abs(row.total))}</span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -83,7 +93,9 @@ export function ExpensesByTagTable({
           <TableBody>
             {data.map((row) => (
               <TableRow key={row.tagId}>
-                <TableCell className="font-medium">{row.tagName}</TableCell>
+                <TableCell className="font-medium">
+                    <Link href={getTagHref(row)} className="hover:underline">{row.tagName}</Link>
+                  </TableCell>
                 <TableCell className="text-right">{formatCurrency(Math.abs(row.total))}</TableCell>
                 <TableCell className="text-right">{row.count}</TableCell>
                 <TableCell className="text-right">

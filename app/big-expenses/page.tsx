@@ -172,6 +172,7 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
                 grandTotal={expensesByTag.grandTotal}
                 totalCount={expensesByTag.totalCount}
                 overallMaxTransaction={expensesByTag.overallMaxTransaction}
+                year={currentYear}
               />
             </CardContent>
           </Card>
