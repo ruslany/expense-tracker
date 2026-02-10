@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { AppShell } from '@/components/app-shell';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CSVUploader } from '@/components/csv-uploader';
-import { ImportHistory } from '@/components/import-history';
+import { CSVUploader } from '@/components/import/csv-uploader';
+import { ImportHistory } from '@/components/import/import-history';
 import { getPrisma } from '@/lib/prisma';
 
 export const metadata: Metadata = { title: 'Import' };
