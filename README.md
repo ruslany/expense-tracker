@@ -145,7 +145,6 @@ expense-tracker/
 │   │   ├── upload/          # CSV upload endpoint
 │   │   ├── transactions/    # Transaction CRUD endpoints
 │   │   ├── dashboard/       # Dashboard data endpoint
-│   │   └── csv-mappings/    # CSV mapping management
 │   ├── import/              # CSV import page
 │   ├── transactions/        # Transactions list page
 │   ├── accounts/            # Accounts page
@@ -206,12 +205,6 @@ Get dashboard summary data for a specific month.
 
 **Query Parameters:**
 - `month`: (optional) Month to fetch data for (YYYY-MM format)
-
-### GET /api/csv-mappings
-List all CSV mappings.
-
-### POST /api/csv-mappings
-Create or update a CSV mapping.
 
 ## Development Scripts
 
