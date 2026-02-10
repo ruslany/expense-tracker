@@ -60,7 +60,7 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
     },
     dateFormat: 'MM/dd/yyyy',
     invertAmount: false,
-    skipPatterns: [],
+    skipPatterns: ['Ext Credit Card Credit PAYMENT - THANK YOU      BEAVERTON    OR'],
   },
   manualentry: {
     institution: 'manualentry',
