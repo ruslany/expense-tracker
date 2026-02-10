@@ -2,10 +2,10 @@
 
 import { Wallet, Tags, Tag, Users } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { AccountList } from '@/components/accounts/account-list';
-import { CategoryList } from '@/components/categories/category-list';
-import { TagList } from '@/components/tags/tag-list';
-import { UserList } from '@/components/administration/user-list';
+import { AccountList } from './account-list';
+import { CategoryList } from './category-list';
+import { TagList } from './tag-list';
+import { UserList } from './user-list';
 
 interface Account {
   id: string;
