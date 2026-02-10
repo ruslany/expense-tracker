@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
 import { DashboardCharts } from '@/components/dashboard/charts';
 import { DashboardPeriodFilter } from '@/components/dashboard/period-filter';
-import { SpendingByCategoryTable } from '@/components/spending-by-category-table';
+import { SpendingByCategoryTable } from '@/components/dashboard/spending-by-category-table';
 import { StatCard } from '@/components/stat-card';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from 'lucide-react';
