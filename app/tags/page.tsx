@@ -184,6 +184,7 @@ export default async function TagsPage({ searchParams }: PageProps) {
                     grandTotal={report.grandTotal}
                     totalCount={report.totalCount}
                     overallMaxTransaction={report.overallMaxTransaction}
+                    tagId={params.tagId}
                     startDate={params.startDate}
                     endDate={params.endDate}
                   />
