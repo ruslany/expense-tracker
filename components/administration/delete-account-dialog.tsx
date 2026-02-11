@@ -91,7 +91,6 @@ export function DeleteAccountDialog({ open, onOpenChange, account }: DeleteAccou
                   <Input
                     value={confirmationInput}
                     onChange={(e) => setConfirmationInput(e.target.value)}
-                    placeholder={account?.name}
                     autoComplete="off"
                   />
                 </div>
