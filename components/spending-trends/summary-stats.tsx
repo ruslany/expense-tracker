@@ -1,19 +1,19 @@
 import { StatCard } from '@/components/stat-card';
 import { formatCurrency } from '@/lib/utils';
-import { DollarSign, TrendingUp, Calendar, BarChart3 } from 'lucide-react';
+import { DollarSign, TrendingUp, Calendar, ArrowDownIcon } from 'lucide-react';
 
 interface SummaryStatsProps {
   totalSpent: number;
   averagePerPeriod: number;
   highestPeriod: { label: string; amount: number } | null;
-  periodsAnalyzed: number;
+  lowestPeriod: { label: string; amount: number } | null;
 }
 
 export function SummaryStats({
   totalSpent,
   averagePerPeriod,
   highestPeriod,
-  periodsAnalyzed,
+  lowestPeriod,
 }: SummaryStatsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -36,9 +36,11 @@ export function SummaryStats({
         icon={<Calendar className="h-4 w-4" />}
       />
       <StatCard
-        label="Periods Analyzed"
-        value={periodsAnalyzed}
-        icon={<BarChart3 className="h-4 w-4" />}
+        label="Lowest Period"
+        value={lowestPeriod ? formatCurrency(lowestPeriod.amount) : '-'}
+        valueColor="green"
+        subtext={lowestPeriod?.label}
+        icon={<ArrowDownIcon className="h-4 w-4" />}
       />
     </div>
   );

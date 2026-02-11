@@ -36,7 +36,7 @@ interface TrendsData {
   totalSpent: number;
   averagePerPeriod: number;
   highestPeriod: { label: string; amount: number } | null;
-  periodsAnalyzed: number;
+  lowestPeriod: { label: string; amount: number } | null;
 }
 
 function getQuarter(date: Date): number {
@@ -155,9 +155,12 @@ async function getSpendingTrends(
   const averagePerPeriod = periodsAnalyzed > 0 ? totalSpent / periodsAnalyzed : 0;
 
   let highestPeriod: { label: string; amount: number } | null = null;
+  let lowestPeriod: { label: string; amount: number } | null = null;
   if (data.length > 0) {
     const highest = data.reduce((max, d) => (d.amount > max.amount ? d : max), data[0]);
     highestPeriod = { label: highest.label, amount: highest.amount };
+    const lowest = data.reduce((min, d) => (d.amount < min.amount ? d : min), data[0]);
+    lowestPeriod = { label: lowest.label, amount: lowest.amount };
   }
 
   return {
@@ -165,7 +168,7 @@ async function getSpendingTrends(
     totalSpent: Math.round(totalSpent * 100) / 100,
     averagePerPeriod: Math.round(averagePerPeriod * 100) / 100,
     highestPeriod,
-    periodsAnalyzed,
+    lowestPeriod,
   };
 }
 
@@ -206,7 +209,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
           totalSpent={trends.totalSpent}
           averagePerPeriod={trends.averagePerPeriod}
           highestPeriod={trends.highestPeriod}
-          periodsAnalyzed={trends.periodsAnalyzed}
+          lowestPeriod={trends.lowestPeriod}
         />
 
         <TrendsChart data={trends.data} />
