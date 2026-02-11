@@ -159,8 +159,28 @@ async function getSpendingTrends(
   if (data.length > 0) {
     const highest = data.reduce((max, d) => (d.amount > max.amount ? d : max), data[0]);
     highestPeriod = { label: highest.label, amount: highest.amount };
-    const lowest = data.reduce((min, d) => (d.amount < min.amount ? d : min), data[0]);
-    lowestPeriod = { label: lowest.label, amount: lowest.amount };
+
+    // Exclude the current (incomplete) period from lowest calculation
+    const now = new Date();
+    const currentYear = now.getUTCFullYear();
+    let currentPeriod: number;
+    if (groupBy === 'year') {
+      currentPeriod = currentYear;
+    } else if (groupBy === 'quarter') {
+      currentPeriod = getQuarter(now);
+    } else {
+      currentPeriod = now.getUTCMonth() + 1;
+    }
+    const currentPeriodLabel = formatPeriodLabel(currentYear, currentPeriod, groupBy);
+    const completedPeriods = data.filter((d) => d.label !== currentPeriodLabel);
+
+    if (completedPeriods.length > 0) {
+      const lowest = completedPeriods.reduce(
+        (min, d) => (d.amount < min.amount ? d : min),
+        completedPeriods[0],
+      );
+      lowestPeriod = { label: lowest.label, amount: lowest.amount };
+    }
   }
 
   return {
