@@ -57,7 +57,9 @@ export function ExpensesByTagTable({
         {data.map((row) => (
           <div key={row.tagId} className="border rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
-              <Link href={getTagHref(row)} className="font-medium hover:underline">{row.tagName}</Link>
+              <Link href={getTagHref(row)} className="font-medium hover:underline">
+                {row.tagName}
+              </Link>
               <span className="font-semibold">{formatCurrency(Math.abs(row.total))}</span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -94,8 +96,10 @@ export function ExpensesByTagTable({
             {data.map((row) => (
               <TableRow key={row.tagId}>
                 <TableCell className="font-medium">
-                    <Link href={getTagHref(row)} className="hover:underline">{row.tagName}</Link>
-                  </TableCell>
+                  <Link href={getTagHref(row)} className="hover:underline">
+                    {row.tagName}
+                  </Link>
+                </TableCell>
                 <TableCell className="text-right">{formatCurrency(Math.abs(row.total))}</TableCell>
                 <TableCell className="text-right">{row.count}</TableCell>
                 <TableCell className="text-right">

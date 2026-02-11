@@ -64,7 +64,9 @@ export function CategoryDetailsTable({
         {data.map((row) => (
           <div key={row.categoryName} className="border rounded-lg p-3 space-y-2">
             <div className="flex items-center justify-between">
-              <Link href={getCategoryHref(row)} className="font-medium hover:underline">{row.categoryName}</Link>
+              <Link href={getCategoryHref(row)} className="font-medium hover:underline">
+                {row.categoryName}
+              </Link>
               <span className="font-semibold">{formatCurrency(row.total)}</span>
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -101,8 +103,10 @@ export function CategoryDetailsTable({
             {data.map((row) => (
               <TableRow key={row.categoryName}>
                 <TableCell className="font-medium">
-                    <Link href={getCategoryHref(row)} className="hover:underline">{row.categoryName}</Link>
-                  </TableCell>
+                  <Link href={getCategoryHref(row)} className="hover:underline">
+                    {row.categoryName}
+                  </Link>
+                </TableCell>
                 <TableCell className="text-right">{formatCurrency(row.total)}</TableCell>
                 <TableCell className="text-right">{row.count}</TableCell>
                 <TableCell className="text-right">{formatCurrency(row.maxTransaction)}</TableCell>
