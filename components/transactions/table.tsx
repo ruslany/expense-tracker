@@ -104,10 +104,7 @@ export async function TransactionsTable({
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-1">
-                <TransactionNotePopover
-                  transactionId={transaction.id}
-                  notes={transaction.notes}
-                />
+                <TransactionNotePopover transactionId={transaction.id} notes={transaction.notes} />
                 <TransactionActions
                   transactionId={transaction.id}
                   date={transaction.date}

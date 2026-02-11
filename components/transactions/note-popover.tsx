@@ -6,27 +6,15 @@ import { useSession } from 'next-auth/react';
 import { StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from '@/components/ui/tooltip';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
 interface TransactionNotePopoverProps {
   transactionId: string;
   notes: string | null;
 }
 
-export function TransactionNotePopover({
-  transactionId,
-  notes,
-}: TransactionNotePopoverProps) {
+export function TransactionNotePopover({ transactionId, notes }: TransactionNotePopoverProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [open, setOpen] = useState(false);
