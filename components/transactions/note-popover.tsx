@@ -118,7 +118,10 @@ export function TransactionNotePopover({
               className="min-h-20 text-sm"
               autoFocus
             />
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={isSaving}>
+                Cancel
+              </Button>
               <Button size="sm" onClick={handleSave} disabled={isSaving}>
                 {isSaving ? 'Saving...' : 'Save'}
               </Button>
