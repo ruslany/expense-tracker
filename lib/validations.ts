@@ -38,6 +38,7 @@ export const transactionUpdateSchema = z.object({
   description: z.string().min(1, 'Description is required').optional(),
   date: z.coerce.date().optional(),
   amount: z.number().optional(),
+  notes: z.string().nullable().optional(),
 });
 
 export const manualTransactionCreateSchema = z.object({

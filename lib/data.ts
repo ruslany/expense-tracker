@@ -113,6 +113,7 @@ export async function fetchFilteredTransactions(
         id: t.account.id,
         name: t.account.name,
       },
+      notes: t.notes,
       tags: t.tags.map((tt) => ({
         id: tt.tag.id,
         name: tt.tag.name,

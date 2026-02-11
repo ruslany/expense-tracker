@@ -12,6 +12,7 @@ import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { CategoryCell } from './category-cell';
 import { TagsCell } from './tags-cell';
 import { TransactionActions } from './actions';
+import { TransactionNotePopover } from './note-popover';
 
 export async function TransactionsTable({
   query,
@@ -102,7 +103,11 @@ export async function TransactionsTable({
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end">
+              <div className="flex items-center justify-end gap-1">
+                <TransactionNotePopover
+                  transactionId={transaction.id}
+                  notes={transaction.notes}
+                />
                 <TransactionActions
                   transactionId={transaction.id}
                   date={transaction.date}
@@ -169,14 +174,20 @@ export async function TransactionsTable({
                   </span>
                 </TableCell>
                 <TableCell>
-                  <TransactionActions
-                    transactionId={transaction.id}
-                    date={transaction.date}
-                    description={transaction.description}
-                    amount={transaction.amount}
-                    categoryId={transaction.categoryId}
-                    categories={categories}
-                  />
+                  <div className="flex items-center gap-1">
+                    <TransactionNotePopover
+                      transactionId={transaction.id}
+                      notes={transaction.notes}
+                    />
+                    <TransactionActions
+                      transactionId={transaction.id}
+                      date={transaction.date}
+                      description={transaction.description}
+                      amount={transaction.amount}
+                      categoryId={transaction.categoryId}
+                      categories={categories}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
