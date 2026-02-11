@@ -77,7 +77,10 @@ async function getTagReport(
     include: { category: true },
   });
 
-  const categoryMap = new Map<string, { id: string | null; total: number; count: number; maxTransaction: number }>();
+  const categoryMap = new Map<
+    string,
+    { id: string | null; total: number; count: number; maxTransaction: number }
+  >();
 
   for (const t of transactions) {
     const categoryName = t.category?.name ?? 'Uncategorized';
