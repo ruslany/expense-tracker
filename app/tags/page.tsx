@@ -103,12 +103,20 @@ async function getTagReport(
     }
   }
 
-  const grandTotal = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.total, 0);
+  let grandTotal = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.total, 0);
   const totalCount = Array.from(categoryMap.values()).reduce((sum, c) => sum + c.count, 0);
   const overallMaxTransaction = Math.max(
     ...Array.from(categoryMap.values()).map((c) => c.maxTransaction),
     0,
   );
+
+  // If total is negative (tag tracks credits/refunds), flip signs for positive display
+  if (grandTotal < 0) {
+    for (const stats of categoryMap.values()) {
+      stats.total = -stats.total;
+    }
+    grandTotal = -grandTotal;
+  }
 
   const data: CategoryBreakdown[] = Array.from(categoryMap.entries())
     .map(([categoryName, stats]) => ({
