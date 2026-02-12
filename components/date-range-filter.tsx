@@ -3,7 +3,15 @@
 import { useState, useEffect } from 'react';
 import { formatInTimeZone } from 'date-fns-tz';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { format } from 'date-fns';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  subMonths,
+  subYears,
+} from 'date-fns';
 import { CalendarIcon, PlayIcon, XIcon } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
@@ -11,6 +19,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface DateRangeFilterProps {
   startDate: Date | undefined;
@@ -68,6 +83,51 @@ export function DateRangeFilter({
     }
   }, [storageKey, restoreOnMount, searchParams, pathname, router]);
 
+  const applyPreset = (preset: string) => {
+    const now = new Date();
+    let from: Date;
+    let to: Date;
+
+    switch (preset) {
+      case 'current-month':
+        from = startOfMonth(now);
+        to = endOfMonth(now);
+        break;
+      case 'last-month': {
+        const lastMonth = subMonths(now, 1);
+        from = startOfMonth(lastMonth);
+        to = endOfMonth(lastMonth);
+        break;
+      }
+      case 'current-year':
+        from = startOfYear(now);
+        to = endOfYear(now);
+        break;
+      case 'last-year': {
+        const lastYear = subYears(now, 1);
+        from = startOfYear(lastYear);
+        to = endOfYear(lastYear);
+        break;
+      }
+      default:
+        return;
+    }
+
+    setDate({ from, to });
+
+    const params = new URLSearchParams(searchParams);
+    const startStr = format(from, 'yyyy-MM-dd');
+    const endStr = format(to, 'yyyy-MM-dd');
+    params.set('startDate', startStr);
+    params.set('endDate', endStr);
+
+    if (storageKey) {
+      localStorage.setItem(storageKey, JSON.stringify({ startDate: startStr, endDate: endStr }));
+    }
+
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   const applyDateRange = () => {
     const params = new URLSearchParams(searchParams);
     const storageData: { startDate?: string; endDate?: string } = {};
@@ -111,6 +171,17 @@ export function DateRangeFilter({
 
   return (
     <div className="flex flex-wrap items-end gap-2">
+      <Select onValueChange={applyPreset}>
+        <SelectTrigger className="w-[150px]">
+          <SelectValue placeholder="Presets" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="current-month">Current month</SelectItem>
+          <SelectItem value="last-month">Last month</SelectItem>
+          <SelectItem value="current-year">Current year</SelectItem>
+          <SelectItem value="last-year">Last year</SelectItem>
+        </SelectContent>
+      </Select>
       <Popover>
         <PopoverTrigger asChild>
           <Button
