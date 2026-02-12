@@ -87,6 +87,7 @@ export function TrendsChart({ data, groupBy }: TrendsChartProps) {
                 />
               }
             />
+            <Bar dataKey="amount" fill="var(--color-amount)" />
             <ReferenceLine
               y={budgetGoal}
               stroke="hsl(var(--destructive))"
@@ -99,7 +100,6 @@ export function TrendsChart({ data, groupBy }: TrendsChartProps) {
                 fontSize: 12,
               }}
             />
-            <Bar dataKey="amount" fill="var(--color-amount)" />
           </BarChart>
         </ChartContainer>
       </CardContent>
