@@ -4,6 +4,9 @@ import { getPrisma } from '@/lib/prisma';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [Google],
+  session: {
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+  },
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
