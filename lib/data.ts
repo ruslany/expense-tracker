@@ -14,21 +14,35 @@ function buildTransactionWhereClause(
 ): TransactionWhereInput {
   const conditions: TransactionWhereInput[] = [];
 
+  conditions.push({ parentId: null });
+
   if (query) {
     conditions.push({
       OR: [
         { description: { contains: query, mode: 'insensitive' } },
         { account: { name: { contains: query, mode: 'insensitive' } } },
         { category: { name: { contains: query, mode: 'insensitive' } } },
+        { splits: { some: { description: { contains: query, mode: 'insensitive' } } } },
+        { splits: { some: { category: { name: { contains: query, mode: 'insensitive' } } } } },
       ],
     });
   }
 
   if (categoryId) {
     if (categoryId === 'uncategorized') {
-      conditions.push({ categoryId: null });
+      conditions.push({
+        OR: [
+          { categoryId: null },
+          { splits: { some: { categoryId: null } } },
+        ],
+      });
     } else {
-      conditions.push({ categoryId });
+      conditions.push({
+        OR: [
+          { categoryId },
+          { splits: { some: { categoryId } } },
+        ],
+      });
     }
   }
 
@@ -94,6 +108,10 @@ export async function fetchFilteredTransactions(
             tag: true,
           },
         },
+        splits: {
+          include: { category: true },
+          orderBy: { createdAt: 'asc' as const },
+        },
       },
       orderBy: {
         date: 'desc',
@@ -117,6 +135,13 @@ export async function fetchFilteredTransactions(
       tags: t.tags.map((tt) => ({
         id: tt.tag.id,
         name: tt.tag.name,
+      })),
+      splits: t.splits.map((s) => ({
+        id: s.id,
+        description: s.description,
+        amount: s.amount,
+        category: s.category?.name ?? null,
+        categoryId: s.category?.id ?? null,
       })),
     }));
   } catch (error) {

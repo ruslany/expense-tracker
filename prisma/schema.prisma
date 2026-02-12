@@ -29,18 +29,22 @@ model Transaction {
   originalData Json
   contentHash  String
   notes        String?
+  parentId     String?
   importedAt   DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  parent   Transaction?  @relation("SplitTransactions", fields: [parentId], references: [id], onDelete: Cascade)
+  splits   Transaction[] @relation("SplitTransactions")
   tags     TransactionTag[]
 
   @@unique([accountId, contentHash])
   @@index([accountId])
   @@index([date])
   @@index([categoryId])
+  @@index([parentId])
 }
 
 model CSVMapping {

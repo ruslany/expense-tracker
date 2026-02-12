@@ -93,6 +93,18 @@ export const userRoleUpdateSchema = z.object({
   role: z.enum(['admin', 'reader']),
 });
 
+export const splitTransactionSchema = z.object({
+  splits: z
+    .array(
+      z.object({
+        description: z.string().min(1, 'Description is required'),
+        amount: z.number(),
+        categoryId: z.string().nullable().optional(),
+      }),
+    )
+    .min(2, 'At least two splits are required'),
+});
+
 export const watchlistItemSchema = z.object({
   symbol: z
     .string()

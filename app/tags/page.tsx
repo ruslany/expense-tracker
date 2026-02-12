@@ -73,6 +73,7 @@ async function getTagReport(
     where: {
       tags: { some: { tagId } },
       ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
+      NOT: { splits: { some: {} } },
     },
     include: { category: true },
   });

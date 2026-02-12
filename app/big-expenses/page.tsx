@@ -65,6 +65,7 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
           tag: { isBigExpense: true },
         },
       },
+      NOT: { splits: { some: {} } },
     },
     include: {
       tags: {
