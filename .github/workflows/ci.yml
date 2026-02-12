@@ -55,3 +55,11 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - run: npm run build
+
+  bicep:
+    name: Bicep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Bicep templates
+        run: az bicep build --file infra/main.bicep
