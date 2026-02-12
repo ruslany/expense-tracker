@@ -274,7 +274,10 @@ export default async function Dashboard({ searchParams }: PageProps) {
         </div>
 
         {/* Charts */}
-        <DashboardCharts spendingOverTime={spendingOverTime} />
+        <DashboardCharts
+          spendingOverTime={spendingOverTime}
+          monthlyBudget={process.env.MONTHLY_BUDGET ? Number(process.env.MONTHLY_BUDGET) : null}
+        />
 
         {/* Spending by Category Table */}
         <SpendingByCategoryTable

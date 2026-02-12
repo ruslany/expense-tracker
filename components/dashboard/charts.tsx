@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
 } from 'recharts';
 import { useIsMobile } from '@/hooks/use-media-query';
 
@@ -22,9 +23,10 @@ interface SpendingDataPoint {
 
 interface DashboardChartsProps {
   spendingOverTime: SpendingDataPoint[];
+  monthlyBudget: number | null;
 }
 
-export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
+export function DashboardCharts({ spendingOverTime, monthlyBudget }: DashboardChartsProps) {
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
@@ -59,14 +61,31 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
                 borderRadius: '8px',
               }}
               formatter={(value: number, name: string) => {
-                const label = name === 'runningTotal' ? 'This Year' : 'Last Year';
-                return [`$${value.toLocaleString()}`, label];
+                const labels: Record<string, string> = {
+                  runningTotal: 'This Year',
+                  prevYearRunningTotal: 'Last Year',
+                };
+                return [`$${value.toLocaleString()}`, labels[name] ?? name];
               }}
             />
             <Legend
               wrapperStyle={{ fontSize: isMobile ? 10 : 12 }}
               formatter={(value: string) => (value === 'runningTotal' ? 'This Year' : 'Last Year')}
             />
+            {monthlyBudget != null && (
+              <ReferenceLine
+                y={monthlyBudget}
+                stroke="hsl(var(--destructive))"
+                strokeDasharray="6 4"
+                strokeWidth={1.5}
+                label={{
+                  value: `Budget $${monthlyBudget.toLocaleString()}`,
+                  position: 'insideTopRight',
+                  fill: 'hsl(var(--destructive))',
+                  fontSize: isMobile ? 10 : 12,
+                }}
+              />
+            )}
             {hasPrevYearData && (
               <Line
                 type="monotone"

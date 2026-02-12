@@ -28,6 +28,9 @@ param dockerImage string
 @description('List of IP addresses allowed to access PostgreSQL')
 param postgresAllowedIpAddresses array = []
 
+@description('Monthly spending budget goal in dollars (optional, shown on charts)')
+param monthlyBudget string = ''
+
 @description('Custom domain name for the Container App (optional)')
 param customDomainName string = ''
 
@@ -109,6 +112,7 @@ module containerApp 'modules/container-app.bicep' = {
     postgresDatabaseName: postgresql.outputs.databaseName
     adminEmail: adminEmail
     authUrl: authUrl
+    monthlyBudget: monthlyBudget
     tags: tags
     customDomainName: customDomainName
     customDomainCertificateId: customDomainCertificateId
