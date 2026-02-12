@@ -20,7 +20,7 @@ export function SummaryStats({
       <StatCard
         label="Total Spent"
         value={formatCurrency(totalSpent)}
-        valueColor="red"
+        valueColor="amber"
         icon={<DollarSign className="h-4 w-4" />}
       />
       <StatCard
@@ -31,7 +31,7 @@ export function SummaryStats({
       <StatCard
         label="Highest Period"
         value={highestPeriod ? formatCurrency(highestPeriod.amount) : '-'}
-        valueColor="amber"
+        valueColor="blue"
         subtext={highestPeriod?.label}
         icon={<Calendar className="h-4 w-4" />}
       />

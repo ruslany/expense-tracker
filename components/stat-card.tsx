@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 interface StatCardProps {
   label: string;
   value: string | number;
-  valueColor?: 'default' | 'red' | 'green' | 'amber';
+  valueColor?: 'default' | 'red' | 'green' | 'amber' | 'blue';
   subtext?: string;
   icon?: React.ReactNode;
 }
@@ -14,6 +14,7 @@ const colorClasses = {
   red: 'text-red-600 dark:text-red-400',
   green: 'text-green-600 dark:text-green-400',
   amber: 'text-amber-600 dark:text-amber-400',
+  blue: 'text-blue-600 dark:text-blue-400',
 };
 
 export function StatCard({ label, value, valueColor = 'default', subtext, icon }: StatCardProps) {
