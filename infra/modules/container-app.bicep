@@ -140,6 +140,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
               name: 'MONTHLY_BUDGET'
               value: monthlyBudget
             }
+          ]
         }
       ]
       scale: {
