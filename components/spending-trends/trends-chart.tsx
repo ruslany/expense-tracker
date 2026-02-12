@@ -19,6 +19,7 @@ interface TrendDataPoint {
 interface TrendsChartProps {
   data: TrendDataPoint[];
   groupBy: 'month' | 'quarter' | 'year';
+  monthlyBudget: number | null;
 }
 
 const chartConfig = {
@@ -28,11 +29,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const MONTHLY_BUDGET = 7000;
 const budgetMultiplier = { month: 1, quarter: 3, year: 12 } as const;
 
-export function TrendsChart({ data, groupBy }: TrendsChartProps) {
-  const budgetGoal = MONTHLY_BUDGET * budgetMultiplier[groupBy];
+export function TrendsChart({ data, groupBy, monthlyBudget }: TrendsChartProps) {
+  const budgetGoal = monthlyBudget != null ? monthlyBudget * budgetMultiplier[groupBy] : null;
   if (data.length === 0) {
     return (
       <Card>
@@ -88,18 +88,20 @@ export function TrendsChart({ data, groupBy }: TrendsChartProps) {
               }
             />
             <Bar dataKey="amount" fill="var(--color-amount)" />
-            <ReferenceLine
-              y={budgetGoal}
-              stroke="hsl(var(--destructive))"
-              strokeDasharray="6 4"
-              strokeWidth={1.5}
-              label={{
-                value: `Budget ${formatCurrency(budgetGoal)}`,
-                position: 'insideTopRight',
-                fill: 'hsl(var(--destructive))',
-                fontSize: 12,
-              }}
-            />
+            {budgetGoal != null && (
+              <ReferenceLine
+                y={budgetGoal}
+                stroke="hsl(var(--destructive))"
+                strokeDasharray="6 4"
+                strokeWidth={1.5}
+                label={{
+                  value: `Budget ${formatCurrency(budgetGoal)}`,
+                  position: 'insideTopRight',
+                  fill: 'hsl(var(--destructive))',
+                  fontSize: 12,
+                }}
+              />
+            )}
           </BarChart>
         </ChartContainer>
       </CardContent>

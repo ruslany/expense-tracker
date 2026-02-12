@@ -233,7 +233,11 @@ export default async function TrendsPage({ searchParams }: PageProps) {
           lowestPeriod={trends.lowestPeriod}
         />
 
-        <TrendsChart data={trends.data} groupBy={groupBy} />
+        <TrendsChart
+          data={trends.data}
+          groupBy={groupBy}
+          monthlyBudget={process.env.MONTHLY_BUDGET ? Number(process.env.MONTHLY_BUDGET) : null}
+        />
       </div>
     </AppShell>
   );

@@ -77,6 +77,7 @@ jobs:
             --parameters postgresAllowedIpAddresses='${{ secrets.POSTGRES_ALLOWED_IPS }}' \
             --parameters customDomainName='${{ secrets.CUSTOM_DOMAIN_NAME }}' \
             --parameters customDomainCertificateId='${{ secrets.CUSTOM_DOMAIN_CERTIFICATE_ID }}' \
+            --parameters monthlyBudget='${{ secrets.MONTHLY_BUDGET }}' \
             --output none
 
       - name: 📋 Output deployed image tag

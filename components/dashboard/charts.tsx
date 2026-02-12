@@ -23,9 +23,10 @@ interface SpendingDataPoint {
 
 interface DashboardChartsProps {
   spendingOverTime: SpendingDataPoint[];
+  monthlyBudget: number | null;
 }
 
-export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
+export function DashboardCharts({ spendingOverTime, monthlyBudget }: DashboardChartsProps) {
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
@@ -71,18 +72,20 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
               wrapperStyle={{ fontSize: isMobile ? 10 : 12 }}
               formatter={(value: string) => (value === 'runningTotal' ? 'This Year' : 'Last Year')}
             />
-            <ReferenceLine
-              y={7000}
-              stroke="hsl(var(--destructive))"
-              strokeDasharray="6 4"
-              strokeWidth={1.5}
-              label={{
-                value: 'Budget $7,000',
-                position: 'insideTopRight',
-                fill: 'hsl(var(--destructive))',
-                fontSize: isMobile ? 10 : 12,
-              }}
-            />
+            {monthlyBudget != null && (
+              <ReferenceLine
+                y={monthlyBudget}
+                stroke="hsl(var(--destructive))"
+                strokeDasharray="6 4"
+                strokeWidth={1.5}
+                label={{
+                  value: `Budget $${monthlyBudget.toLocaleString()}`,
+                  position: 'insideTopRight',
+                  fill: 'hsl(var(--destructive))',
+                  fontSize: isMobile ? 10 : 12,
+                }}
+              />
+            )}
             {hasPrevYearData && (
               <Line
                 type="monotone"
