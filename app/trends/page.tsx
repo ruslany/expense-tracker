@@ -95,6 +95,7 @@ async function getSpendingTrends(
       // Include expenses (negative amounts) and refunds (positive amounts)
       // so that refunds reduce the period total
       amount: { not: 0 },
+      NOT: { splits: { some: {} } },
     },
     select: { date: true, amount: true },
     orderBy: { date: 'asc' },

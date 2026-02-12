@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
           gte: startDate,
           lte: endDate,
         },
+        NOT: { splits: { some: {} } },
       },
       include: {
         account: {

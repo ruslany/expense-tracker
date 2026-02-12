@@ -45,6 +45,7 @@ async function getStats(year: number, month: number) {
         gte: startOfMonth,
         lte: endOfMonth,
       },
+      NOT: { splits: { some: {} } },
     },
   });
 
@@ -85,6 +86,7 @@ async function getCategorySpendingTable(year: number, month: number) {
         gte: startOfMonth,
         lte: endOfMonth,
       },
+      NOT: { splits: { some: {} } },
     },
     include: {
       category: true,
@@ -164,6 +166,7 @@ async function getRunningTotalForMonth(year: number, month: number) {
         gte: startOfMonth,
         lte: endOfMonth,
       },
+      NOT: { splits: { some: {} } },
     },
     orderBy: { date: 'asc' },
   });

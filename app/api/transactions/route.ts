@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       pageSize,
     } = validated;
 
-    const where: Prisma.TransactionWhereInput = {};
+    const where: Prisma.TransactionWhereInput = { parentId: null };
 
     if (startDate || endDate) {
       const dateFilter: Prisma.DateTimeFilter = {};
