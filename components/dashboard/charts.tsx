@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
 } from 'recharts';
 import { useIsMobile } from '@/hooks/use-media-query';
 
@@ -59,13 +60,28 @@ export function DashboardCharts({ spendingOverTime }: DashboardChartsProps) {
                 borderRadius: '8px',
               }}
               formatter={(value: number, name: string) => {
-                const label = name === 'runningTotal' ? 'This Year' : 'Last Year';
-                return [`$${value.toLocaleString()}`, label];
+                const labels: Record<string, string> = {
+                  runningTotal: 'This Year',
+                  prevYearRunningTotal: 'Last Year',
+                };
+                return [`$${value.toLocaleString()}`, labels[name] ?? name];
               }}
             />
             <Legend
               wrapperStyle={{ fontSize: isMobile ? 10 : 12 }}
               formatter={(value: string) => (value === 'runningTotal' ? 'This Year' : 'Last Year')}
+            />
+            <ReferenceLine
+              y={7000}
+              stroke="hsl(var(--destructive))"
+              strokeDasharray="6 4"
+              strokeWidth={1.5}
+              label={{
+                value: 'Budget $7,000',
+                position: 'insideTopRight',
+                fill: 'hsl(var(--destructive))',
+                fontSize: isMobile ? 10 : 12,
+              }}
             />
             {hasPrevYearData && (
               <Line
