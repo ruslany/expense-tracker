@@ -233,7 +233,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
           lowestPeriod={trends.lowestPeriod}
         />
 
-        <TrendsChart data={trends.data} />
+        <TrendsChart data={trends.data} groupBy={groupBy} />
       </div>
     </AppShell>
   );
