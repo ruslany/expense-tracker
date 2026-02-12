@@ -5,10 +5,7 @@ import { computeContentHash } from '@/lib/utils';
 import { requireAdmin } from '@/lib/authorization';
 import { z } from 'zod';
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authResult = await requireAdmin();
   if ('response' in authResult) return authResult.response;
 
@@ -29,10 +26,7 @@ export async function POST(
     }
 
     if (parent.parentId) {
-      return NextResponse.json(
-        { error: 'Cannot split a child transaction' },
-        { status: 409 },
-      );
+      return NextResponse.json({ error: 'Cannot split a child transaction' }, { status: 409 });
     }
 
     if (parent.splits.length > 0) {
@@ -124,10 +118,7 @@ export async function DELETE(
     }
 
     if (parent.splits.length === 0) {
-      return NextResponse.json(
-        { error: 'Transaction is not split' },
-        { status: 409 },
-      );
+      return NextResponse.json({ error: 'Transaction is not split' }, { status: 409 });
     }
 
     await prisma.transaction.deleteMany({

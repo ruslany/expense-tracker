@@ -76,7 +76,9 @@ export function SplitTransactionDialog({
 
   const difference = Math.abs(splitsTotal - amount);
   const isBalanced = difference < 0.01;
-  const validLines = lines.filter((l) => l.description.trim() && l.amount && !isNaN(parseFloat(l.amount)));
+  const validLines = lines.filter(
+    (l) => l.description.trim() && l.amount && !isNaN(parseFloat(l.amount)),
+  );
   const canSubmit = isBalanced && validLines.length >= 2 && validLines.length === lines.length;
 
   const updateLine = (index: number, field: keyof SplitLine, value: string) => {
@@ -172,9 +174,7 @@ export function SplitTransactionDialog({
                     </Select>
                   </div>
                   <div className="space-y-1 w-28">
-                    {index === 0 && (
-                      <Label className="text-xs text-muted-foreground">Amount</Label>
-                    )}
+                    {index === 0 && <Label className="text-xs text-muted-foreground">Amount</Label>}
                     <Input
                       type="number"
                       step="0.01"
@@ -212,11 +212,7 @@ export function SplitTransactionDialog({
               )}
             >
               Total: {formatCurrency(splitsTotal)} / {formatCurrency(amount)}
-              {!isBalanced && (
-                <span className="ml-2">
-                  (off by {formatCurrency(difference)})
-                </span>
-              )}
+              {!isBalanced && <span className="ml-2">(off by {formatCurrency(difference)})</span>}
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}

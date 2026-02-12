@@ -86,7 +86,10 @@ export async function TransactionsTable({
                 </div>
 
                 {/* Description */}
-                <div className="text-sm font-medium flex items-center gap-1" title={transaction.description}>
+                <div
+                  className="text-sm font-medium flex items-center gap-1"
+                  title={transaction.description}
+                >
                   {isSplit && <Scissors className="size-3 text-muted-foreground shrink-0" />}
                   {transaction.description}
                 </div>
@@ -102,14 +105,20 @@ export async function TransactionsTable({
                             <span className="text-muted-foreground ml-1">({split.category})</span>
                           )}
                         </span>
-                        <span className="font-medium shrink-0 text-red-400/70 dark:text-red-400/50">{formatCurrency(split.amount)}</span>
+                        <span className="font-medium shrink-0 text-red-400/70 dark:text-red-400/50">
+                          {formatCurrency(split.amount)}
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {/* Tags */}
-                <TagsCell transactionId={transaction.id} tags={transaction.tags} allTags={allTags} />
+                <TagsCell
+                  transactionId={transaction.id}
+                  tags={transaction.tags}
+                  allTags={allTags}
+                />
 
                 {/* Category and Account */}
                 <div className="flex items-center justify-between gap-2">
@@ -126,7 +135,10 @@ export async function TransactionsTable({
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-1">
-                  <TransactionNotePopover transactionId={transaction.id} notes={transaction.notes} />
+                  <TransactionNotePopover
+                    transactionId={transaction.id}
+                    notes={transaction.notes}
+                  />
                   <TransactionActions
                     transactionId={transaction.id}
                     date={transaction.date}
@@ -165,8 +177,13 @@ export async function TransactionsTable({
                     <TableCell>{formatDate(transaction.date)}</TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="max-w-75 truncate flex items-center gap-1" title={transaction.description}>
-                          {isSplit && <Scissors className="size-3 text-muted-foreground shrink-0" />}
+                        <div
+                          className="max-w-75 truncate flex items-center gap-1"
+                          title={transaction.description}
+                        >
+                          {isSplit && (
+                            <Scissors className="size-3 text-muted-foreground shrink-0" />
+                          )}
                           {transaction.description}
                         </div>
                         <TagsCell

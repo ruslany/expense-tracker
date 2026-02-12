@@ -31,17 +31,11 @@ function buildTransactionWhereClause(
   if (categoryId) {
     if (categoryId === 'uncategorized') {
       conditions.push({
-        OR: [
-          { categoryId: null },
-          { splits: { some: { categoryId: null } } },
-        ],
+        OR: [{ categoryId: null }, { splits: { some: { categoryId: null } } }],
       });
     } else {
       conditions.push({
-        OR: [
-          { categoryId },
-          { splits: { some: { categoryId } } },
-        ],
+        OR: [{ categoryId }, { splits: { some: { categoryId } } }],
       });
     }
   }
