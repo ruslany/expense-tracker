@@ -18,7 +18,7 @@ export function SummaryStats({
       <StatCard
         label="Total Expenses"
         value={formatCurrency(totalExpenses)}
-        valueColor="red"
+        valueColor="amber"
         icon={<DollarSign className="h-4 w-4" />}
       />
       <StatCard
@@ -29,6 +29,7 @@ export function SummaryStats({
       <StatCard
         label="Max Transaction"
         value={formatCurrency(maxTransaction)}
+        valueColor="blue"
         icon={<ArrowUpRight className="h-4 w-4" />}
       />
     </div>

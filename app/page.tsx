@@ -247,7 +247,11 @@ export default async function Dashboard({ searchParams }: PageProps) {
           <StatCard
             label="Net Spent"
             value={formatCurrency(stats.netSpent)}
-            valueColor="red"
+            valueColor={
+              process.env.MONTHLY_BUDGET && stats.netSpent > Number(process.env.MONTHLY_BUDGET)
+                ? 'red'
+                : 'amber'
+            }
             subtext="After refunds"
             icon={<ArrowDownIcon className="h-4 w-4" />}
           />
@@ -267,7 +271,7 @@ export default async function Dashboard({ searchParams }: PageProps) {
           <StatCard
             label="Max Transaction"
             value={formatCurrency(stats.maxTransaction)}
-            valueColor="amber"
+            valueColor="blue"
             subtext="This month"
             icon={<DollarSign className="h-4 w-4" />}
           />
