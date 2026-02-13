@@ -3,14 +3,7 @@
 import { useState, useEffect } from 'react';
 import { formatInTimeZone } from 'date-fns-tz';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  startOfYear,
-  endOfYear,
-  subMonths,
-} from 'date-fns';
+import { format, startOfMonth, endOfMonth, startOfYear, endOfYear, subMonths } from 'date-fns';
 import { CalendarIcon, PlayIcon, XIcon } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
