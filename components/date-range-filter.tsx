@@ -10,7 +10,6 @@ import {
   startOfYear,
   endOfYear,
   subMonths,
-  subYears,
 } from 'date-fns';
 import { CalendarIcon, PlayIcon, XIcon } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
@@ -103,14 +102,15 @@ export function DateRangeFilter({
         from = startOfYear(now);
         to = endOfYear(now);
         break;
-      case 'last-year': {
-        const lastYear = subYears(now, 1);
-        from = startOfYear(lastYear);
-        to = endOfYear(lastYear);
+      default: {
+        // Handle dynamic year presets like "year-2025"
+        const yearMatch = preset.match(/^year-(\d{4})$/);
+        if (!yearMatch) return;
+        const yearDate = new Date(parseInt(yearMatch[1], 10), 0, 1);
+        from = startOfYear(yearDate);
+        to = endOfYear(yearDate);
         break;
       }
-      default:
-        return;
     }
 
     setDate({ from, to });
@@ -179,7 +179,14 @@ export function DateRangeFilter({
           <SelectItem value="current-month">Current month</SelectItem>
           <SelectItem value="last-month">Last month</SelectItem>
           <SelectItem value="current-year">Current year</SelectItem>
-          <SelectItem value="last-year">Last year</SelectItem>
+          {Array.from({ length: new Date().getFullYear() - 2024 }, (_, i) => {
+            const year = new Date().getFullYear() - 1 - i;
+            return (
+              <SelectItem key={year} value={`year-${year}`}>
+                {year}
+              </SelectItem>
+            );
+          })}
         </SelectContent>
       </Select>
       <Popover>
