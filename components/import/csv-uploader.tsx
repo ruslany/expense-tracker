@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { formatInTimeZone } from 'date-fns-tz';
+import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Upload, FileText, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -125,7 +125,7 @@ export function CSVUploader() {
       formData.append('institution', selectedAccount.institution);
       formData.append('accountId', selectedAccount.id);
       if (cutoffDate) {
-        formData.append('cutoffDate', cutoffDate.toISOString());
+        formData.append('cutoffDate', format(cutoffDate, 'yyyy-MM-dd'));
       }
 
       const response = await fetch('/api/upload', {
@@ -239,7 +239,7 @@ export function CSVUploader() {
               data-empty={!cutoffDate}
               className="justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
             >
-              {cutoffDate ? formatInTimeZone(cutoffDate, 'UTC', 'PPP') : <span>Pick a date</span>}
+              {cutoffDate ? format(cutoffDate, 'PPP') : <span>Pick a date</span>}
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </PopoverTrigger>
