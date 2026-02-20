@@ -107,9 +107,7 @@ export async function fetchFilteredTransactions(
           orderBy: { createdAt: 'asc' as const },
         },
       },
-      orderBy: {
-        date: 'desc',
-      },
+      orderBy: [{ date: 'desc' }, { id: 'asc' }],
       take: pageSize,
       skip: offset,
     });
