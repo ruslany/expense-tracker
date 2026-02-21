@@ -12,11 +12,15 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const { id } = await params;
     const body = await request.json();
 
-    const validated = transactionUpdateSchema.parse(body);
+    const { reviewed, ...dbFields } = transactionUpdateSchema.parse(body);
+    void reviewed; // signal only — reviewedAt is always set on any PATCH
 
     const transaction = await prisma.transaction.update({
       where: { id },
-      data: validated,
+      data: {
+        ...dbFields,
+        reviewedAt: new Date(),
+      },
       include: {
         account: {
           select: {

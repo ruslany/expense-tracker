@@ -11,6 +11,7 @@ function buildTransactionWhereClause(
   tagId?: string,
   startDate?: string,
   endDate?: string,
+  unreviewed?: boolean,
 ): TransactionWhereInput {
   const conditions: TransactionWhereInput[] = [];
 
@@ -67,6 +68,10 @@ function buildTransactionWhereClause(
     conditions.push({ date: dateFilter });
   }
 
+  if (unreviewed) {
+    conditions.push({ reviewedAt: null });
+  }
+
   return conditions.length > 0 ? { AND: conditions } : {};
 }
 
@@ -79,6 +84,7 @@ export async function fetchFilteredTransactions(
   tagId?: string,
   startDate?: string,
   endDate?: string,
+  unreviewed?: boolean,
 ) {
   const offset = (currentPage - 1) * pageSize;
   const where = buildTransactionWhereClause(
@@ -88,6 +94,7 @@ export async function fetchFilteredTransactions(
     tagId,
     startDate,
     endDate,
+    unreviewed,
   );
 
   try {
@@ -124,6 +131,7 @@ export async function fetchFilteredTransactions(
         name: t.account.name,
       },
       notes: t.notes,
+      reviewedAt: t.reviewedAt,
       tags: t.tags.map((tt) => ({
         id: tt.tag.id,
         name: tt.tag.name,
@@ -167,6 +175,7 @@ export async function fetchTransactionsPages(
   tagId?: string,
   startDate?: string,
   endDate?: string,
+  unreviewed?: boolean,
 ) {
   const where = buildTransactionWhereClause(
     query,
@@ -175,6 +184,7 @@ export async function fetchTransactionsPages(
     tagId,
     startDate,
     endDate,
+    unreviewed,
   );
 
   try {

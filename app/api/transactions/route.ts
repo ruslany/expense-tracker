@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
         originalData,
         contentHash,
         importedAt: new Date(),
+        reviewedAt: new Date(),
         ...(validated.tagIds && validated.tagIds.length > 0
           ? {
               tags: {
