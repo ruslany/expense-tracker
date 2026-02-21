@@ -39,6 +39,7 @@ export const transactionUpdateSchema = z.object({
   date: z.coerce.date().optional(),
   amount: z.number().optional(),
   notes: z.string().nullable().optional(),
+  reviewed: z.boolean().optional(),
 });
 
 export const manualTransactionCreateSchema = z.object({

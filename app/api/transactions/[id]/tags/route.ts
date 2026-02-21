@@ -28,9 +28,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       });
     }
 
-    // Fetch the updated transaction with tags
-    const transaction = await prisma.transaction.findUnique({
+    // Update reviewedAt and fetch tags in one round-trip
+    const transaction = await prisma.transaction.update({
       where: { id },
+      data: { reviewedAt: new Date() },
       include: {
         tags: {
           include: {
@@ -40,12 +41,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       },
     });
 
-    const tags =
-      transaction?.tags.map((tt) => ({
-        id: tt.tag.id,
-        name: tt.tag.name,
-      })) ?? [];
-
+    const tags = transaction.tags.map((tt) => ({ id: tt.tag.id, name: tt.tag.name }));
     return NextResponse.json({ tags });
   } catch (error) {
     console.error('Error updating transaction tags:', error);

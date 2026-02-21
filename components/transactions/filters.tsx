@@ -132,3 +132,34 @@ export function TagFilter({ tags }: { tags: Tag[] }) {
     </Select>
   );
 }
+
+export function UnreviewedFilter() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const currentValue = searchParams.get('unreviewed') === 'true' ? 'unreviewed' : 'all';
+
+  const handleChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', '1');
+    if (value === 'unreviewed') {
+      params.set('unreviewed', 'true');
+    } else {
+      params.delete('unreviewed');
+    }
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  return (
+    <Select value={currentValue} onValueChange={handleChange}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="All" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All</SelectItem>
+        <SelectItem value="unreviewed">Unreviewed only</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+}

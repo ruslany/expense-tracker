@@ -15,6 +15,7 @@ import { CategoryCell } from './category-cell';
 import { TagsCell } from './tags-cell';
 import { TransactionActions } from './actions';
 import { TransactionNotePopover } from './note-popover';
+import { ReviewButton } from './review-button';
 
 export async function TransactionsTable({
   query,
@@ -25,6 +26,7 @@ export async function TransactionsTable({
   tagId,
   startDate,
   endDate,
+  unreviewed,
 }: {
   query: string;
   currentPage: number;
@@ -34,6 +36,7 @@ export async function TransactionsTable({
   tagId?: string;
   startDate?: string;
   endDate?: string;
+  unreviewed?: boolean;
 }) {
   const [transactions, categories, allTags] = await Promise.all([
     fetchFilteredTransactions(
@@ -45,6 +48,7 @@ export async function TransactionsTable({
       tagId,
       startDate,
       endDate,
+      unreviewed,
     ),
     fetchCategories(),
     fetchTags(),
@@ -69,9 +73,14 @@ export async function TransactionsTable({
               <CardContent className="p-4 space-y-3">
                 {/* Header: Date and Amount */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    {formatDate(transaction.date)}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {transaction.reviewedAt === null && (
+                      <span className="inline-block size-2 rounded-full bg-amber-400 dark:bg-amber-500 shrink-0" />
+                    )}
+                    <span className="text-sm text-muted-foreground">
+                      {formatDate(transaction.date)}
+                    </span>
+                  </div>
                   <span
                     className={cn(
                       'font-semibold',
@@ -135,6 +144,9 @@ export async function TransactionsTable({
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-1">
+                  {transaction.reviewedAt === null && (
+                    <ReviewButton transactionId={transaction.id} />
+                  )}
                   <TransactionNotePopover
                     transactionId={transaction.id}
                     notes={transaction.notes}
@@ -174,7 +186,14 @@ export async function TransactionsTable({
               return (
                 <React.Fragment key={transaction.id}>
                   <TableRow>
-                    <TableCell>{formatDate(transaction.date)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1.5">
+                        {transaction.reviewedAt === null && (
+                          <span className="inline-block size-2 rounded-full bg-amber-400 dark:bg-amber-500 shrink-0" />
+                        )}
+                        {formatDate(transaction.date)}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="space-y-1">
                         <div
@@ -217,6 +236,9 @@ export async function TransactionsTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
+                        {transaction.reviewedAt === null && (
+                          <ReviewButton transactionId={transaction.id} />
+                        )}
                         <TransactionNotePopover
                           transactionId={transaction.id}
                           notes={transaction.notes}

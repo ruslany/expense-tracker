@@ -3,7 +3,7 @@ import { AppShell } from '@/components/app-shell';
 import { TransactionsTable } from '@/components/transactions/table';
 import { SearchTransactions } from '@/components/transactions/search';
 import { TransactionsPagination } from '@/components/transactions/pagination';
-import { CategoryFilter, AccountFilter, TagFilter } from '@/components/transactions/filters';
+import { CategoryFilter, AccountFilter, TagFilter, UnreviewedFilter } from '@/components/transactions/filters';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { AddTransactionButton } from '@/components/transactions/add-transaction-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +21,7 @@ export default async function TransactionsPage(props: {
     tagId?: string;
     startDate?: string;
     endDate?: string;
+    unreviewed?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
@@ -32,9 +33,10 @@ export default async function TransactionsPage(props: {
   const tagId = searchParams?.tagId;
   const startDate = searchParams?.startDate;
   const endDate = searchParams?.endDate;
+  const unreviewed = searchParams?.unreviewed === 'true';
 
   const [totalPages, categories, accounts, tags] = await Promise.all([
-    fetchTransactionsPages(query, pageSize, categoryId, accountId, tagId, startDate, endDate),
+    fetchTransactionsPages(query, pageSize, categoryId, accountId, tagId, startDate, endDate, unreviewed),
     fetchCategories(),
     fetchAccounts(),
     fetchTags(),
@@ -65,6 +67,7 @@ export default async function TransactionsPage(props: {
               <CategoryFilter categories={categories} />
               <AccountFilter accounts={accounts} />
               <TagFilter tags={tags} />
+              <UnreviewedFilter />
               <div className="ml-auto">
                 <AddTransactionButton accounts={accounts} categories={categories} />
               </div>
@@ -78,6 +81,7 @@ export default async function TransactionsPage(props: {
               tagId={tagId}
               startDate={startDate}
               endDate={endDate}
+              unreviewed={unreviewed}
             />
             <div className="flex justify-center">
               <TransactionsPagination totalPages={totalPages} />
