@@ -3,7 +3,12 @@ import { AppShell } from '@/components/app-shell';
 import { TransactionsTable } from '@/components/transactions/table';
 import { SearchTransactions } from '@/components/transactions/search';
 import { TransactionsPagination } from '@/components/transactions/pagination';
-import { CategoryFilter, AccountFilter, TagFilter, UnreviewedFilter } from '@/components/transactions/filters';
+import {
+  CategoryFilter,
+  AccountFilter,
+  TagFilter,
+  UnreviewedFilter,
+} from '@/components/transactions/filters';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { AddTransactionButton } from '@/components/transactions/add-transaction-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,7 +41,16 @@ export default async function TransactionsPage(props: {
   const unreviewed = searchParams?.unreviewed === 'true';
 
   const [totalPages, categories, accounts, tags] = await Promise.all([
-    fetchTransactionsPages(query, pageSize, categoryId, accountId, tagId, startDate, endDate, unreviewed),
+    fetchTransactionsPages(
+      query,
+      pageSize,
+      categoryId,
+      accountId,
+      tagId,
+      startDate,
+      endDate,
+      unreviewed,
+    ),
     fetchCategories(),
     fetchAccounts(),
     fetchTags(),
