@@ -1,13 +1,12 @@
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { MoneyInput } from '@/components/transactions/money-input';
 
 interface AmountFieldProps {
   isDebit: boolean;
   onIsDebitChange: (isDebit: boolean) => void;
-  displayAmount: string;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => void;
+  amountDigits: string;
+  onAmountDigitsChange: (digits: string) => void;
   // Used to make label/input id pairs unique when multiple dialogs are mounted
   idPrefix?: string;
 }
@@ -15,9 +14,8 @@ interface AmountFieldProps {
 export function AmountField({
   isDebit,
   onIsDebitChange,
-  displayAmount,
-  onKeyDown,
-  onPaste,
+  amountDigits,
+  onAmountDigitsChange,
   idPrefix = 'amount',
 }: AmountFieldProps) {
   return (
@@ -41,21 +39,11 @@ export function AmountField({
       </div>
       <div className="grid gap-2">
         <Label htmlFor={`${idPrefix}-value`}>Amount</Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
-            $
-          </span>
-          <Input
-            id={`${idPrefix}-value`}
-            className="pl-7 font-mono"
-            value={displayAmount}
-            placeholder="0.00"
-            onKeyDown={onKeyDown}
-            onPaste={onPaste}
-            onChange={() => {}}
-            inputMode="numeric"
-          />
-        </div>
+        <MoneyInput
+          id={`${idPrefix}-value`}
+          value={amountDigits}
+          onChange={onAmountDigitsChange}
+        />
       </div>
     </>
   );

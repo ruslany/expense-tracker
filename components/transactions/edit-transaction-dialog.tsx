@@ -59,7 +59,7 @@ export function EditTransactionDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editDate, setEditDate] = useState<Date>(date);
   const [editDescription, setEditDescription] = useState(description);
-  const { isDebit, setIsDebit, getDisplayAmount, getAmountValue, handleAmountKeyDown, handleAmountPaste, isAmountValid, reset: resetAmount } = useAmountInput();
+  const { amountDigits, setAmountDigits, isDebit, setIsDebit, getAmountValue, isAmountValid, reset: resetAmount } = useAmountInput();
   const [editCategoryId, setEditCategoryId] = useState<string>(categoryId ?? '');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -163,9 +163,8 @@ export function EditTransactionDialog({
               idPrefix="edit-transaction"
               isDebit={isDebit}
               onIsDebitChange={setIsDebit}
-              displayAmount={getDisplayAmount()}
-              onKeyDown={handleAmountKeyDown}
-              onPaste={handleAmountPaste}
+              amountDigits={amountDigits}
+              onAmountDigitsChange={setAmountDigits}
             />
             <div className="grid gap-2">
               <Label htmlFor="edit-category">Category (optional)</Label>

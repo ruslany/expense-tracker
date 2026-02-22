@@ -62,7 +62,7 @@ export function AddTransactionDialog({
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
   });
   const [description, setDescription] = useState('');
-  const { isDebit, setIsDebit, getDisplayAmount, getAmountValue, handleAmountKeyDown, handleAmountPaste, isAmountValid, reset: resetAmount } = useAmountInput();
+  const { amountDigits, setAmountDigits, isDebit, setIsDebit, getAmountValue, isAmountValid, reset: resetAmount } = useAmountInput();
   const [categoryId, setCategoryId] = useState<string>('');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -182,9 +182,8 @@ export function AddTransactionDialog({
               idPrefix="add-transaction"
               isDebit={isDebit}
               onIsDebitChange={setIsDebit}
-              displayAmount={getDisplayAmount()}
-              onKeyDown={handleAmountKeyDown}
-              onPaste={handleAmountPaste}
+              amountDigits={amountDigits}
+              onAmountDigitsChange={setAmountDigits}
             />
             <div className="grid gap-2">
               <Label htmlFor="category">Category (optional)</Label>
