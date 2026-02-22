@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface Account {
   id: string;
@@ -220,32 +221,20 @@ export function AddTransactionDialog({
             </div>
             <div className="grid gap-2">
               <Label>Type</Label>
-              <div className="flex rounded-md border overflow-hidden">
-                <button
-                  type="button"
-                  className={cn(
-                    'flex-1 px-4 py-2 text-sm font-medium transition-colors',
-                    isDebit
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-background text-muted-foreground hover:bg-muted',
-                  )}
-                  onClick={() => setIsDebit(true)}
-                >
-                  Debit
-                </button>
-                <button
-                  type="button"
-                  className={cn(
-                    'flex-1 px-4 py-2 text-sm font-medium transition-colors border-l',
-                    !isDebit
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-background text-muted-foreground hover:bg-muted',
-                  )}
-                  onClick={() => setIsDebit(false)}
-                >
-                  Credit
-                </button>
-              </div>
+              <RadioGroup
+                value={isDebit ? 'debit' : 'credit'}
+                onValueChange={(v) => setIsDebit(v === 'debit')}
+                className="flex gap-6"
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="debit" id="type-debit" />
+                  <Label htmlFor="type-debit">Debit</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="credit" id="type-credit" />
+                  <Label htmlFor="type-credit">Credit</Label>
+                </div>
+              </RadioGroup>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="amount">Amount</Label>
