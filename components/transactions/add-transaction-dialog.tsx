@@ -28,7 +28,8 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { AmountField } from '@/components/transactions/amount-field';
+import { useAmountInput } from '@/hooks/use-amount-input';
 
 interface Account {
   id: string;
@@ -61,8 +62,7 @@ export function AddTransactionDialog({
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
   });
   const [description, setDescription] = useState('');
-  const [amountDigits, setAmountDigits] = useState(''); // raw digits, e.g. "4599" = $45.99
-  const [isDebit, setIsDebit] = useState(true);
+  const { isDebit, setIsDebit, getDisplayAmount, getAmountValue, handleAmountKeyDown, handleAmountPaste, isAmountValid, reset: resetAmount } = useAmountInput();
   const [categoryId, setCategoryId] = useState<string>('');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,53 +73,12 @@ export function AddTransactionDialog({
       const now = new Date();
       setDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
       setDescription('');
-      setAmountDigits('');
-      setIsDebit(true);
+      resetAmount();
       setCategoryId('');
       setCalendarOpen(false);
       setError(null);
     }
-  }, [open]);
-
-  const getDisplayAmount = () => {
-    if (!amountDigits) return '';
-    const cents = parseInt(amountDigits, 10);
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(cents / 100);
-  };
-
-  const getAmountValue = () => {
-    if (!amountDigits) return 0;
-    const cents = parseInt(amountDigits, 10);
-    return isDebit ? -(cents / 100) : cents / 100;
-  };
-
-  const handleAmountKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key >= '0' && e.key <= '9') {
-      e.preventDefault();
-      if (amountDigits.length < 9) {
-        setAmountDigits(amountDigits + e.key);
-      }
-    } else if (e.key === 'Backspace') {
-      e.preventDefault();
-      setAmountDigits(amountDigits.slice(0, -1));
-    } else if (e.key === 'Delete') {
-      e.preventDefault();
-      setAmountDigits('');
-    } else if (!['Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-      e.preventDefault();
-    }
-  };
-
-  const handleAmountPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const digits = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-    if (digits) {
-      setAmountDigits(digits.slice(0, 9));
-    }
-  };
+  }, [open, resetAmount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,7 +115,7 @@ export function AddTransactionDialog({
     }
   };
 
-  const isValid = accountId && description.trim() && amountDigits.length > 0 && parseInt(amountDigits, 10) > 0;
+  const isValid = accountId && description.trim() && isAmountValid;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -219,41 +178,14 @@ export function AddTransactionDialog({
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label>Type</Label>
-              <RadioGroup
-                value={isDebit ? 'debit' : 'credit'}
-                onValueChange={(v) => setIsDebit(v === 'debit')}
-                className="flex gap-6"
-              >
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="debit" id="type-debit" />
-                  <Label htmlFor="type-debit">Debit</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="credit" id="type-credit" />
-                  <Label htmlFor="type-credit">Credit</Label>
-                </div>
-              </RadioGroup>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="amount">Amount</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
-                  $
-                </span>
-                <Input
-                  id="amount"
-                  className="pl-7 font-mono"
-                  value={getDisplayAmount()}
-                  placeholder="0.00"
-                  onKeyDown={handleAmountKeyDown}
-                  onPaste={handleAmountPaste}
-                  onChange={() => {}}
-                  inputMode="numeric"
-                />
-              </div>
-            </div>
+            <AmountField
+              idPrefix="add-transaction"
+              isDebit={isDebit}
+              onIsDebitChange={setIsDebit}
+              displayAmount={getDisplayAmount()}
+              onKeyDown={handleAmountKeyDown}
+              onPaste={handleAmountPaste}
+            />
             <div className="grid gap-2">
               <Label htmlFor="category">Category (optional)</Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
