@@ -62,6 +62,7 @@ export function AddTransactionDialog({
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState<string>('');
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export function AddTransactionDialog({
       setDescription('');
       setAmount('');
       setCategoryId('');
+      setCalendarOpen(false);
       setError(null);
     }
   }, [open]);
@@ -139,7 +141,7 @@ export function AddTransactionDialog({
             </div>
             <div className="grid gap-2">
               <Label>Date</Label>
-              <Popover>
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -153,10 +155,12 @@ export function AddTransactionDialog({
                   <Calendar
                     mode="single"
                     selected={date}
-                    onSelect={(d) =>
-                      d &&
-                      setDate(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())))
-                    }
+                    onSelect={(d) => {
+                      if (d) {
+                        setDate(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())));
+                        setCalendarOpen(false);
+                      }
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
