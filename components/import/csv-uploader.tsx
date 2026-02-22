@@ -50,6 +50,7 @@ export function CSVUploader() {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<RecentTransaction[] | null>(null);
   const [cutoffDate, setCutoffDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
 
   useEffect(() => {
@@ -232,7 +233,7 @@ export function CSVUploader() {
       {/* Date Cutoff Filter */}
       <div className="space-y-2">
         <Label>Import transactions from (optional)</Label>
-        <Popover>
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -247,7 +248,7 @@ export function CSVUploader() {
             <Calendar
               mode="single"
               selected={cutoffDate}
-              onSelect={setCutoffDate}
+              onSelect={(date) => { setCutoffDate(date); setCalendarOpen(false); }}
               defaultMonth={cutoffDate}
               className="[--cell-size:--spacing(7)]"
             />
