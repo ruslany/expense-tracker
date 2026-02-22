@@ -76,9 +76,9 @@ export function CSVMappingDialog({ open, onOpenChange, mapping }: CSVMappingDial
         <DialogHeader>
           <DialogTitle>Edit Import Rules</DialogTitle>
           <DialogDescription>
-            Configure skip patterns for{' '}
-            <span className="font-medium">{mapping?.institution}</span>. Transactions whose
-            descriptions match any of these patterns will be ignored during import.
+            Configure skip patterns for <span className="font-medium">{mapping?.institution}</span>.
+            Transactions whose descriptions match any of these patterns will be ignored during
+            import.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

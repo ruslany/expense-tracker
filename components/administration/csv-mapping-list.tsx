@@ -54,11 +54,7 @@ export function CSVMappingList({ mappings }: CSVMappingListProps) {
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{mapping.institution}</div>
-                        <Button
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => handleEdit(mapping)}
-                        >
+                        <Button variant="ghost" size="icon-xs" onClick={() => handleEdit(mapping)}>
                           <Pencil className="size-4" />
                           <span className="sr-only">Edit</span>
                         </Button>
@@ -126,11 +122,7 @@ export function CSVMappingList({ mappings }: CSVMappingListProps) {
         </CardContent>
       </Card>
 
-      <CSVMappingDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        mapping={selectedMapping}
-      />
+      <CSVMappingDialog open={dialogOpen} onOpenChange={setDialogOpen} mapping={selectedMapping} />
     </>
   );
 }

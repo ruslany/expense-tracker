@@ -51,7 +51,13 @@ interface AdministrationTabsProps {
   csvMappings: CSVMapping[];
 }
 
-export function AdministrationTabs({ accounts, categories, tags, users, csvMappings }: AdministrationTabsProps) {
+export function AdministrationTabs({
+  accounts,
+  categories,
+  tags,
+  users,
+  csvMappings,
+}: AdministrationTabsProps) {
   return (
     <Tabs defaultValue="accounts">
       <TabsList>

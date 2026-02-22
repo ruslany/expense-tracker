@@ -36,7 +36,13 @@ export default async function AdministrationPage() {
           <p className="text-muted-foreground">Manage accounts, categories, tags, and users</p>
         </div>
 
-        <AdministrationTabs accounts={accounts} categories={categories} tags={tags} users={users} csvMappings={csvMappings} />
+        <AdministrationTabs
+          accounts={accounts}
+          categories={categories}
+          tags={tags}
+          users={users}
+          csvMappings={csvMappings}
+        />
       </div>
     </AppShell>
   );
