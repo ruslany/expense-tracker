@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { MoneyInput } from '@/components/transactions/money-input';
 
 interface Category {
   id: string;
@@ -31,7 +32,7 @@ interface Category {
 
 interface SplitLine {
   description: string;
-  amount: string;
+  amountDigits: string; // raw digit string, e.g. "4599" = $45.99
   categoryId: string;
 }
 
@@ -59,25 +60,31 @@ export function SplitTransactionDialog({
   const [error, setError] = useState<string | null>(null);
   const [lines, setLines] = useState<SplitLine[]>([]);
 
+  // Sign is inherited from the original transaction — no UI toggle needed.
+  const isDebit = amount < 0;
+
   useEffect(() => {
     if (open) {
       setLines([
-        { description, amount: amount.toString(), categoryId: categoryId ?? '' },
-        { description: '', amount: '', categoryId: '' },
+        {
+          description,
+          amountDigits: Math.round(Math.abs(amount) * 100).toString(),
+          categoryId: categoryId ?? '',
+        },
+        { description: '', amountDigits: '', categoryId: '' },
       ]);
       setError(null);
     }
   }, [open, description, amount, categoryId]);
 
-  const splitsTotal = lines.reduce((sum, l) => {
-    const val = parseFloat(l.amount);
-    return sum + (isNaN(val) ? 0 : val);
-  }, 0);
-
-  const difference = Math.abs(splitsTotal - amount);
+  const lineAmounts = lines.map((l) => (l.amountDigits ? parseInt(l.amountDigits, 10) / 100 : 0));
+  const splitsTotal = lineAmounts.reduce((sum, v) => sum + v, 0);
+  const originalAbs = Math.abs(amount);
+  const difference = Math.abs(splitsTotal - originalAbs);
   const isBalanced = difference < 0.01;
+
   const validLines = lines.filter(
-    (l) => l.description.trim() && l.amount && !isNaN(parseFloat(l.amount)),
+    (l) => l.description.trim() && l.amountDigits && parseInt(l.amountDigits, 10) > 0,
   );
   const canSubmit = isBalanced && validLines.length >= 2 && validLines.length === lines.length;
 
@@ -86,7 +93,7 @@ export function SplitTransactionDialog({
   };
 
   const addLine = () => {
-    setLines((prev) => [...prev, { description: '', amount: '', categoryId: '' }]);
+    setLines((prev) => [...prev, { description: '', amountDigits: '', categoryId: '' }]);
   };
 
   const removeLine = (index: number) => {
@@ -104,11 +111,14 @@ export function SplitTransactionDialog({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          splits: lines.map((l) => ({
-            description: l.description,
-            amount: parseFloat(l.amount),
-            categoryId: l.categoryId || null,
-          })),
+          splits: lines.map((l) => {
+            const abs = parseInt(l.amountDigits, 10) / 100;
+            return {
+              description: l.description,
+              amount: isDebit ? -abs : abs,
+              categoryId: l.categoryId || null,
+            };
+          }),
         }),
       });
 
@@ -173,14 +183,11 @@ export function SplitTransactionDialog({
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-1 w-28">
+                  <div className="space-y-1 w-32">
                     {index === 0 && <Label className="text-xs text-muted-foreground">Amount</Label>}
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      value={line.amount}
-                      onChange={(e) => updateLine(index, 'amount', e.target.value)}
+                    <MoneyInput
+                      value={line.amountDigits}
+                      onChange={(digits) => updateLine(index, 'amountDigits', digits)}
                     />
                   </div>
                 </div>
@@ -211,7 +218,8 @@ export function SplitTransactionDialog({
                   : 'text-red-600 dark:text-red-400',
               )}
             >
-              Total: {formatCurrency(splitsTotal)} / {formatCurrency(amount)}
+              Total: {formatCurrency(isDebit ? -splitsTotal : splitsTotal)} /{' '}
+              {formatCurrency(amount)}
               {!isBalanced && <span className="ml-2">(off by {formatCurrency(difference)})</span>}
             </div>
 

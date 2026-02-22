@@ -26,6 +26,8 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AmountField } from '@/components/transactions/amount-field';
+import { useAmountInput } from '@/hooks/use-amount-input';
 
 interface Category {
   id: string;
@@ -57,19 +59,29 @@ export function EditTransactionDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editDate, setEditDate] = useState<Date>(date);
   const [editDescription, setEditDescription] = useState(description);
-  const [editAmount, setEditAmount] = useState(amount.toString());
+  const {
+    amountDigits,
+    setAmountDigits,
+    isDebit,
+    setIsDebit,
+    getAmountValue,
+    isAmountValid,
+    reset: resetAmount,
+  } = useAmountInput();
   const [editCategoryId, setEditCategoryId] = useState<string>(categoryId ?? '');
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setEditDate(date);
       setEditDescription(description);
-      setEditAmount(amount.toString());
+      resetAmount(amount);
       setEditCategoryId(categoryId ?? '');
+      setCalendarOpen(false);
       setError(null);
     }
-  }, [open, date, description, amount, categoryId]);
+  }, [open, date, description, amount, categoryId, resetAmount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +95,7 @@ export function EditTransactionDialog({
         body: JSON.stringify({
           date: editDate.toISOString(),
           description: editDescription,
-          amount: parseFloat(editAmount),
+          amount: getAmountValue(),
           categoryId: editCategoryId || null,
         }),
       });
@@ -105,7 +117,7 @@ export function EditTransactionDialog({
     }
   };
 
-  const isValid = editDescription.trim() && editAmount && !isNaN(parseFloat(editAmount));
+  const isValid = editDescription.trim() && isAmountValid;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -118,7 +130,7 @@ export function EditTransactionDialog({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Date</Label>
-              <Popover>
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -135,7 +147,12 @@ export function EditTransactionDialog({
                   <Calendar
                     mode="single"
                     selected={editDate}
-                    onSelect={(d) => d && setEditDate(d)}
+                    onSelect={(d) => {
+                      if (d) {
+                        setEditDate(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())));
+                        setCalendarOpen(false);
+                      }
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
@@ -150,20 +167,13 @@ export function EditTransactionDialog({
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="edit-amount">Amount</Label>
-              <Input
-                id="edit-amount"
-                type="number"
-                step="0.01"
-                value={editAmount}
-                onChange={(e) => setEditAmount(e.target.value)}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Use negative values for expenses, positive for income/credits.
-              </p>
-            </div>
+            <AmountField
+              idPrefix="edit-transaction"
+              isDebit={isDebit}
+              onIsDebitChange={setIsDebit}
+              amountDigits={amountDigits}
+              onAmountDigitsChange={setAmountDigits}
+            />
             <div className="grid gap-2">
               <Label htmlFor="edit-category">Category (optional)</Label>
               <Select value={editCategoryId} onValueChange={setEditCategoryId}>

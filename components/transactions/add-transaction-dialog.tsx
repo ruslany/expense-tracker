@@ -28,6 +28,8 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AmountField } from '@/components/transactions/amount-field';
+import { useAmountInput } from '@/hooks/use-amount-input';
 
 interface Account {
   id: string;
@@ -60,7 +62,15 @@ export function AddTransactionDialog({
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
   });
   const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
+  const {
+    amountDigits,
+    setAmountDigits,
+    isDebit,
+    setIsDebit,
+    getAmountValue,
+    isAmountValid,
+    reset: resetAmount,
+  } = useAmountInput();
   const [categoryId, setCategoryId] = useState<string>('');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,12 +81,12 @@ export function AddTransactionDialog({
       const now = new Date();
       setDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
       setDescription('');
-      setAmount('');
+      resetAmount();
       setCategoryId('');
       setCalendarOpen(false);
       setError(null);
     }
-  }, [open]);
+  }, [open, resetAmount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +101,7 @@ export function AddTransactionDialog({
           accountId,
           date: date.toISOString(),
           description,
-          amount: parseFloat(amount),
+          amount: getAmountValue(),
           categoryId: categoryId || null,
         }),
       });
@@ -113,7 +123,7 @@ export function AddTransactionDialog({
     }
   };
 
-  const isValid = accountId && description.trim() && amount && !isNaN(parseFloat(amount));
+  const isValid = accountId && description.trim() && isAmountValid;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -176,21 +186,13 @@ export function AddTransactionDialog({
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="amount">Amount</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="e.g., -45.99"
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Use negative values for expenses, positive for income/credits.
-              </p>
-            </div>
+            <AmountField
+              idPrefix="add-transaction"
+              isDebit={isDebit}
+              onIsDebitChange={setIsDebit}
+              amountDigits={amountDigits}
+              onAmountDigitsChange={setAmountDigits}
+            />
             <div className="grid gap-2">
               <Label htmlFor="category">Category (optional)</Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
