@@ -8,6 +8,7 @@ import {
   fetchCategoriesWithKeywords,
   fetchTagsWithTransactionCount,
   fetchUsers,
+  fetchCSVMappings,
 } from '@/lib/data';
 
 export const metadata: Metadata = { title: 'Administration' };
@@ -19,11 +20,12 @@ export default async function AdministrationPage() {
     redirect('/');
   }
 
-  const [accounts, categories, tags, users] = await Promise.all([
+  const [accounts, categories, tags, users, csvMappings] = await Promise.all([
     fetchAccountsWithTransactionCount(),
     fetchCategoriesWithKeywords(),
     fetchTagsWithTransactionCount(),
     fetchUsers(),
+    fetchCSVMappings(),
   ]);
 
   return (
@@ -34,7 +36,7 @@ export default async function AdministrationPage() {
           <p className="text-muted-foreground">Manage accounts, categories, tags, and users</p>
         </div>
 
-        <AdministrationTabs accounts={accounts} categories={categories} tags={tags} users={users} />
+        <AdministrationTabs accounts={accounts} categories={categories} tags={tags} users={users} csvMappings={csvMappings} />
       </div>
     </AppShell>
   );
