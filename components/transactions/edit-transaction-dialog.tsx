@@ -61,6 +61,7 @@ export function EditTransactionDialog({
   const [editDescription, setEditDescription] = useState(description);
   const { isDebit, setIsDebit, getDisplayAmount, getAmountValue, handleAmountKeyDown, handleAmountPaste, isAmountValid, reset: resetAmount } = useAmountInput();
   const [editCategoryId, setEditCategoryId] = useState<string>(categoryId ?? '');
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -69,6 +70,7 @@ export function EditTransactionDialog({
       setEditDescription(description);
       resetAmount(amount);
       setEditCategoryId(categoryId ?? '');
+      setCalendarOpen(false);
       setError(null);
     }
   }, [open, date, description, amount, categoryId, resetAmount]);
@@ -120,7 +122,7 @@ export function EditTransactionDialog({
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Date</Label>
-              <Popover>
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -137,7 +139,12 @@ export function EditTransactionDialog({
                   <Calendar
                     mode="single"
                     selected={editDate}
-                    onSelect={(d) => d && setEditDate(d)}
+                    onSelect={(d) => {
+                      if (d) {
+                        setEditDate(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())));
+                        setCalendarOpen(false);
+                      }
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
