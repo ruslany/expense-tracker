@@ -248,7 +248,10 @@ export function CSVUploader() {
             <Calendar
               mode="single"
               selected={cutoffDate}
-              onSelect={(date) => { setCutoffDate(date); setCalendarOpen(false); }}
+              onSelect={(date) => {
+                setCutoffDate(date);
+                setCalendarOpen(false);
+              }}
               defaultMonth={cutoffDate}
               className="[--cell-size:--spacing(7)]"
             />
