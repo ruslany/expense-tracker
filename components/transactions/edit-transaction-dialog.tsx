@@ -59,7 +59,15 @@ export function EditTransactionDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editDate, setEditDate] = useState<Date>(date);
   const [editDescription, setEditDescription] = useState(description);
-  const { amountDigits, setAmountDigits, isDebit, setIsDebit, getAmountValue, isAmountValid, reset: resetAmount } = useAmountInput();
+  const {
+    amountDigits,
+    setAmountDigits,
+    isDebit,
+    setIsDebit,
+    getAmountValue,
+    isAmountValid,
+    reset: resetAmount,
+  } = useAmountInput();
   const [editCategoryId, setEditCategoryId] = useState<string>(categoryId ?? '');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);

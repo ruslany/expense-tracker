@@ -77,9 +77,7 @@ export function SplitTransactionDialog({
     }
   }, [open, description, amount, categoryId]);
 
-  const lineAmounts = lines.map((l) =>
-    l.amountDigits ? parseInt(l.amountDigits, 10) / 100 : 0,
-  );
+  const lineAmounts = lines.map((l) => (l.amountDigits ? parseInt(l.amountDigits, 10) / 100 : 0));
   const splitsTotal = lineAmounts.reduce((sum, v) => sum + v, 0);
   const originalAbs = Math.abs(amount);
   const difference = Math.abs(splitsTotal - originalAbs);
@@ -186,9 +184,7 @@ export function SplitTransactionDialog({
                     </Select>
                   </div>
                   <div className="space-y-1 w-32">
-                    {index === 0 && (
-                      <Label className="text-xs text-muted-foreground">Amount</Label>
-                    )}
+                    {index === 0 && <Label className="text-xs text-muted-foreground">Amount</Label>}
                     <MoneyInput
                       value={line.amountDigits}
                       onChange={(digits) => updateLine(index, 'amountDigits', digits)}

@@ -62,7 +62,15 @@ export function AddTransactionDialog({
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
   });
   const [description, setDescription] = useState('');
-  const { amountDigits, setAmountDigits, isDebit, setIsDebit, getAmountValue, isAmountValid, reset: resetAmount } = useAmountInput();
+  const {
+    amountDigits,
+    setAmountDigits,
+    isDebit,
+    setIsDebit,
+    getAmountValue,
+    isAmountValid,
+    reset: resetAmount,
+  } = useAmountInput();
   const [categoryId, setCategoryId] = useState<string>('');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);

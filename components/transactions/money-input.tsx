@@ -27,7 +27,9 @@ export function MoneyInput({ value, onChange, id, className }: MoneyInputProps) 
     } else if (e.key === 'Delete') {
       e.preventDefault();
       onChange('');
-    } else if (!['Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+    } else if (
+      !['Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+    ) {
       e.preventDefault();
     }
   };

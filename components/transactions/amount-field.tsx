@@ -39,11 +39,7 @@ export function AmountField({
       </div>
       <div className="grid gap-2">
         <Label htmlFor={`${idPrefix}-value`}>Amount</Label>
-        <MoneyInput
-          id={`${idPrefix}-value`}
-          value={amountDigits}
-          onChange={onAmountDigitsChange}
-        />
+        <MoneyInput id={`${idPrefix}-value`} value={amountDigits} onChange={onAmountDigitsChange} />
       </div>
     </>
   );
