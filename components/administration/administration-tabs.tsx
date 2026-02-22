@@ -1,11 +1,12 @@
 'use client';
 
-import { Wallet, Tags, Tag, Users } from 'lucide-react';
+import { Wallet, Tags, Tag, Users, FileInput } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AccountList } from './account-list';
 import { CategoryList } from './category-list';
 import { TagList } from './tag-list';
 import { UserList } from './user-list';
+import { CSVMappingList } from './csv-mapping-list';
 
 interface Account {
   id: string;
@@ -36,14 +37,27 @@ interface User {
   createdAt: Date;
 }
 
+interface CSVMapping {
+  id: string;
+  institution: string;
+  skipPatterns: string[];
+}
+
 interface AdministrationTabsProps {
   accounts: Account[];
   categories: Category[];
   tags: Tag[];
   users: User[];
+  csvMappings: CSVMapping[];
 }
 
-export function AdministrationTabs({ accounts, categories, tags, users }: AdministrationTabsProps) {
+export function AdministrationTabs({
+  accounts,
+  categories,
+  tags,
+  users,
+  csvMappings,
+}: AdministrationTabsProps) {
   return (
     <Tabs defaultValue="accounts">
       <TabsList>
@@ -63,6 +77,10 @@ export function AdministrationTabs({ accounts, categories, tags, users }: Admini
           <Users />
           Users
         </TabsTrigger>
+        <TabsTrigger value="import-rules">
+          <FileInput />
+          Import Rules
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="accounts">
         <AccountList accounts={accounts} />
@@ -75,6 +93,9 @@ export function AdministrationTabs({ accounts, categories, tags, users }: Admini
       </TabsContent>
       <TabsContent value="users">
         <UserList users={users} />
+      </TabsContent>
+      <TabsContent value="import-rules">
+        <CSVMappingList mappings={csvMappings} />
       </TabsContent>
     </Tabs>
   );

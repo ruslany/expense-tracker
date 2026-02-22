@@ -28,6 +28,10 @@ export const csvMappingSchema = z.object({
   dateFormat: z.string().min(1, 'Date format is required'),
 });
 
+export const csvMappingUpdateSchema = z.object({
+  skipPatterns: z.array(z.string()).optional(),
+});
+
 export const categorySchema = z.object({
   name: z.string().min(1, 'Category name is required'),
   keywords: z.array(z.string()).optional(),

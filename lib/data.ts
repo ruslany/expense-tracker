@@ -331,6 +331,24 @@ export async function fetchWatchlistItems() {
   }
 }
 
+export async function fetchCSVMappings() {
+  try {
+    const prisma = await getPrisma();
+    const mappings = await prisma.cSVMapping.findMany({
+      orderBy: { institution: 'asc' },
+      select: {
+        id: true,
+        institution: true,
+        skipPatterns: true,
+      },
+    });
+    return mappings;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch CSV mappings.');
+  }
+}
+
 export async function fetchUsers() {
   try {
     const prisma = await getPrisma();
