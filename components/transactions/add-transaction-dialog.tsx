@@ -55,7 +55,10 @@ export function AddTransactionDialog({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [accountId, setAccountId] = useState('');
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>(() => {
+    const now = new Date();
+    return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  });
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState<string>('');
@@ -64,7 +67,8 @@ export function AddTransactionDialog({
   useEffect(() => {
     if (open) {
       setAccountId('');
-      setDate(new Date());
+      const now = new Date();
+      setDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
       setDescription('');
       setAmount('');
       setCategoryId('');
@@ -149,7 +153,10 @@ export function AddTransactionDialog({
                   <Calendar
                     mode="single"
                     selected={date}
-                    onSelect={(d) => d && setDate(d)}
+                    onSelect={(d) =>
+                      d &&
+                      setDate(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())))
+                    }
                     initialFocus
                   />
                 </PopoverContent>
