@@ -60,7 +60,8 @@ export function AddTransactionDialog({
     return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
   });
   const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
+  const [amountDigits, setAmountDigits] = useState(''); // raw digits, e.g. "4599" = $45.99
+  const [isDebit, setIsDebit] = useState(true);
   const [categoryId, setCategoryId] = useState<string>('');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,12 +72,53 @@ export function AddTransactionDialog({
       const now = new Date();
       setDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
       setDescription('');
-      setAmount('');
+      setAmountDigits('');
+      setIsDebit(true);
       setCategoryId('');
       setCalendarOpen(false);
       setError(null);
     }
   }, [open]);
+
+  const getDisplayAmount = () => {
+    if (!amountDigits) return '';
+    const cents = parseInt(amountDigits, 10);
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(cents / 100);
+  };
+
+  const getAmountValue = () => {
+    if (!amountDigits) return 0;
+    const cents = parseInt(amountDigits, 10);
+    return isDebit ? -(cents / 100) : cents / 100;
+  };
+
+  const handleAmountKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key >= '0' && e.key <= '9') {
+      e.preventDefault();
+      if (amountDigits.length < 9) {
+        setAmountDigits(amountDigits + e.key);
+      }
+    } else if (e.key === 'Backspace') {
+      e.preventDefault();
+      setAmountDigits(amountDigits.slice(0, -1));
+    } else if (e.key === 'Delete') {
+      e.preventDefault();
+      setAmountDigits('');
+    } else if (!['Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleAmountPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const digits = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+    if (digits) {
+      setAmountDigits(digits.slice(0, 9));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +133,7 @@ export function AddTransactionDialog({
           accountId,
           date: date.toISOString(),
           description,
-          amount: parseFloat(amount),
+          amount: getAmountValue(),
           categoryId: categoryId || null,
         }),
       });
@@ -113,7 +155,7 @@ export function AddTransactionDialog({
     }
   };
 
-  const isValid = accountId && description.trim() && amount && !isNaN(parseFloat(amount));
+  const isValid = accountId && description.trim() && amountDigits.length > 0 && parseInt(amountDigits, 10) > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -177,19 +219,51 @@ export function AddTransactionDialog({
               />
             </div>
             <div className="grid gap-2">
+              <Label>Type</Label>
+              <div className="flex rounded-md border overflow-hidden">
+                <button
+                  type="button"
+                  className={cn(
+                    'flex-1 px-4 py-2 text-sm font-medium transition-colors',
+                    isDebit
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-muted-foreground hover:bg-muted',
+                  )}
+                  onClick={() => setIsDebit(true)}
+                >
+                  Debit
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    'flex-1 px-4 py-2 text-sm font-medium transition-colors border-l',
+                    !isDebit
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-muted-foreground hover:bg-muted',
+                  )}
+                  onClick={() => setIsDebit(false)}
+                >
+                  Credit
+                </button>
+              </div>
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="amount">Amount</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="e.g., -45.99"
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Use negative values for expenses, positive for income/credits.
-              </p>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
+                  $
+                </span>
+                <Input
+                  id="amount"
+                  className="pl-7 font-mono"
+                  value={getDisplayAmount()}
+                  placeholder="0.00"
+                  onKeyDown={handleAmountKeyDown}
+                  onPaste={handleAmountPaste}
+                  onChange={() => {}}
+                  inputMode="numeric"
+                />
+              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="category">Category (optional)</Label>
