@@ -59,9 +59,9 @@ export function TransactionActions({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+          <DropdownMenuItem onClick={() => !isSplit && setEditOpen(true)} disabled={isSplit}>
             <Pencil />
-            Edit
+            {isSplit ? 'Edit (unsplit first)' : 'Edit'}
           </DropdownMenuItem>
           {!isSplit && (
             <DropdownMenuItem onClick={() => setSplitOpen(true)}>
