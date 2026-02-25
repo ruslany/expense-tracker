@@ -19,13 +19,26 @@ interface Category {
   name: string;
 }
 
-interface FilterCardProps {
-  categories: Category[];
-  selectedGroupBy: 'month' | 'quarter' | 'year';
-  selectedCategoryId: string | null;
+interface Tag {
+  id: string;
+  name: string;
 }
 
-export function FilterCard({ categories, selectedGroupBy, selectedCategoryId }: FilterCardProps) {
+interface FilterCardProps {
+  categories: Category[];
+  tags: Tag[];
+  selectedGroupBy: 'month' | 'quarter' | 'year';
+  selectedCategoryId: string | null;
+  selectedTagId: string | null;
+}
+
+export function FilterCard({
+  categories,
+  tags,
+  selectedGroupBy,
+  selectedCategoryId,
+  selectedTagId,
+}: FilterCardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -42,6 +55,16 @@ export function FilterCard({ categories, selectedGroupBy, selectedCategoryId }: 
       params.set('categoryId', value);
     } else {
       params.delete('categoryId');
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  const handleTagChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (value && value !== 'all') {
+      params.set('tagId', value);
+    } else {
+      params.delete('tagId');
     }
     router.replace(`${pathname}?${params.toString()}`);
   };
@@ -82,6 +105,22 @@ export function FilterCard({ categories, selectedGroupBy, selectedCategoryId }: 
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tag-select">Tag</Label>
+                <Select value={selectedTagId || 'all'} onValueChange={handleTagChange}>
+                  <SelectTrigger id="tag-select" className="w-full sm:w-45">
+                    <SelectValue placeholder="All tags" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Tags</SelectItem>
+                    {tags.map((tag) => (
+                      <SelectItem key={tag.id} value={tag.id}>
+                        {tag.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
