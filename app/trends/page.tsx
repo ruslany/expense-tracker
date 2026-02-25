@@ -5,6 +5,7 @@ import { DateRangeFilter } from '@/components/date-range-filter';
 import { SummaryStats } from '@/components/spending-trends/summary-stats';
 import { TrendsChart } from '@/components/spending-trends/trends-chart';
 import { getPrisma } from '@/lib/prisma';
+import { fetchTags } from '@/lib/data';
 
 export const metadata: Metadata = { title: 'Spending Trends' };
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,7 @@ interface PageProps {
   searchParams: Promise<{
     groupBy?: string;
     categoryId?: string;
+    tagId?: string;
     startDate?: string;
     endDate?: string;
   }>;
@@ -75,6 +77,7 @@ function formatPeriodLabel(
 async function getSpendingTrends(
   groupBy: 'month' | 'quarter' | 'year',
   categoryId: string | null,
+  tagId: string | null,
   startDate: Date | null,
   endDate: Date | null,
 ): Promise<TrendsData> {
@@ -92,6 +95,7 @@ async function getSpendingTrends(
     where: {
       ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
       ...(categoryId ? { categoryId } : {}),
+      ...(tagId ? { tags: { some: { tagId } } } : {}),
       // Include expenses (negative amounts) and refunds (positive amounts)
       // so that refunds reduce the period total
       amount: { not: 0 },
@@ -197,12 +201,14 @@ export default async function TrendsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const groupBy = (params.groupBy as 'month' | 'quarter' | 'year') || 'month';
   const categoryId = params.categoryId || null;
+  const tagId = params.tagId || null;
   const startDate = params.startDate ? new Date(params.startDate) : null;
   const endDate = params.endDate ? new Date(params.endDate) : null;
 
-  const [categories, trends] = await Promise.all([
+  const [categories, tags, trends] = await Promise.all([
     getAllCategories(),
-    getSpendingTrends(groupBy, categoryId, startDate, endDate),
+    fetchTags(),
+    getSpendingTrends(groupBy, categoryId, tagId, startDate, endDate),
   ]);
 
   return (
@@ -222,8 +228,10 @@ export default async function TrendsPage({ searchParams }: PageProps) {
 
         <FilterCard
           categories={categories}
+          tags={tags}
           selectedGroupBy={groupBy}
           selectedCategoryId={categoryId}
+          selectedTagId={tagId}
         />
 
         <SummaryStats
