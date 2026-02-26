@@ -7,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 type Category = {
@@ -138,12 +140,12 @@ export function UnreviewedFilter() {
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const currentValue = searchParams.get('unreviewed') === 'true' ? 'unreviewed' : 'all';
+  const checked = searchParams.get('unreviewed') === 'true';
 
-  const handleChange = (value: string) => {
+  const handleChange = (value: boolean) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', '1');
-    if (value === 'unreviewed') {
+    if (value) {
       params.set('unreviewed', 'true');
     } else {
       params.delete('unreviewed');
@@ -152,14 +154,11 @@ export function UnreviewedFilter() {
   };
 
   return (
-    <Select value={currentValue} onValueChange={handleChange}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="All" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        <SelectItem value="unreviewed">Unreviewed only</SelectItem>
-      </SelectContent>
-    </Select>
+    <div className="flex items-center gap-2">
+      <Switch id="unreviewed-filter" checked={checked} onCheckedChange={handleChange} />
+      <Label htmlFor="unreviewed-filter" className="cursor-pointer">
+        Unreviewed only
+      </Label>
+    </div>
   );
 }
