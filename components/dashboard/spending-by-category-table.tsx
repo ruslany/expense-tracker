@@ -68,8 +68,8 @@ export function SpendingByCategoryTable({
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-2 bg-muted rounded-sm overflow-hidden">
                   <div
-                    className="h-full bg-amber-400"
-                    style={{ width: `${(row.totalExpenses / maxExpense) * 100}%` }}
+                    className={`h-full ${row.totalExpenses < 0 ? 'bg-green-500' : 'bg-amber-400'}`}
+                    style={{ width: `${(Math.abs(row.totalExpenses) / maxExpense) * 100}%` }}
                   />
                 </div>
                 <span className="text-sm text-muted-foreground w-14 text-right">
@@ -119,8 +119,8 @@ export function SpendingByCategoryTable({
                     <div className="flex items-center justify-end gap-2">
                       <div className="w-24 h-4 bg-muted rounded-sm overflow-hidden">
                         <div
-                          className="h-full bg-amber-400"
-                          style={{ width: `${(row.totalExpenses / maxExpense) * 100}%` }}
+                          className={`h-full ${row.totalExpenses < 0 ? 'bg-green-500' : 'bg-amber-400'}`}
+                          style={{ width: `${(Math.abs(row.totalExpenses) / maxExpense) * 100}%` }}
                         />
                       </div>
                       <span className="w-24 text-right">{formatCurrency(row.totalExpenses)}</span>
