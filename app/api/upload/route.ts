@@ -82,6 +82,18 @@ export async function POST(request: NextRequest) {
       skippedByCutoff = parsedTransactions.length - filteredTransactions.length;
     }
 
+    // If accountId is provided but nothing passed the cutoff filter, return early
+    if (accountId && filteredTransactions.length === 0) {
+      return NextResponse.json({
+        success: true,
+        imported: 0,
+        skipped: 0,
+        skippedByCutoff,
+        total: parsedTransactions.length,
+        preview: [],
+      });
+    }
+
     // If accountId is provided, import the transactions
     if (accountId && filteredTransactions.length > 0) {
       const now = new Date();
