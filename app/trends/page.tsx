@@ -202,7 +202,9 @@ export default async function TrendsPage({ searchParams }: PageProps) {
   const groupBy = (params.groupBy as 'month' | 'quarter' | 'year') || 'month';
   const categoryId = params.categoryId || null;
   const tagId = params.tagId || null;
-  const startDate = params.startDate ? new Date(params.startDate) : null;
+  const defaultStartDate = new Date();
+  defaultStartDate.setUTCFullYear(defaultStartDate.getUTCFullYear() - 2);
+  const startDate = params.startDate ? new Date(params.startDate) : defaultStartDate;
   const endDate = params.endDate ? new Date(params.endDate) : null;
 
   const [categories, tags, trends] = await Promise.all([
