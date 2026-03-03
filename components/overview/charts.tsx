@@ -21,12 +21,12 @@ interface SpendingDataPoint {
   prevYearRunningTotal: number | null;
 }
 
-interface DashboardChartsProps {
+interface OverviewChartsProps {
   spendingOverTime: SpendingDataPoint[];
   monthlyBudget: number | null;
 }
 
-export function DashboardCharts({ spendingOverTime, monthlyBudget }: DashboardChartsProps) {
+export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChartsProps) {
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);

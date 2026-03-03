@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard,
+  CalendarDays,
   CreditCard,
   Upload,
   PieChart,
@@ -19,9 +19,9 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
+    title: 'Overview',
     href: '/',
-    icon: LayoutDashboard,
+    icon: CalendarDays,
   },
   {
     title: 'Investments',

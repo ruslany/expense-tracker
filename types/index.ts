@@ -24,7 +24,7 @@ export interface ParsedTransaction {
   tags?: string[];
 }
 
-export interface DashboardStats {
+export interface OverviewStats {
   totalSpent: number;
   totalIncome: number;
   netCashFlow: number;

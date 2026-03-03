@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
-import { DashboardCharts } from '@/components/dashboard/charts';
-import { DashboardPeriodFilter } from '@/components/dashboard/period-filter';
-import { SpendingByCategoryTable } from '@/components/dashboard/spending-by-category-table';
+import { OverviewCharts } from '@/components/overview/charts';
+import { OverviewPeriodFilter } from '@/components/overview/period-filter';
+import { SpendingByCategoryTable } from '@/components/overview/spending-by-category-table';
 import { StatCard } from '@/components/stat-card';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, TrendingUp } from 'lucide-react';
 import { getPrisma } from '@/lib/prisma';
 
-export const metadata: Metadata = { title: 'Dashboard' };
+export const metadata: Metadata = { title: 'Overview' };
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
@@ -218,7 +218,7 @@ async function getSpendingOverTime(year: number, month: number) {
   });
 }
 
-export default async function Dashboard({ searchParams }: PageProps) {
+export default async function Overview({ searchParams }: PageProps) {
   const params = await searchParams;
   const now = new Date();
   const currentYear = params.year ? parseInt(params.year, 10) : now.getFullYear();
@@ -236,10 +236,10 @@ export default async function Dashboard({ searchParams }: PageProps) {
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">Overview of your expenses and income</p>
+            <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
+            <p className="text-muted-foreground">Monthly spending and income</p>
           </div>
-          <DashboardPeriodFilter availableYears={availableYears} />
+          <OverviewPeriodFilter availableYears={availableYears} />
         </div>
 
         {/* Summary Cards */}
@@ -278,7 +278,7 @@ export default async function Dashboard({ searchParams }: PageProps) {
         </div>
 
         {/* Charts */}
-        <DashboardCharts
+        <OverviewCharts
           spendingOverTime={spendingOverTime}
           monthlyBudget={process.env.MONTHLY_BUDGET ? Number(process.env.MONTHLY_BUDGET) : null}
         />
