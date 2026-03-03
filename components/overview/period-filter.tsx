@@ -12,7 +12,7 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 const STORAGE_KEY = 'dashboard-period';
 
-interface DashboardPeriodFilterProps {
+interface OverviewPeriodFilterProps {
   availableYears: number[];
 }
 
@@ -31,7 +31,7 @@ const MONTHS = [
   { value: '11', label: 'December' },
 ];
 
-export function DashboardPeriodFilter({ availableYears }: DashboardPeriodFilterProps) {
+export function OverviewPeriodFilter({ availableYears }: OverviewPeriodFilterProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
