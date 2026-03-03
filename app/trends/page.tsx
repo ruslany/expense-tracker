@@ -204,6 +204,13 @@ export default async function TrendsPage({ searchParams }: PageProps) {
   const tagId = params.tagId || null;
   const defaultStartDate = new Date();
   defaultStartDate.setUTCFullYear(defaultStartDate.getUTCFullYear() - 2);
+  if (groupBy === 'quarter') {
+    const month = defaultStartDate.getUTCMonth(); // 0-11
+    const quarterStartMonth = month - (month % 3);
+    defaultStartDate.setUTCMonth(quarterStartMonth, 1);
+  } else if (groupBy === 'year') {
+    defaultStartDate.setUTCMonth(0, 1);
+  }
   const startDate = params.startDate ? new Date(params.startDate) : defaultStartDate;
   const endDate = params.endDate ? new Date(params.endDate) : null;
 
