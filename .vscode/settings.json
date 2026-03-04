@@ -1,0 +1,30 @@
+{
+  // Tailwind
+  "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
+
+  // Format on save with Prettier
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // ESLint auto-fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Prisma schema formatting
+  "[prisma]": { "editor.defaultFormatter": "Prisma.prisma" },
+
+  // Don't search generated files or node_modules
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/lib/generated": true
+  },
+
+  // TypeScript: use workspace version
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
+
