@@ -77,6 +77,7 @@ export function FilterCard({
     if (value === 'essential') {
       params.set('view', 'essential');
       params.delete('categoryId');
+      params.delete('tagId');
     } else {
       params.delete('view');
     }
@@ -145,7 +146,7 @@ export function FilterCard({
                   </Select>
                 </div>
               )}
-              <div className="space-y-2">
+              {selectedView === 'default' && <div className="space-y-2">
                 <Label htmlFor="tag-select">Tag</Label>
                 <Select value={selectedTagId || 'all'} onValueChange={handleTagChange}>
                   <SelectTrigger id="tag-select" className="w-full sm:w-45">
@@ -160,7 +161,7 @@ export function FilterCard({
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </div>}
             </div>
           </CollapsibleContent>
         </Collapsible>
