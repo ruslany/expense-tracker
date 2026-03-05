@@ -397,6 +397,17 @@ export default async function TrendsPage({ searchParams }: PageProps) {
           averagePerPeriod={trends.averagePerPeriod}
           highestPeriod={trends.highestPeriod}
           lowestPeriod={trends.lowestPeriod}
+          view={view}
+          essentialTotal={
+            view === 'essential'
+              ? (trends as EssentialTrendsData).data.reduce((sum, d) => sum + d.essential, 0)
+              : undefined
+          }
+          discretionaryTotal={
+            view === 'essential'
+              ? (trends as EssentialTrendsData).data.reduce((sum, d) => sum + d.discretionary, 0)
+              : undefined
+          }
         />
 
         {view === 'essential' ? (
