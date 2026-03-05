@@ -96,7 +96,14 @@ async function getCategorySpendingTable(year: number, month: number) {
   // Group by category with net totals (expenses - credits), count, and max expense
   const categoryMap = new Map<
     string,
-    { id: string | null; isEssential: boolean; expenses: number; credits: number; count: number; maxExpense: number }
+    {
+      id: string | null;
+      isEssential: boolean;
+      expenses: number;
+      credits: number;
+      count: number;
+      maxExpense: number;
+    }
   >();
 
   for (const t of transactions) {
