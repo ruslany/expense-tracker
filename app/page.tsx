@@ -96,7 +96,14 @@ async function getCategorySpendingTable(year: number, month: number) {
   // Group by category with net totals (expenses - credits), count, and max expense
   const categoryMap = new Map<
     string,
-    { id: string | null; expenses: number; credits: number; count: number; maxExpense: number }
+    {
+      id: string | null;
+      isEssential: boolean;
+      expenses: number;
+      credits: number;
+      count: number;
+      maxExpense: number;
+    }
   >();
 
   for (const t of transactions) {
@@ -114,6 +121,7 @@ async function getCategorySpendingTable(year: number, month: number) {
     } else {
       categoryMap.set(categoryName, {
         id: t.category?.id ?? null,
+        isEssential: t.category?.isEssential ?? false,
         expenses: t.amount < 0 ? Math.abs(t.amount) : 0,
         credits: t.amount > 0 ? t.amount : 0,
         count: 1,
@@ -139,6 +147,7 @@ async function getCategorySpendingTable(year: number, month: number) {
       return {
         id: stats.id,
         name,
+        isEssential: stats.isEssential,
         totalExpenses: Math.round(netSpending * 100) / 100,
         percent: grandTotal > 0 ? (netSpending / grandTotal) * 100 : 0,
         count: stats.count,
