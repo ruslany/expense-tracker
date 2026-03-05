@@ -26,6 +26,7 @@ interface Category {
   id: string;
   name: string;
   keywords: string[];
+  isEssential: boolean;
   transactionCount: number;
 }
 

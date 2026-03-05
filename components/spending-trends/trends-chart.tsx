@@ -8,32 +8,52 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from '@/components/ui/chart';
 import { formatCurrency } from '@/lib/utils';
+import type { EssentialDataPoint } from '@/app/trends/page';
 
 interface TrendDataPoint {
   label: string;
   amount: number;
 }
 
-interface TrendsChartProps {
-  data: TrendDataPoint[];
-  groupBy: 'month' | 'quarter' | 'year';
-  monthlyBudget: number | null;
-}
+type TrendsChartProps =
+  | {
+      view: 'default';
+      data: TrendDataPoint[];
+      groupBy: 'month' | 'quarter' | 'year';
+      monthlyBudget: number | null;
+    }
+  | {
+      view: 'essential';
+      data: EssentialDataPoint[];
+      groupBy: 'month' | 'quarter' | 'year';
+    };
 
-const chartConfig = {
+const defaultChartConfig = {
   amount: {
     label: 'Spent',
     color: 'var(--chart-1)',
   },
 } satisfies ChartConfig;
 
+const essentialChartConfig = {
+  essential: {
+    label: 'Essential',
+    color: 'var(--chart-1)',
+  },
+  discretionary: {
+    label: 'Discretionary',
+    color: 'var(--chart-2)',
+  },
+} satisfies ChartConfig;
+
 const budgetMultiplier = { month: 1, quarter: 3, year: 12 } as const;
 
-export function TrendsChart({ data, groupBy, monthlyBudget }: TrendsChartProps) {
-  const budgetGoal = monthlyBudget != null ? monthlyBudget * budgetMultiplier[groupBy] : null;
-  if (data.length === 0) {
+export function TrendsChart(props: TrendsChartProps) {
+  if (props.data.length === 0) {
     return (
       <Card>
         <CardContent>
@@ -45,13 +65,73 @@ export function TrendsChart({ data, groupBy, monthlyBudget }: TrendsChartProps) 
     );
   }
 
+  if (props.view === 'essential') {
+    return (
+      <Card>
+        <CardContent className="px-2 sm:p-6">
+          <ChartContainer config={essentialChartConfig} className="aspect-auto h-[250px] w-full">
+            <BarChart
+              accessibilityLayer
+              data={props.data}
+              margin={{ left: 12, right: 12 }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    className="w-[180px]"
+                    labelFormatter={(value) => String(value)}
+                    formatter={(value, name) => (
+                      <div className="flex w-full items-center gap-2">
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                          style={{
+                            backgroundColor:
+                              name === 'essential'
+                                ? 'var(--color-essential)'
+                                : 'var(--color-discretionary)',
+                          }}
+                        />
+                        <div className="flex flex-1 justify-between items-center leading-none">
+                          <span className="text-muted-foreground">
+                            {name === 'essential' ? 'Essential' : 'Discretionary'}
+                          </span>
+                          <span className="text-foreground font-mono font-medium tabular-nums">
+                            {formatCurrency(value as number)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  />
+                }
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar dataKey="essential" stackId="a" fill="var(--color-essential)" />
+              <Bar dataKey="discretionary" stackId="a" fill="var(--color-discretionary)" />
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const budgetGoal =
+    props.monthlyBudget != null ? props.monthlyBudget * budgetMultiplier[props.groupBy] : null;
+
   return (
     <Card>
       <CardContent className="px-2 sm:p-6">
-        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+        <ChartContainer config={defaultChartConfig} className="aspect-auto h-[250px] w-full">
           <BarChart
             accessibilityLayer
-            data={data}
+            data={props.data}
             margin={{
               left: 12,
               right: 12,

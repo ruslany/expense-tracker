@@ -30,6 +30,7 @@ interface FilterCardProps {
   selectedGroupBy: 'month' | 'quarter' | 'year';
   selectedCategoryId: string | null;
   selectedTagId: string | null;
+  selectedView: 'default' | 'essential';
 }
 
 export function FilterCard({
@@ -38,6 +39,7 @@ export function FilterCard({
   selectedGroupBy,
   selectedCategoryId,
   selectedTagId,
+  selectedView,
 }: FilterCardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,6 +71,17 @@ export function FilterCard({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
+  const handleViewChange = (value: 'default' | 'essential') => {
+    const params = new URLSearchParams(searchParams);
+    if (value === 'essential') {
+      params.set('view', 'essential');
+      params.delete('categoryId');
+    } else {
+      params.delete('view');
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   return (
     <Card>
       <CardContent>
@@ -82,6 +95,25 @@ export function FilterCard({
           <CollapsibleContent className="pt-2">
             <div className="flex flex-wrap gap-4">
               <div className="space-y-2">
+                <Label>View</Label>
+                <div className="flex gap-1">
+                  <Button
+                    variant={selectedView === 'default' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleViewChange('default')}
+                  >
+                    Total
+                  </Button>
+                  <Button
+                    variant={selectedView === 'essential' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleViewChange('essential')}
+                  >
+                    Essential vs Discretionary
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="group-by-select">Group By</Label>
                 <Select value={selectedGroupBy} onValueChange={handleGroupByChange}>
                   <SelectTrigger id="group-by-select" className="w-full sm:w-45">
@@ -94,22 +126,24 @@ export function FilterCard({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="category-select">Category</Label>
-                <Select value={selectedCategoryId || 'all'} onValueChange={handleCategoryChange}>
-                  <SelectTrigger id="category-select" className="w-full sm:w-45">
-                    <SelectValue placeholder="All categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {selectedView === 'default' && (
+                <div className="space-y-2">
+                  <Label htmlFor="category-select">Category</Label>
+                  <Select value={selectedCategoryId || 'all'} onValueChange={handleCategoryChange}>
+                    <SelectTrigger id="category-select" className="w-full sm:w-45">
+                      <SelectValue placeholder="All categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="tag-select">Tag</Label>
                 <Select value={selectedTagId || 'all'} onValueChange={handleTagChange}>

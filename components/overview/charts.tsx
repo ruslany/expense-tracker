@@ -19,6 +19,7 @@ interface SpendingDataPoint {
   date: string;
   runningTotal: number | null;
   prevYearRunningTotal: number | null;
+  essentialRunningTotal: number | null;
 }
 
 interface OverviewChartsProps {
@@ -30,6 +31,7 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
+  const hasEssentialData = spendingOverTime.some((d) => d.essentialRunningTotal !== null);
 
   return (
     <Card>
@@ -64,13 +66,21 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
                 const labels: Record<string, string> = {
                   runningTotal: 'This Year',
                   prevYearRunningTotal: 'Last Year',
+                  essentialRunningTotal: 'Essential',
                 };
                 return [`$${value.toLocaleString()}`, labels[name] ?? name];
               }}
             />
             <Legend
               wrapperStyle={{ fontSize: isMobile ? 10 : 12 }}
-              formatter={(value: string) => (value === 'runningTotal' ? 'This Year' : 'Last Year')}
+              formatter={(value: string) => {
+              const labels: Record<string, string> = {
+                runningTotal: 'This Year',
+                prevYearRunningTotal: 'Last Year',
+                essentialRunningTotal: 'Essential',
+              };
+              return labels[value] ?? value;
+            }}
             />
             {monthlyBudget != null && (
               <ReferenceLine
@@ -94,6 +104,18 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
                 stroke="hsl(var(--muted-foreground))"
                 strokeWidth={2}
                 dot={false}
+                connectNulls={false}
+              />
+            )}
+            {hasEssentialData && (
+              <Line
+                type="monotone"
+                dataKey="essentialRunningTotal"
+                name="essentialRunningTotal"
+                stroke="var(--chart-1)"
+                strokeWidth={2}
+                dot={false}
+                strokeDasharray="4 2"
                 connectNulls={false}
               />
             )}

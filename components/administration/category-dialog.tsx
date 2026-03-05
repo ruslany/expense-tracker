@@ -14,12 +14,14 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { KeywordInput } from './keyword-input';
 
 interface Category {
   id: string;
   name: string;
   keywords: string[];
+  isEssential: boolean;
 }
 
 interface CategoryDialogProps {
@@ -39,6 +41,7 @@ export function CategoryDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState('');
   const [keywords, setKeywords] = useState<string[]>([]);
+  const [isEssential, setIsEssential] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isEditing = !!category;
@@ -48,9 +51,11 @@ export function CategoryDialog({
       if (category) {
         setName(category.name);
         setKeywords(category.keywords);
+        setIsEssential(category.isEssential);
       } else {
         setName('');
         setKeywords([]);
+        setIsEssential(false);
       }
       setError(null);
     }
@@ -75,7 +80,7 @@ export function CategoryDialog({
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, keywords }),
+        body: JSON.stringify({ name, keywords, isEssential }),
       });
 
       if (!response.ok) {
@@ -128,6 +133,14 @@ export function CategoryDialog({
               <p className="text-xs text-muted-foreground">
                 Transactions containing these keywords will be auto-categorized.
               </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="is-essential"
+                checked={isEssential}
+                onCheckedChange={setIsEssential}
+              />
+              <Label htmlFor="is-essential">Essential spending</Label>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>

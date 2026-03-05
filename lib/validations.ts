@@ -35,6 +35,7 @@ export const csvMappingUpdateSchema = z.object({
 export const categorySchema = z.object({
   name: z.string().min(1, 'Category name is required'),
   keywords: z.array(z.string()).optional(),
+  isEssential: z.boolean().optional(),
 });
 
 export const transactionUpdateSchema = z.object({
@@ -84,6 +85,7 @@ export const transactionTagsUpdateSchema = z.object({
 export const categoryUpdateSchema = z.object({
   name: z.string().min(1, 'Category name is required').optional(),
   keywords: z.array(z.string()).optional(),
+  isEssential: z.boolean().optional(),
 });
 
 export const userRoleCreateSchema = z.object({
