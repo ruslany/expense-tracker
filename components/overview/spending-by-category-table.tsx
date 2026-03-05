@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -16,6 +17,7 @@ import { formatCurrency } from '@/lib/utils';
 interface CategorySpending {
   id: string | null;
   name: string;
+  isEssential: boolean;
   totalExpenses: number;
   percent: number;
   count: number;
@@ -60,9 +62,12 @@ export function SpendingByCategoryTable({
           {data.map((row) => (
             <div key={row.name} className="border rounded-lg p-3 space-y-2">
               <div className="flex items-center justify-between">
-                <Link href={getCategoryHref(row)} className="font-medium hover:underline">
-                  {row.name}
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link href={getCategoryHref(row)} className="font-medium hover:underline">
+                    {row.name}
+                  </Link>
+                  {row.isEssential && <Badge>Essential</Badge>}
+                </div>
                 <span className="font-semibold">{formatCurrency(row.totalExpenses)}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -110,10 +115,13 @@ export function SpendingByCategoryTable({
             <TableBody>
               {data.map((row) => (
                 <TableRow key={row.name}>
-                  <TableCell className="font-medium">
-                    <Link href={getCategoryHref(row)} className="hover:underline">
-                      {row.name}
-                    </Link>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Link href={getCategoryHref(row)} className="font-medium hover:underline">
+                        {row.name}
+                      </Link>
+                      {row.isEssential && <Badge>Essential</Badge>}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
