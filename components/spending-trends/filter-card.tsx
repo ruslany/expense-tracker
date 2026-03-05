@@ -146,22 +146,24 @@ export function FilterCard({
                   </Select>
                 </div>
               )}
-              {selectedView === 'default' && <div className="space-y-2">
-                <Label htmlFor="tag-select">Tag</Label>
-                <Select value={selectedTagId || 'all'} onValueChange={handleTagChange}>
-                  <SelectTrigger id="tag-select" className="w-full sm:w-45">
-                    <SelectValue placeholder="All tags" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Tags</SelectItem>
-                    {tags.map((tag) => (
-                      <SelectItem key={tag.id} value={tag.id}>
-                        {tag.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>}
+              {selectedView === 'default' && (
+                <div className="space-y-2">
+                  <Label htmlFor="tag-select">Tag</Label>
+                  <Select value={selectedTagId || 'all'} onValueChange={handleTagChange}>
+                    <SelectTrigger id="tag-select" className="w-full sm:w-45">
+                      <SelectValue placeholder="All tags" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Tags</SelectItem>
+                      {tags.map((tag) => (
+                        <SelectItem key={tag.id} value={tag.id}>
+                          {tag.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </CollapsibleContent>
         </Collapsible>
