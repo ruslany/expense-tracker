@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import { ChevronDownIcon } from 'lucide-react';
 
 interface Category {
@@ -96,7 +97,7 @@ export function FilterCard({
             <div className="flex flex-wrap gap-4">
               <div className="space-y-2">
                 <Label>View</Label>
-                <div className="flex gap-1">
+                <ButtonGroup>
                   <Button
                     variant={selectedView === 'default' ? 'default' : 'outline'}
                     size="sm"
@@ -111,7 +112,7 @@ export function FilterCard({
                   >
                     Essential vs Discretionary
                   </Button>
-                </div>
+                </ButtonGroup>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="group-by-select">Group By</Label>
