@@ -82,7 +82,12 @@ export function CategoryList({ categories }: CategoryListProps) {
                   <Card key={category.id}>
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <div className="font-medium">{category.name}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium">{category.name}</div>
+                          <Badge variant={category.isEssential ? 'default' : 'outline'}>
+                            {category.isEssential ? 'Essential' : 'Discretionary'}
+                          </Badge>
+                        </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon-xs">
@@ -138,7 +143,14 @@ export function CategoryList({ categories }: CategoryListProps) {
                   <TableBody>
                     {categories.map((category) => (
                       <TableRow key={category.id}>
-                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{category.name}</span>
+                            <Badge variant={category.isEssential ? 'default' : 'outline'}>
+                              {category.isEssential ? 'Essential' : 'Discretionary'}
+                            </Badge>
+                          </div>
+                        </TableCell>
                         <TableCell>
                           {category.keywords.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
