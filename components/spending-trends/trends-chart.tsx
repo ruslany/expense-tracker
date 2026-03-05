@@ -42,11 +42,11 @@ const defaultChartConfig = {
 const essentialChartConfig = {
   essential: {
     label: 'Essential',
-    color: 'var(--chart-1)',
+    color: '#16a34a',
   },
   discretionary: {
     label: 'Discretionary',
-    color: 'var(--chart-2)',
+    color: '#2563eb',
   },
 } satisfies ChartConfig;
 

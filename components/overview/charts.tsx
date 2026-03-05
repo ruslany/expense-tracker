@@ -112,7 +112,7 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
                 type="monotone"
                 dataKey="essentialRunningTotal"
                 name="essentialRunningTotal"
-                stroke="var(--chart-1)"
+                stroke="#16a34a"
                 strokeWidth={2}
                 dot={false}
                 strokeDasharray="4 2"
