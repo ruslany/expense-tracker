@@ -15,6 +15,7 @@ export async function GET() {
         id: true,
         name: true,
         keywords: true,
+        isEssential: true,
         _count: {
           select: { transactions: true },
         },
@@ -26,6 +27,7 @@ export async function GET() {
         id: c.id,
         name: c.name,
         keywords: c.keywords,
+        isEssential: c.isEssential,
         transactionCount: c._count.transactions,
       })),
     );
@@ -69,11 +71,13 @@ export async function POST(request: NextRequest) {
       data: {
         name: validated.name,
         keywords: validated.keywords ?? [],
+        isEssential: validated.isEssential ?? false,
       },
       select: {
         id: true,
         name: true,
         keywords: true,
+        isEssential: true,
       },
     });
 

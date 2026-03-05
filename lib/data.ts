@@ -242,6 +242,7 @@ export async function fetchCategoriesWithKeywords() {
         id: true,
         name: true,
         keywords: true,
+        isEssential: true,
         _count: {
           select: { transactions: true },
         },
@@ -251,6 +252,7 @@ export async function fetchCategoriesWithKeywords() {
       id: c.id,
       name: c.name,
       keywords: c.keywords,
+      isEssential: c.isEssential,
       transactionCount: c._count.transactions,
     }));
   } catch (error) {

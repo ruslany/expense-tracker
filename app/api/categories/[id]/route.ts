@@ -42,6 +42,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         id: true,
         name: true,
         keywords: true,
+        isEssential: true,
       },
     });
 

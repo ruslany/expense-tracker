@@ -196,10 +196,52 @@ async function getRunningTotalForMonth(year: number, month: number) {
   return { totals: result, lastDayWithData };
 }
 
+async function getRunningEssentialTotalForMonth(year: number, month: number) {
+  const prisma = await getPrisma();
+  const startOfMonth = new Date(Date.UTC(year, month, 1));
+  const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
+
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      date: {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      },
+      NOT: { splits: { some: {} } },
+      category: { isEssential: true },
+    },
+    select: { date: true, amount: true },
+    orderBy: { date: 'asc' },
+  });
+
+  const spendingByDay = new Map<number, number>();
+  for (const t of transactions) {
+    const day = t.date.getUTCDate();
+    const current = spendingByDay.get(day) ?? 0;
+    if (t.amount < 0) {
+      spendingByDay.set(day, current + Math.abs(t.amount));
+    } else {
+      spendingByDay.set(day, current - t.amount);
+    }
+  }
+
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  const lastDayWithData = spendingByDay.size > 0 ? Math.max(...spendingByDay.keys()) : 0;
+  const result = new Map<number, number>();
+  let runningTotal = 0;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const daySpending = spendingByDay.get(day) ?? 0;
+    runningTotal += daySpending;
+    result.set(day, Math.round(runningTotal * 100) / 100);
+  }
+  return { totals: result, lastDayWithData };
+}
+
 async function getSpendingOverTime(year: number, month: number) {
-  const [current, prevYear] = await Promise.all([
+  const [current, prevYear, essential] = await Promise.all([
     getRunningTotalForMonth(year, month),
     getRunningTotalForMonth(year - 1, month),
+    getRunningEssentialTotalForMonth(year, month),
   ]);
 
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
@@ -214,6 +256,8 @@ async function getSpendingOverTime(year: number, month: number) {
       date: `${monthName} ${day}`,
       runningTotal: day <= current.lastDayWithData ? (current.totals.get(day) ?? 0) : null,
       prevYearRunningTotal: prevYear.lastDayWithData > 0 ? (prevYear.totals.get(day) ?? 0) : null,
+      essentialRunningTotal:
+        day <= essential.lastDayWithData ? (essential.totals.get(day) ?? 0) : null,
     };
   });
 }
