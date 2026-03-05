@@ -84,9 +84,7 @@ export function CategoryList({ categories }: CategoryListProps) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="font-medium">{category.name}</div>
-                          <Badge variant={category.isEssential ? 'default' : 'outline'}>
-                            {category.isEssential ? 'Essential' : 'Discretionary'}
-                          </Badge>
+                          {category.isEssential && <Badge>Essential</Badge>}
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -146,9 +144,7 @@ export function CategoryList({ categories }: CategoryListProps) {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{category.name}</span>
-                            <Badge variant={category.isEssential ? 'default' : 'outline'}>
-                              {category.isEssential ? 'Essential' : 'Discretionary'}
-                            </Badge>
+                            {category.isEssential && <Badge>Essential</Badge>}
                           </div>
                         </TableCell>
                         <TableCell>
