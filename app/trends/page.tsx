@@ -343,7 +343,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const groupBy = (params.groupBy as 'month' | 'quarter' | 'year') || 'month';
   const view = params.view === 'essential' ? 'essential' : 'default';
-  const categoryId = view === 'essential' ? null : (params.categoryId || null);
+  const categoryId = view === 'essential' ? null : params.categoryId || null;
   const tagId = params.tagId || null;
   const defaultStartDate = new Date();
   defaultStartDate.setUTCFullYear(defaultStartDate.getUTCFullYear() - 2);

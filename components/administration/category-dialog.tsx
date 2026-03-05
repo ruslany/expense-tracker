@@ -135,11 +135,7 @@ export function CategoryDialog({
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Switch
-                id="is-essential"
-                checked={isEssential}
-                onCheckedChange={setIsEssential}
-              />
+              <Switch id="is-essential" checked={isEssential} onCheckedChange={setIsEssential} />
               <Label htmlFor="is-essential">Essential spending</Label>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}

@@ -70,11 +70,7 @@ export function TrendsChart(props: TrendsChartProps) {
       <Card>
         <CardContent className="px-2 sm:p-6">
           <ChartContainer config={essentialChartConfig} className="aspect-auto h-[250px] w-full">
-            <BarChart
-              accessibilityLayer
-              data={props.data}
-              margin={{ left: 12, right: 12 }}
-            >
+            <BarChart accessibilityLayer data={props.data} margin={{ left: 12, right: 12 }}>
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="label"

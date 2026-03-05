@@ -74,13 +74,13 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
             <Legend
               wrapperStyle={{ fontSize: isMobile ? 10 : 12 }}
               formatter={(value: string) => {
-              const labels: Record<string, string> = {
-                runningTotal: 'This Year',
-                prevYearRunningTotal: 'Last Year',
-                essentialRunningTotal: 'Essential',
-              };
-              return labels[value] ?? value;
-            }}
+                const labels: Record<string, string> = {
+                  runningTotal: 'This Year',
+                  prevYearRunningTotal: 'Last Year',
+                  essentialRunningTotal: 'Essential',
+                };
+                return labels[value] ?? value;
+              }}
             />
             {monthlyBudget != null && (
               <ReferenceLine
