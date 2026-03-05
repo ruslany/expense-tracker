@@ -257,7 +257,9 @@ async function getSpendingOverTime(year: number, month: number) {
       runningTotal: day <= current.lastDayWithData ? (current.totals.get(day) ?? 0) : null,
       prevYearRunningTotal: prevYear.lastDayWithData > 0 ? (prevYear.totals.get(day) ?? 0) : null,
       essentialRunningTotal:
-        day <= essential.lastDayWithData ? (essential.totals.get(day) ?? 0) : null,
+        essential.lastDayWithData > 0 && day <= current.lastDayWithData
+          ? (essential.totals.get(day) ?? 0)
+          : null,
     };
   });
 }
