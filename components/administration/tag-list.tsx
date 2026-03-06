@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2, Plus } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, Plus, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
 import {
@@ -77,7 +77,12 @@ export function TagList({ tags }: TagListProps) {
                   <Card key={tag.id}>
                     <CardContent className="p-4 space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="font-medium">{tag.name}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{tag.name}</span>
+                          {tag.isBigExpense && (
+                            <TrendingUp className="size-3.5 text-muted-foreground" />
+                          )}
+                        </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon-xs">
@@ -114,6 +119,7 @@ export function TagList({ tags }: TagListProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>Big Expense</TableHead>
                       <TableHead className="text-right">Transactions</TableHead>
                       <TableHead className="w-10"></TableHead>
                     </TableRow>
@@ -122,6 +128,11 @@ export function TagList({ tags }: TagListProps) {
                     {tags.map((tag) => (
                       <TableRow key={tag.id}>
                         <TableCell className="font-medium">{tag.name}</TableCell>
+                        <TableCell>
+                          {tag.isBigExpense && (
+                            <TrendingUp className="size-4 text-muted-foreground" />
+                          )}
+                        </TableCell>
                         <TableCell className="text-right">{tag.transactionCount}</TableCell>
                         <TableCell>
                           <DropdownMenu>

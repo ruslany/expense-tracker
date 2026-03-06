@@ -14,10 +14,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 interface Tag {
   id: string;
   name: string;
+  isBigExpense: boolean;
 }
 
 interface TagDialogProps {
@@ -30,6 +32,7 @@ export function TagDialog({ open, onOpenChange, tag }: TagDialogProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState('');
+  const [isBigExpense, setIsBigExpense] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isEditing = !!tag;
@@ -38,8 +41,10 @@ export function TagDialog({ open, onOpenChange, tag }: TagDialogProps) {
     if (open) {
       if (tag) {
         setName(tag.name);
+        setIsBigExpense(tag.isBigExpense);
       } else {
         setName('');
+        setIsBigExpense(false);
       }
       setError(null);
     }
@@ -57,7 +62,7 @@ export function TagDialog({ open, onOpenChange, tag }: TagDialogProps) {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, isBigExpense }),
       });
 
       if (!response.ok) {
@@ -100,6 +105,10 @@ export function TagDialog({ open, onOpenChange, tag }: TagDialogProps) {
                 required
                 maxLength={50}
               />
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch id="is-big-expense" checked={isBigExpense} onCheckedChange={setIsBigExpense} />
+              <Label htmlFor="is-big-expense">Big expense</Label>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>

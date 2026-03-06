@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
     const tag = await prisma.tag.create({
       data: {
         name: validated.name,
+        isBigExpense: validated.isBigExpense ?? false,
       },
       select: {
         id: true,
