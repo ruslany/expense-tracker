@@ -64,23 +64,23 @@ export function AdministrationTabs({
       <TabsList>
         <TabsTrigger value="accounts">
           <Wallet />
-          Accounts
+          <span className="hidden sm:inline">Accounts</span>
         </TabsTrigger>
         <TabsTrigger value="categories">
           <Tags />
-          Categories
+          <span className="hidden sm:inline">Categories</span>
         </TabsTrigger>
         <TabsTrigger value="tags">
           <Tag />
-          Tags
+          <span className="hidden sm:inline">Tags</span>
         </TabsTrigger>
         <TabsTrigger value="users">
           <Users />
-          Users
+          <span className="hidden sm:inline">Users</span>
         </TabsTrigger>
         <TabsTrigger value="import-rules">
           <FileInput />
-          Import Rules
+          <span className="hidden sm:inline">Import Rules</span>
         </TabsTrigger>
       </TabsList>
       <TabsContent value="accounts">
