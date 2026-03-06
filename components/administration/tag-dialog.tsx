@@ -107,7 +107,11 @@ export function TagDialog({ open, onOpenChange, tag }: TagDialogProps) {
               />
             </div>
             <div className="flex items-center gap-3">
-              <Switch id="is-big-expense" checked={isBigExpense} onCheckedChange={setIsBigExpense} />
+              <Switch
+                id="is-big-expense"
+                checked={isBigExpense}
+                onCheckedChange={setIsBigExpense}
+              />
               <Label htmlFor="is-big-expense">Big expense</Label>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
