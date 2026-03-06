@@ -76,6 +76,7 @@ export const csvUploadSchema = z.object({
 
 export const tagSchema = z.object({
   name: z.string().min(1, 'Tag name is required').max(50, 'Tag name too long'),
+  isBigExpense: z.boolean().optional(),
 });
 
 export const transactionTagsUpdateSchema = z.object({
