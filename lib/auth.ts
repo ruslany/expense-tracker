@@ -24,16 +24,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (adminEmail && email === adminEmail) {
         await prisma.userRole.upsert({
           where: { email },
-          update: { role: 'admin' },
-          create: { email, role: 'admin' },
+          update: { role: 'admin', lastLoginAt: new Date() },
+          create: { email, role: 'admin', lastLoginAt: new Date() },
         });
         return true;
       }
 
-      // Check if user exists in UserRole table
+      // Check if user exists in UserRole table and record login time
       const userRole = await prisma.userRole.findUnique({
         where: { email },
       });
+
+      if (userRole) {
+        await prisma.userRole.update({
+          where: { email },
+          data: { lastLoginAt: new Date() },
+        });
+      }
 
       return !!userRole;
     },

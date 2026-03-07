@@ -361,6 +361,7 @@ export async function fetchUsers() {
       id: u.id,
       email: u.email,
       role: u.role,
+      lastLoginAt: u.lastLoginAt,
       createdAt: u.createdAt,
     }));
   } catch (error) {
