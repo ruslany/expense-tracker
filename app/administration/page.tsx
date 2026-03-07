@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { auth } from '@/lib/auth';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_COOKIE } from '@/lib/constants';
 import { AppShell } from '@/components/app-shell';
 import { AdministrationTabs } from '@/components/administration/administration-tabs';
 import {
@@ -19,6 +21,9 @@ export default async function AdministrationPage() {
   if (!session?.user || session.user.role !== 'admin') {
     redirect('/');
   }
+
+  const cookieStore = await cookies();
+  const pageSize = Number(cookieStore.get(PAGE_SIZE_COOKIE)?.value) || DEFAULT_PAGE_SIZE;
 
   const [accounts, categories, tags, users, csvMappings] = await Promise.all([
     fetchAccountsWithTransactionCount(),
@@ -42,6 +47,7 @@ export default async function AdministrationPage() {
           tags={tags}
           users={users}
           csvMappings={csvMappings}
+          pageSize={pageSize}
         />
       </div>
     </AppShell>

@@ -1,8 +1,7 @@
 import { getPrisma } from './prisma';
 import type { TransactionWhereInput } from './generated/prisma/models/Transaction';
 import type { FundType } from '@/types';
-
-const DEFAULT_PAGE_SIZE = 10;
+import { DEFAULT_PAGE_SIZE } from './constants';
 
 function buildTransactionWhereClause(
   query?: string,

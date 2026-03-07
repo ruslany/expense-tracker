@@ -1,12 +1,13 @@
 'use client';
 
-import { Wallet, Tags, Tag, Users, FileInput } from 'lucide-react';
+import { Wallet, Tags, Tag, Users, FileInput, Settings } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AccountList } from './account-list';
 import { CategoryList } from './category-list';
 import { TagList } from './tag-list';
 import { UserList } from './user-list';
 import { CSVMappingList } from './csv-mapping-list';
+import { SettingsTab } from './settings-tab';
 
 interface Account {
   id: string;
@@ -51,6 +52,7 @@ interface AdministrationTabsProps {
   tags: Tag[];
   users: User[];
   csvMappings: CSVMapping[];
+  pageSize: number;
 }
 
 export function AdministrationTabs({
@@ -59,6 +61,7 @@ export function AdministrationTabs({
   tags,
   users,
   csvMappings,
+  pageSize,
 }: AdministrationTabsProps) {
   return (
     <Tabs defaultValue="accounts">
@@ -83,6 +86,10 @@ export function AdministrationTabs({
           <FileInput />
           <span className="hidden sm:inline">Import Rules</span>
         </TabsTrigger>
+        <TabsTrigger value="settings">
+          <Settings />
+          <span className="hidden sm:inline">Settings</span>
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="accounts">
         <AccountList accounts={accounts} />
@@ -98,6 +105,9 @@ export function AdministrationTabs({
       </TabsContent>
       <TabsContent value="import-rules">
         <CSVMappingList mappings={csvMappings} />
+      </TabsContent>
+      <TabsContent value="settings">
+        <SettingsTab currentPageSize={pageSize} />
       </TabsContent>
     </Tabs>
   );
