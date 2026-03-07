@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_COOKIE } from '@/lib/constants';
 import { AppShell } from '@/components/app-shell';
 import { TransactionsTable } from '@/components/transactions/table';
 import { SearchTransactions } from '@/components/transactions/search';
@@ -30,9 +32,11 @@ export default async function TransactionsPage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
+  const cookieStore = await cookies();
+  const defaultPageSize = Number(cookieStore.get(PAGE_SIZE_COOKIE)?.value) || DEFAULT_PAGE_SIZE;
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-  const pageSize = Number(searchParams?.pageSize) || 10;
+  const pageSize = Number(searchParams?.pageSize) || defaultPageSize;
   const categoryId = searchParams?.categoryId;
   const accountId = searchParams?.accountId;
   const tagId = searchParams?.tagId;
