@@ -35,6 +35,7 @@ interface User {
   id: string;
   email: string;
   role: string;
+  lastLoginAt: Date | null;
   createdAt: Date;
 }
 

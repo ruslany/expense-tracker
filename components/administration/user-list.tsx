@@ -53,6 +53,7 @@ interface User {
   id: string;
   email: string;
   role: string;
+  lastLoginAt: Date | null;
   createdAt: Date;
 }
 
@@ -308,9 +309,10 @@ export function UserList({ users }: UserListProps) {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Added {formatDate(user.createdAt)}
-                      </p>
+                      <div className="text-xs text-muted-foreground space-y-0.5">
+                        <p>Added {formatDate(user.createdAt)}</p>
+                        <p>Last seen {user.lastLoginAt ? formatDate(user.lastLoginAt) : 'never'}</p>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -324,6 +326,7 @@ export function UserList({ users }: UserListProps) {
                       <TableHead>Email</TableHead>
                       <TableHead>Role</TableHead>
                       <TableHead>Added</TableHead>
+                      <TableHead>Last seen</TableHead>
                       <TableHead className="w-10"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -336,6 +339,9 @@ export function UserList({ users }: UserListProps) {
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {formatDate(user.createdAt)}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {user.lastLoginAt ? formatDate(user.lastLoginAt) : 'Never'}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
