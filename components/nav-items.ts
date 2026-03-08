@@ -7,6 +7,7 @@ import {
   Tag,
   TrendingUp,
   LineChart,
+  LayoutGrid,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -32,6 +33,11 @@ export const navItems: NavItem[] = [
     title: 'Big Expenses',
     href: '/big-expenses',
     icon: PieChart,
+  },
+  {
+    title: 'Categories',
+    href: '/categories',
+    icon: LayoutGrid,
   },
   {
     title: 'Tags',
