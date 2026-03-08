@@ -128,8 +128,13 @@ export function CategoryTreemap({ data }: CategoryTreemapProps) {
     .map((d) => ({ name: d.name, size: d.totalExpenses, percent: d.percent }));
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <Treemap data={chartData} dataKey="size" content={<CustomContent />}>
+    <ResponsiveContainer width="100%" height={400} debounce={200}>
+      <Treemap
+        data={chartData}
+        dataKey="size"
+        content={<CustomContent />}
+        isAnimationActive={false}
+      >
         <Tooltip content={<CustomTooltip />} />
       </Treemap>
     </ResponsiveContainer>
