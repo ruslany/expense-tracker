@@ -28,7 +28,11 @@ const COLORS = [
 
 function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null;
-  const { name, size, percent } = payload[0].payload as { name: string; size: number; percent: number };
+  const { name, size, percent } = payload[0].payload as {
+    name: string;
+    size: number;
+    percent: number;
+  };
   return (
     <div
       style={{
@@ -41,7 +45,9 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
       }}
     >
       <div style={{ fontWeight: 600, marginBottom: 4 }}>{name}</div>
-      <div>{formatCurrency(size)}, {percent.toFixed(1)}%</div>
+      <div>
+        {formatCurrency(size)}, {percent.toFixed(1)}%
+      </div>
     </div>
   );
 }
@@ -56,7 +62,15 @@ interface ContentProps {
   index?: number;
 }
 
-function CustomContent({ x = 0, y = 0, width = 0, height = 0, name, value, index = 0 }: ContentProps) {
+function CustomContent({
+  x = 0,
+  y = 0,
+  width = 0,
+  height = 0,
+  name,
+  value,
+  index = 0,
+}: ContentProps) {
   const color = COLORS[index % COLORS.length];
   const showLabel = width > 60 && height > 40;
   const showValue = width > 80 && height > 60;
@@ -115,11 +129,7 @@ export function CategoryTreemap({ data }: CategoryTreemapProps) {
 
   return (
     <ResponsiveContainer width="100%" height={400}>
-      <Treemap
-        data={chartData}
-        dataKey="size"
-        content={<CustomContent />}
-      >
+      <Treemap data={chartData} dataKey="size" content={<CustomContent />}>
         <Tooltip content={<CustomTooltip />} />
       </Treemap>
     </ResponsiveContainer>
