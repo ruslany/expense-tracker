@@ -129,7 +129,12 @@ export function CategoryTreemap({ data }: CategoryTreemapProps) {
 
   return (
     <ResponsiveContainer width="100%" height={400} debounce={200}>
-      <Treemap data={chartData} dataKey="size" content={<CustomContent />} isAnimationActive={false}>
+      <Treemap
+        data={chartData}
+        dataKey="size"
+        content={<CustomContent />}
+        isAnimationActive={false}
+      >
         <Tooltip content={<CustomTooltip />} />
       </Treemap>
     </ResponsiveContainer>
