@@ -29,8 +29,10 @@ interface SpendingByCategoryTableProps {
   grandTotal: number;
   totalCount: number;
   overallMaxTransaction: number;
-  year: number;
-  month: number;
+  year?: number;
+  month?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export function SpendingByCategoryTable({
@@ -40,14 +42,26 @@ export function SpendingByCategoryTable({
   overallMaxTransaction,
   year,
   month,
+  startDate,
+  endDate,
 }: SpendingByCategoryTableProps) {
   const maxExpense = Math.max(...data.map((d) => d.totalExpenses), 1);
 
   function getCategoryHref(row: CategorySpending) {
-    const startDate = new Date(Date.UTC(year, month, 1)).toISOString().split('T')[0];
-    const endDate = new Date(Date.UTC(year, month + 1, 0)).toISOString().split('T')[0];
+    const start =
+      startDate ??
+      (year !== undefined && month !== undefined
+        ? new Date(Date.UTC(year, month, 1)).toISOString().split('T')[0]
+        : undefined);
+    const end =
+      endDate ??
+      (year !== undefined && month !== undefined
+        ? new Date(Date.UTC(year, month + 1, 0)).toISOString().split('T')[0]
+        : undefined);
     const categoryId = row.id ?? 'uncategorized';
-    const params = new URLSearchParams({ categoryId, startDate, endDate });
+    const params = new URLSearchParams({ categoryId });
+    if (start) params.set('startDate', start);
+    if (end) params.set('endDate', end);
     return `/transactions?${params.toString()}`;
   }
 
