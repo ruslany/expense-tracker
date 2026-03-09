@@ -103,13 +103,10 @@ async function getCategoryReport(startDate: Date | null, endDate: Date | null) {
 
 export default async function CategoriesPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const currentYear = new Date().getFullYear();
-  const defaultStartDate = `${currentYear}-01-01`;
-  const defaultEndDate = `${currentYear}-12-31`;
-  const startDateStr = params.startDate ?? defaultStartDate;
-  const endDateStr = params.endDate ?? defaultEndDate;
-  const startDate = new Date(startDateStr);
-  const endDate = new Date(endDateStr);
+  const startDateStr = params.startDate ?? null;
+  const endDateStr = params.endDate ?? null;
+  const startDate = startDateStr ? new Date(startDateStr) : null;
+  const endDate = endDateStr ? new Date(endDateStr) : null;
 
   const report = await getCategoryReport(startDate, endDate);
 
@@ -123,10 +120,9 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
           </div>
           <DateRangeFilter
             key={`dates-${startDateStr}-${endDateStr}`}
-            startDate={startDate}
-            endDate={endDate}
+            startDate={startDate ?? undefined}
+            endDate={endDate ?? undefined}
             storageKey="category-report-dates"
-            restoreOnMount={false}
           />
         </div>
 
@@ -150,8 +146,8 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
           grandTotal={report.grandTotal}
           totalCount={report.totalCount}
           overallMaxTransaction={report.overallMaxTransaction}
-          startDate={startDateStr}
-          endDate={endDateStr}
+          startDate={startDateStr ?? undefined}
+          endDate={endDateStr ?? undefined}
         />
       </div>
     </AppShell>
