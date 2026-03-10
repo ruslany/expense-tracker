@@ -30,7 +30,7 @@ export function MobileNav() {
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-64">
+        <SheetContent side="left" className="w-64" aria-describedby={undefined}>
           <SheetHeader className="border-b pb-4">
             <SheetTitle>Expense Tracker</SheetTitle>
           </SheetHeader>
