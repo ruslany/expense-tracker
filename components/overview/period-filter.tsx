@@ -107,7 +107,10 @@ export function OverviewPeriodFilter({ availableYears }: OverviewPeriodFilterPro
     const params = new URLSearchParams(searchParams);
     params.set('month', month.toString());
     params.set('year', year.toString());
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ year: year.toString(), month: month.toString() }));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ year: year.toString(), month: month.toString() }),
+    );
     replace(`${pathname}?${params.toString()}`);
   };
 
