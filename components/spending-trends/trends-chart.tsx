@@ -129,11 +129,12 @@ export function TrendsChart(props: TrendsChartProps) {
 
   const dataWithMA = props.data.map((d, i) => ({
     ...d,
-    movingAvg:
-      showMA && i >= 2
-        ? Math.round((props.data.slice(i - 2, i + 1).reduce((s, p) => s + p.amount, 0) / 3) * 100) /
-          100
-        : null,
+    movingAvg: showMA
+      ? (() => {
+          const window = props.data.slice(Math.max(0, i - 2), i + 1);
+          return Math.round((window.reduce((s, p) => s + p.amount, 0) / window.length) * 100) / 100;
+        })()
+      : null,
   }));
 
   return (
