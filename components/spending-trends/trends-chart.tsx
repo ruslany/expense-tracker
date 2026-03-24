@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Bar, BarChart, CartesianGrid, ReferenceLine, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ComposedChart, Line, ReferenceLine, XAxis } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   type ChartConfig,
@@ -36,6 +36,10 @@ const defaultChartConfig = {
   amount: {
     label: 'Spent',
     color: 'var(--chart-1)',
+  },
+  movingAvg: {
+    label: '3-period avg',
+    color: 'var(--chart-4)',
   },
 } satisfies ChartConfig;
 
@@ -121,13 +125,25 @@ export function TrendsChart(props: TrendsChartProps) {
   const budgetGoal =
     props.monthlyBudget != null ? props.monthlyBudget * budgetMultiplier[props.groupBy] : null;
 
+  const showMA = props.groupBy === 'month';
+
+  const dataWithMA = props.data.map((d, i) => ({
+    ...d,
+    movingAvg:
+      showMA && i >= 2
+        ? Math.round(
+            (props.data.slice(i - 2, i + 1).reduce((s, p) => s + p.amount, 0) / 3) * 100,
+          ) / 100
+        : null,
+  }));
+
   return (
     <Card>
       <CardContent className="px-2 sm:p-6">
         <ChartContainer config={defaultChartConfig} className="aspect-auto h-[250px] w-full">
-          <BarChart
+          <ComposedChart
             accessibilityLayer
-            data={props.data}
+            data={dataWithMA}
             margin={{
               left: 12,
               right: 12,
@@ -144,26 +160,44 @@ export function TrendsChart(props: TrendsChartProps) {
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className="w-[150px]"
+                  className="w-[175px]"
                   labelFormatter={(value) => String(value)}
-                  formatter={(value) => (
-                    <div className="flex w-full items-center gap-2">
-                      <div
-                        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-                        style={{ backgroundColor: 'var(--color-amount)' }}
-                      />
-                      <div className="flex flex-1 justify-between items-center leading-none">
-                        <span className="text-muted-foreground">Spent</span>
-                        <span className="text-foreground font-mono font-medium tabular-nums">
-                          {formatCurrency(value as number)}
-                        </span>
+                  formatter={(value, name) => {
+                    const isMA = name === 'movingAvg';
+                    if (isMA && !showMA) return null;
+                    return (
+                      <div className="flex w-full items-center gap-2">
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                          style={{
+                            backgroundColor: isMA ? 'var(--color-movingAvg)' : 'var(--color-amount)',
+                          }}
+                        />
+                        <div className="flex flex-1 justify-between items-center leading-none">
+                          <span className="text-muted-foreground">
+                            {isMA ? '3-period avg' : 'Spent'}
+                          </span>
+                          <span className="text-foreground font-mono font-medium tabular-nums">
+                            {formatCurrency(value as number)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  }}
                 />
               }
             />
             <Bar dataKey="amount" fill="var(--color-amount)" />
+            {showMA && (
+              <Line
+                dataKey="movingAvg"
+                type="monotone"
+                stroke="var(--color-movingAvg)"
+                strokeWidth={2}
+                dot={false}
+                connectNulls={false}
+              />
+            )}
             {budgetGoal != null && (
               <ReferenceLine
                 y={budgetGoal}
@@ -178,7 +212,7 @@ export function TrendsChart(props: TrendsChartProps) {
                 }}
               />
             )}
-          </BarChart>
+          </ComposedChart>
         </ChartContainer>
       </CardContent>
     </Card>
