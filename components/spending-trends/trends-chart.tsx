@@ -131,9 +131,8 @@ export function TrendsChart(props: TrendsChartProps) {
     ...d,
     movingAvg:
       showMA && i >= 2
-        ? Math.round(
-            (props.data.slice(i - 2, i + 1).reduce((s, p) => s + p.amount, 0) / 3) * 100,
-          ) / 100
+        ? Math.round((props.data.slice(i - 2, i + 1).reduce((s, p) => s + p.amount, 0) / 3) * 100) /
+          100
         : null,
   }));
 
@@ -170,7 +169,9 @@ export function TrendsChart(props: TrendsChartProps) {
                         <div
                           className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
                           style={{
-                            backgroundColor: isMA ? 'var(--color-movingAvg)' : 'var(--color-amount)',
+                            backgroundColor: isMA
+                              ? 'var(--color-movingAvg)'
+                              : 'var(--color-amount)',
                           }}
                         />
                         <div className="flex flex-1 justify-between items-center leading-none">
