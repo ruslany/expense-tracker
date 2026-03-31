@@ -415,6 +415,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
             view="essential"
             data={(trends as EssentialTrendsData).data}
             groupBy={groupBy}
+            categoryName="Essential vs Discretionary"
           />
         ) : (
           <TrendsChart
@@ -423,6 +424,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
             groupBy={groupBy}
             monthlyBudget={monthlyBudget}
             averagePerPeriod={(trends as TrendsData).averagePerPeriod}
+            categoryName={categories.find((c) => c.id === categoryId)?.name}
           />
         )}
       </div>
