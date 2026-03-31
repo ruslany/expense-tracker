@@ -3,6 +3,10 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-media-query';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Camera } from 'lucide-react';
+import { useScreenshot } from '@/hooks/use-screenshot';
 
 interface CategoryBreakdown {
   categoryName: string;
@@ -13,6 +17,7 @@ interface CategoryBreakdown {
 
 interface CategoryBreakdownChartProps {
   data: CategoryBreakdown[];
+  title: string;
 }
 
 const COLORS = [
@@ -28,16 +33,9 @@ const COLORS = [
   '#6366f1', // indigo
 ];
 
-export function CategoryBreakdownChart({ data }: CategoryBreakdownChartProps) {
+export function CategoryBreakdownChart({ data, title }: CategoryBreakdownChartProps) {
   const isMobile = useIsMobile();
-
-  if (data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-75 text-muted-foreground">
-        No data available
-      </div>
-    );
-  }
+  const { ref: cardRef, handleScreenshot } = useScreenshot();
 
   const MAX_SLICES = 7;
   const allSlices = data.map((item) => ({
@@ -58,42 +56,58 @@ export function CategoryBreakdownChart({ data }: CategoryBreakdownChartProps) {
   const outerRadius = isMobile ? 60 : 100;
 
   return (
-    <ResponsiveContainer width="100%" height={chartHeight}>
-      <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-        <Pie
-          data={chartData}
-          cx="50%"
-          cy="50%"
-          outerRadius={outerRadius}
-          fill="#8884d8"
-          dataKey="value"
-          label={({ percent }) => `${((percent ?? 0) * 100).toFixed(1)}%`}
-          labelLine={false}
-        >
-          {chartData.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={entry.name === 'Other' ? '#9ca3af' : COLORS[index % COLORS.length]}
-            />
-          ))}
-        </Pie>
-        <Tooltip
-          formatter={(value) => formatCurrency(value as number)}
-          contentStyle={{
-            backgroundColor: 'hsl(var(--card))',
-            border: '1px solid hsl(var(--border))',
-            borderRadius: '8px',
-            color: 'hsl(var(--card-foreground))',
-          }}
-          itemStyle={{
-            color: 'hsl(var(--card-foreground))',
-          }}
-          labelStyle={{
-            color: 'hsl(var(--card-foreground))',
-          }}
-        />
-        <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 14 }} />
-      </PieChart>
-    </ResponsiveContainer>
+    <Card ref={cardRef}>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>{title}</CardTitle>
+        <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
+          <Camera className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {data.length === 0 ? (
+          <div className="flex items-center justify-center h-75 text-muted-foreground">
+            No data available
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={chartHeight}>
+            <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                outerRadius={outerRadius}
+                fill="#8884d8"
+                dataKey="value"
+                label={({ percent }) => `${((percent ?? 0) * 100).toFixed(1)}%`}
+                labelLine={false}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.name === 'Other' ? '#9ca3af' : COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => formatCurrency(value as number)}
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px',
+                  color: 'hsl(var(--card-foreground))',
+                }}
+                itemStyle={{
+                  color: 'hsl(var(--card-foreground))',
+                }}
+                labelStyle={{
+                  color: 'hsl(var(--card-foreground))',
+                }}
+              />
+              <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 14 }} />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
   );
 }

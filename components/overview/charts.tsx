@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   ComposedChart,
   Area,
@@ -14,6 +15,8 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { useIsMobile } from '@/hooks/use-media-query';
+import { Camera } from 'lucide-react';
+import { useScreenshot } from '@/hooks/use-screenshot';
 
 interface SpendingDataPoint {
   date: string;
@@ -32,11 +35,15 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
   const hasEssentialData = spendingOverTime.some((d) => d.essentialRunningTotal !== null);
+  const { ref: cardRef, handleScreenshot } = useScreenshot();
 
   return (
-    <Card>
-      <CardHeader>
+    <Card ref={cardRef}>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Spending Over Time</CardTitle>
+        <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
+          <Camera className="h-4 w-4" />
+        </Button>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={chartHeight}>

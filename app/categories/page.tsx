@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { SummaryStats } from '@/components/summary-stats';
 import { SpendingByCategoryTable } from '@/components/overview/spending-by-category-table';
@@ -132,14 +131,7 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
           maxTransaction={report.overallMaxTransaction}
         />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Spending by Category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CategoryTreemap data={report.data} />
-          </CardContent>
-        </Card>
+        <CategoryTreemap data={report.data} title="Spending by Category" />
 
         <SpendingByCategoryTable
           data={report.data}

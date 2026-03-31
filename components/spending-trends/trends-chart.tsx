@@ -1,8 +1,7 @@
 'use client';
 
-import * as React from 'react';
 import { Bar, BarChart, CartesianGrid, ComposedChart, Line, ReferenceLine, XAxis } from 'recharts';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   type ChartConfig,
@@ -15,6 +14,7 @@ import {
 import { formatCurrency } from '@/lib/utils';
 import type { EssentialDataPoint } from '@/app/trends/page';
 import { Camera } from 'lucide-react';
+import { useScreenshot } from '@/hooks/use-screenshot';
 
 interface TrendDataPoint {
   label: string;
@@ -62,17 +62,7 @@ const essentialChartConfig = {
 const budgetMultiplier = { month: 1, quarter: 3, year: 12 } as const;
 
 export function TrendsChart(props: TrendsChartProps) {
-  const cardRef = React.useRef<HTMLDivElement>(null);
-
-  async function handleScreenshot() {
-    if (!cardRef.current) return;
-    const { toPng } = await import('html-to-image');
-    const dataUrl = await toPng(cardRef.current, { pixelRatio: 2, style: { borderRadius: '0' } });
-    const res = await fetch(dataUrl);
-    const blob = await res.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    window.open(blobUrl, '_blank');
-  }
+  const { ref: cardRef, handleScreenshot } = useScreenshot();
 
   if (props.data.length === 0) {
     return (
@@ -89,18 +79,18 @@ export function TrendsChart(props: TrendsChartProps) {
   if (props.view === 'essential') {
     return (
       <Card ref={cardRef}>
-        <CardContent className="px-2 sm:p-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">{props.categoryName ?? 'All Categories'}</span>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleScreenshot}
-              aria-label="Screenshot"
-            >
-              <Camera className="h-4 w-4" />
-            </Button>
-          </div>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>{props.categoryName ?? 'All Categories'}</CardTitle>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleScreenshot}
+            aria-label="Screenshot"
+          >
+            <Camera className="h-4 w-4" />
+          </Button>
+        </CardHeader>
+        <CardContent className="px-2 sm:px-6">
           <ChartContainer config={essentialChartConfig} className="aspect-auto h-[250px] w-full">
             <BarChart accessibilityLayer data={props.data} margin={{ left: 12, right: 12 }}>
               <CartesianGrid vertical={false} />
@@ -168,13 +158,13 @@ export function TrendsChart(props: TrendsChartProps) {
 
   return (
     <Card ref={cardRef}>
-      <CardContent className="px-2 sm:p-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">{props.categoryName ?? 'All Categories'}</span>
-          <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
-            <Camera className="h-4 w-4" />
-          </Button>
-        </div>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>{props.categoryName ?? 'All Categories'}</CardTitle>
+        <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
+          <Camera className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent className="px-2 sm:px-6">
         <ChartContainer config={defaultChartConfig} className="aspect-auto h-[250px] w-full">
           <ComposedChart
             accessibilityLayer
