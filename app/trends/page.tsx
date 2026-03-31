@@ -422,6 +422,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
             data={(trends as TrendsData).data}
             groupBy={groupBy}
             monthlyBudget={monthlyBudget}
+            averagePerPeriod={(trends as TrendsData).averagePerPeriod}
           />
         )}
       </div>
