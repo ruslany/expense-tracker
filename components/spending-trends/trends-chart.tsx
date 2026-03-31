@@ -25,6 +25,7 @@ type TrendsChartProps =
       data: TrendDataPoint[];
       groupBy: 'month' | 'quarter' | 'year';
       monthlyBudget: number | null;
+      averagePerPeriod: number;
     }
   | {
       view: 'essential';
@@ -124,6 +125,7 @@ export function TrendsChart(props: TrendsChartProps) {
 
   const budgetGoal =
     props.monthlyBudget != null ? props.monthlyBudget * budgetMultiplier[props.groupBy] : null;
+  const { averagePerPeriod } = props;
 
   const showMA = props.groupBy === 'month';
 
@@ -198,6 +200,20 @@ export function TrendsChart(props: TrendsChartProps) {
                 strokeWidth={2}
                 dot={false}
                 connectNulls={false}
+              />
+            )}
+            {averagePerPeriod > 0 && (
+              <ReferenceLine
+                y={averagePerPeriod}
+                stroke="hsl(var(--muted-foreground))"
+                strokeDasharray="6 4"
+                strokeWidth={1.5}
+                label={{
+                  value: `Avg ${formatCurrency(averagePerPeriod)}`,
+                  position: 'insideBottomRight',
+                  fill: 'hsl(var(--muted-foreground))',
+                  fontSize: 12,
+                }}
               />
             )}
             {budgetGoal != null && (
