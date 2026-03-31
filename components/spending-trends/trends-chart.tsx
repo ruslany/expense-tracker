@@ -81,12 +81,7 @@ export function TrendsChart(props: TrendsChartProps) {
       <Card ref={cardRef}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>{props.categoryName ?? 'All Categories'}</CardTitle>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleScreenshot}
-            aria-label="Screenshot"
-          >
+          <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
             <Camera className="h-4 w-4" />
           </Button>
         </CardHeader>
