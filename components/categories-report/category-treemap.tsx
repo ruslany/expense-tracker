@@ -2,6 +2,10 @@
 
 import { Treemap, ResponsiveContainer, Tooltip, type TooltipProps } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Camera } from 'lucide-react';
+import { useScreenshot } from '@/hooks/use-screenshot';
 
 interface CategoryData {
   name: string;
@@ -11,6 +15,7 @@ interface CategoryData {
 
 interface CategoryTreemapProps {
   data: CategoryData[];
+  title: string;
 }
 
 const COLORS = [
@@ -114,29 +119,39 @@ function CustomContent({
   );
 }
 
-export function CategoryTreemap({ data }: CategoryTreemapProps) {
-  if (data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-80 text-muted-foreground">
-        No data available
-      </div>
-    );
-  }
+export function CategoryTreemap({ data, title }: CategoryTreemapProps) {
+  const { ref: cardRef, handleScreenshot } = useScreenshot();
 
   const chartData = data
     .filter((d) => d.totalExpenses > 0)
     .map((d) => ({ name: d.name, size: d.totalExpenses, percent: d.percent }));
 
   return (
-    <ResponsiveContainer width="100%" height={400} debounce={200}>
-      <Treemap
-        data={chartData}
-        dataKey="size"
-        content={<CustomContent />}
-        isAnimationActive={false}
-      >
-        <Tooltip content={<CustomTooltip />} />
-      </Treemap>
-    </ResponsiveContainer>
+    <Card ref={cardRef}>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>{title}</CardTitle>
+        <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
+          <Camera className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {chartData.length === 0 ? (
+          <div className="flex items-center justify-center h-80 text-muted-foreground">
+            No data available
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={400} debounce={200}>
+            <Treemap
+              data={chartData}
+              dataKey="size"
+              content={<CustomContent />}
+              isAnimationActive={false}
+            >
+              <Tooltip content={<CustomTooltip />} />
+            </Treemap>
+          </ResponsiveContainer>
+        )}
+      </CardContent>
+    </Card>
   );
 }

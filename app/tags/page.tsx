@@ -177,14 +177,10 @@ export default async function TagsPage({ searchParams }: PageProps) {
             />
 
             <div className="grid gap-6 lg:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Category Breakdown for &quot;{report.tagName}&quot;</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CategoryBreakdownChart data={report.data} />
-                </CardContent>
-              </Card>
+              <CategoryBreakdownChart
+                data={report.data}
+                title={`Category Breakdown for "${report.tagName}"`}
+              />
 
               <Card>
                 <CardHeader>

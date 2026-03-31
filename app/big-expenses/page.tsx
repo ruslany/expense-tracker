@@ -154,14 +154,10 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
         />
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Expenses by Tag ({currentYear})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ExpensesByTagChart data={expensesByTag.data} />
-            </CardContent>
-          </Card>
+          <ExpensesByTagChart
+            data={expensesByTag.data}
+            title={`Expenses by Tag (${currentYear})`}
+          />
 
           <Card>
             <CardHeader>
