@@ -157,7 +157,7 @@ export function makeReceiptStorageKey(
   const ext = dotIndex > 0 ? fileName.slice(dotIndex) : '';
   const base = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
   const safeFileName = base.slice(0, 100) + ext;
-  const prefix = transactionId ?? 'unprocessed';
+  const prefix = transactionId ?? 'uploaded';
   return `${prefix}/${receiptId}-${safeFileName}`;
 }
 
