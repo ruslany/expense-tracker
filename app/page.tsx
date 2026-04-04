@@ -336,7 +336,8 @@ export default async function Overview({ searchParams }: PageProps) {
         <OverviewCharts
           spendingOverTime={spendingOverTime}
           monthlyBudget={process.env.MONTHLY_BUDGET ? Number(process.env.MONTHLY_BUDGET) : null}
-          title={`Spending Over Time - ${new Date(Date.UTC(currentYear, currentMonth, 1)).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })}`}
+          year={currentYear}
+          month={currentMonth}
         />
 
         {/* Spending by Category Table */}

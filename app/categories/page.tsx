@@ -109,6 +109,17 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
 
   const report = await getCategoryReport(startDate, endDate);
 
+  const formatDate = (d: Date) =>
+    d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  const treemapSubtitle =
+    startDate && endDate
+      ? `${formatDate(startDate)} – ${formatDate(endDate)}`
+      : startDate
+        ? `From ${formatDate(startDate)}`
+        : endDate
+          ? `Until ${formatDate(endDate)}`
+          : 'All time';
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -131,7 +142,7 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
           maxTransaction={report.overallMaxTransaction}
         />
 
-        <CategoryTreemap data={report.data} title="Spending by Category" />
+        <CategoryTreemap data={report.data} title="Spending by Category" subtitle={treemapSubtitle} />
 
         <SpendingByCategoryTable
           data={report.data}
