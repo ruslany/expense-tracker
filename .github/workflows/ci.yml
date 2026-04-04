@@ -16,7 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx prisma generate
-      - run: npm run lint
+      - run: npm run lint -- --max-warnings 0
 
   typecheck:
     name: Type Check
