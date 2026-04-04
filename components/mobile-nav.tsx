@@ -8,9 +8,14 @@ import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
 import { navItems } from './nav-items';
 
-export function MobileNav() {
+interface MobileNavProps {
+  unprocessedCount?: number;
+}
+
+export function MobileNav({ unprocessedCount = 0 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -38,6 +43,7 @@ export function MobileNav() {
             {visibleItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
+              const showBadge = item.href === '/unprocessed-receipts' && unprocessedCount > 0;
 
               return (
                 <SheetClose key={item.href} asChild>
@@ -50,8 +56,13 @@ export function MobileNav() {
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                     )}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.title}
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span className="flex-1">{item.title}</span>
+                    {showBadge && (
+                      <Badge variant="destructive" className="px-1.5 py-0 text-xs">
+                        {unprocessedCount}
+                      </Badge>
+                    )}
                   </Link>
                 </SheetClose>
               );

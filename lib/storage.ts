@@ -18,6 +18,7 @@ class LocalFileStorageProvider implements StorageProvider {
     this.baseDir = path.join(process.cwd(), 'uploads', 'receipts');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async upload(key: string, data: Buffer, _mimeType: string): Promise<void> {
     const filePath = path.join(this.baseDir, key);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -84,7 +85,7 @@ class AzureBlobStorageProvider implements StorageProvider {
   }
 
   async getDownloadUrl(key: string): Promise<string> {
-    const { generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } =
+    const { generateBlobSASQueryParameters, BlobSASPermissions } =
       await import('@azure/storage-blob');
     const { DefaultAzureCredential } = await import('@azure/identity');
 
@@ -144,6 +145,20 @@ export function getStorageProvider(): StorageProvider {
   }
 
   return _provider;
+}
+
+// Exported for use in upload routes — generates a consistent storage key
+export function makeReceiptStorageKey(
+  receiptId: string,
+  fileName: string,
+  transactionId?: string,
+): string {
+  const dotIndex = fileName.lastIndexOf('.');
+  const ext = dotIndex > 0 ? fileName.slice(dotIndex) : '';
+  const base = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
+  const safeFileName = base.slice(0, 100) + ext;
+  const prefix = transactionId ?? 'uploaded';
+  return `${prefix}/${receiptId}-${safeFileName}`;
 }
 
 // Exported for use in the local file proxy route

@@ -8,6 +8,7 @@ import {
   TrendingUp,
   LineChart,
   LayoutGrid,
+  Receipt,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -53,6 +54,12 @@ export const navItems: NavItem[] = [
     title: 'Transactions',
     href: '/transactions',
     icon: CreditCard,
+  },
+  {
+    title: 'Receipts',
+    href: '/unprocessed-receipts',
+    icon: Receipt,
+    requireAdmin: true,
   },
   {
     title: 'Import',

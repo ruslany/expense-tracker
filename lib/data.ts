@@ -372,3 +372,34 @@ export async function fetchUsers() {
     throw new Error('Failed to fetch users.');
   }
 }
+
+export async function fetchUnprocessedReceipts() {
+  try {
+    const prisma = await getPrisma();
+    return prisma.receipt.findMany({
+      where: { transactionId: null },
+      orderBy: { uploadedAt: 'asc' },
+      select: {
+        id: true,
+        fileName: true,
+        mimeType: true,
+        fileSize: true,
+        uploadedAt: true,
+        uploadedBy: true,
+      },
+    });
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch unprocessed receipts.');
+  }
+}
+
+export async function fetchUnprocessedReceiptsCount() {
+  try {
+    const prisma = await getPrisma();
+    return prisma.receipt.count({ where: { transactionId: null } });
+  } catch (error) {
+    console.error('Database Error:', error);
+    return 0;
+  }
+}

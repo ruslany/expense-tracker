@@ -5,8 +5,13 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { navItems } from './nav-items';
+import { Badge } from '@/components/ui/badge';
 
-export function Nav() {
+interface NavProps {
+  unprocessedCount?: number;
+}
+
+export function Nav({ unprocessedCount = 0 }: NavProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'admin';
@@ -18,6 +23,7 @@ export function Nav() {
       {visibleItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href;
+        const showBadge = item.href === '/unprocessed-receipts' && unprocessedCount > 0;
 
         return (
           <Link
@@ -30,8 +36,13 @@ export function Nav() {
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
             )}
           >
-            <Icon className="h-4 w-4" />
-            {item.title}
+            <Icon className="h-4 w-4 shrink-0" />
+            <span className="flex-1">{item.title}</span>
+            {showBadge && (
+              <Badge variant="destructive" className="px-1.5 py-0 text-xs">
+                {unprocessedCount}
+              </Badge>
+            )}
           </Link>
         );
       })}

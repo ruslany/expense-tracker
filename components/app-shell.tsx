@@ -2,8 +2,11 @@ import { Nav } from './nav';
 import { MobileNav } from './mobile-nav';
 import { ThemeToggle } from './theme-toggle';
 import { UserMenu } from './user-menu';
+import { fetchUnprocessedReceiptsCount } from '@/lib/data';
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export async function AppShell({ children }: { children: React.ReactNode }) {
+  const unprocessedCount = await fetchUnprocessedReceiptsCount();
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -13,7 +16,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <h1 className="text-xl font-bold">Expense Tracker</h1>
           </div>
           <div className="flex-1 overflow-auto p-4">
-            <Nav />
+            <Nav unprocessedCount={unprocessedCount} />
           </div>
         </div>
       </aside>
@@ -23,7 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Header */}
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6">
           <div className="flex items-center gap-4">
-            <MobileNav />
+            <MobileNav unprocessedCount={unprocessedCount} />
             <h1 className="text-xl font-bold lg:hidden">Expense Tracker</h1>
           </div>
           <div className="flex items-center gap-4">

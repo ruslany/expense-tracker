@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Paperclip, Trash2, Download, Upload, FileText, Image } from 'lucide-react';
+import { Paperclip, Trash2, Download, Upload, FileText, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -46,13 +46,7 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    setSelectedFile(null);
-    fetchReceipts();
-  }, [open, transactionId]);
-
-  async function fetchReceipts() {
+  const fetchReceipts = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await fetch(`/api/transactions/${transactionId}/receipts`);
@@ -63,7 +57,13 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [transactionId]);
+
+  useEffect(() => {
+    if (!open) return;
+    setSelectedFile(null);
+    fetchReceipts();
+  }, [open, fetchReceipts]);
 
   async function handleUpload() {
     if (!selectedFile) return;
@@ -138,6 +138,7 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
                   <li key={receipt.id} className="rounded-md border">
                     {isImage && (
                       <div className="max-h-48 overflow-hidden rounded-t-md bg-muted">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={`/api/receipts/${receipt.id}/file`}
                           alt={receipt.fileName}
@@ -147,7 +148,7 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
                     )}
                     <div className="flex items-center gap-3 p-3">
                       {isImage ? (
-                        <Image className="size-4 shrink-0 text-muted-foreground" />
+                        <ImageIcon className="size-4 shrink-0 text-muted-foreground" />
                       ) : (
                         <FileText className="size-4 shrink-0 text-muted-foreground" />
                       )}
