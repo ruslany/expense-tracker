@@ -29,6 +29,7 @@ interface TransactionActionsProps {
   categoryId: string | null;
   categories: Category[];
   isSplit: boolean;
+  receiptCount: number;
 }
 
 export function TransactionActions({
@@ -39,6 +40,7 @@ export function TransactionActions({
   categoryId,
   categories,
   isSplit,
+  receiptCount,
 }: TransactionActionsProps) {
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
@@ -79,7 +81,7 @@ export function TransactionActions({
           )}
           <DropdownMenuItem onClick={() => setReceiptsOpen(true)}>
             <Paperclip />
-            Receipts
+            Receipts{receiptCount > 0 ? ` (${receiptCount})` : ''}
           </DropdownMenuItem>
           <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
             <Trash2 />

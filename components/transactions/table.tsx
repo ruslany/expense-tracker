@@ -16,7 +16,6 @@ import { TagsCell } from './tags-cell';
 import { TransactionActions } from './actions';
 import { TransactionNotePopover } from './note-popover';
 import { ReviewButton } from './review-button';
-import { ReceiptButton } from './receipt-button';
 
 export async function TransactionsTable({
   query,
@@ -148,10 +147,6 @@ export async function TransactionsTable({
                   {transaction.reviewedAt === null && (
                     <ReviewButton transactionId={transaction.id} />
                   )}
-                  <ReceiptButton
-                    transactionId={transaction.id}
-                    receiptCount={transaction.receiptCount}
-                  />
                   <TransactionNotePopover
                     transactionId={transaction.id}
                     notes={transaction.notes}
@@ -164,6 +159,7 @@ export async function TransactionsTable({
                     categoryId={transaction.categoryId}
                     categories={categories}
                     isSplit={isSplit}
+                    receiptCount={transaction.receiptCount}
                   />
                 </div>
               </CardContent>
@@ -244,10 +240,6 @@ export async function TransactionsTable({
                         {transaction.reviewedAt === null && (
                           <ReviewButton transactionId={transaction.id} />
                         )}
-                        <ReceiptButton
-                          transactionId={transaction.id}
-                          receiptCount={transaction.receiptCount}
-                        />
                         <TransactionNotePopover
                           transactionId={transaction.id}
                           notes={transaction.notes}
@@ -260,6 +252,7 @@ export async function TransactionsTable({
                           categoryId={transaction.categoryId}
                           categories={categories}
                           isSplit={isSplit}
+                          receiptCount={transaction.receiptCount}
                         />
                       </div>
                     </TableCell>
