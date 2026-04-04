@@ -116,7 +116,10 @@ export const splitTransactionSchema = z.object({
 export const receiptUploadSchema = z.object({
   fileName: z.string().min(1),
   mimeType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf']),
-  fileSize: z.number().int().max(10 * 1024 * 1024),
+  fileSize: z
+    .number()
+    .int()
+    .max(10 * 1024 * 1024),
 });
 
 export const watchlistItemSchema = z.object({
