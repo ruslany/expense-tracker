@@ -32,7 +32,12 @@ interface OverviewChartsProps {
   month: number;
 }
 
-export function OverviewCharts({ spendingOverTime, monthlyBudget, year, month }: OverviewChartsProps) {
+export function OverviewCharts({
+  spendingOverTime,
+  monthlyBudget,
+  year,
+  month,
+}: OverviewChartsProps) {
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
