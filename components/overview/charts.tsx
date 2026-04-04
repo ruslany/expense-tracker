@@ -28,9 +28,10 @@ interface SpendingDataPoint {
 interface OverviewChartsProps {
   spendingOverTime: SpendingDataPoint[];
   monthlyBudget: number | null;
+  title: string;
 }
 
-export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChartsProps) {
+export function OverviewCharts({ spendingOverTime, monthlyBudget, title }: OverviewChartsProps) {
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
@@ -40,7 +41,7 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
   return (
     <Card ref={cardRef}>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Spending Over Time</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
           <Camera className="h-4 w-4" />
         </Button>
