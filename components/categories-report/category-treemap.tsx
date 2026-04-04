@@ -2,7 +2,7 @@
 
 import { Treemap, ResponsiveContainer, Tooltip, type TooltipProps } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Camera } from 'lucide-react';
 import { useScreenshot } from '@/hooks/use-screenshot';
@@ -16,6 +16,7 @@ interface CategoryData {
 interface CategoryTreemapProps {
   data: CategoryData[];
   title: string;
+  subtitle?: string;
 }
 
 const COLORS = [
@@ -119,7 +120,7 @@ function CustomContent({
   );
 }
 
-export function CategoryTreemap({ data, title }: CategoryTreemapProps) {
+export function CategoryTreemap({ data, title, subtitle }: CategoryTreemapProps) {
   const { ref: cardRef, handleScreenshot } = useScreenshot();
 
   const chartData = data
@@ -129,7 +130,10 @@ export function CategoryTreemap({ data, title }: CategoryTreemapProps) {
   return (
     <Card ref={cardRef}>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{title}</CardTitle>
+        <div>
+          <CardTitle>{title}</CardTitle>
+          {subtitle && <CardDescription>{subtitle}</CardDescription>}
+        </div>
         <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
           <Camera className="h-4 w-4" />
         </Button>

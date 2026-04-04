@@ -336,6 +336,8 @@ export default async function Overview({ searchParams }: PageProps) {
         <OverviewCharts
           spendingOverTime={spendingOverTime}
           monthlyBudget={process.env.MONTHLY_BUDGET ? Number(process.env.MONTHLY_BUDGET) : null}
+          year={currentYear}
+          month={currentMonth}
         />
 
         {/* Spending by Category Table */}

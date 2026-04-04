@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   ComposedChart,
@@ -28,9 +28,16 @@ interface SpendingDataPoint {
 interface OverviewChartsProps {
   spendingOverTime: SpendingDataPoint[];
   monthlyBudget: number | null;
+  year: number;
+  month: number;
 }
 
-export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChartsProps) {
+export function OverviewCharts({
+  spendingOverTime,
+  monthlyBudget,
+  year,
+  month,
+}: OverviewChartsProps) {
   const isMobile = useIsMobile();
   const chartHeight = isMobile ? 200 : 300;
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
@@ -40,7 +47,16 @@ export function OverviewCharts({ spendingOverTime, monthlyBudget }: OverviewChar
   return (
     <Card ref={cardRef}>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Spending Over Time</CardTitle>
+        <div>
+          <CardTitle>Spending Over Time</CardTitle>
+          <CardDescription>
+            {new Date(Date.UTC(year, month, 1)).toLocaleDateString('en-US', {
+              month: 'long',
+              year: 'numeric',
+              timeZone: 'UTC',
+            })}
+          </CardDescription>
+        </div>
         <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
           <Camera className="h-4 w-4" />
         </Button>
