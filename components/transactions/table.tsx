@@ -15,6 +15,7 @@ import { CategoryCell } from './category-cell';
 import { TagsCell } from './tags-cell';
 import { TransactionActions } from './actions';
 import { TransactionNotePopover } from './note-popover';
+import { ReceiptButton } from './receipt-button';
 import { ReviewButton } from './review-button';
 
 export async function TransactionsTable({
@@ -151,6 +152,10 @@ export async function TransactionsTable({
                     transactionId={transaction.id}
                     notes={transaction.notes}
                   />
+                  <ReceiptButton
+                    transactionId={transaction.id}
+                    receiptCount={transaction.receiptCount}
+                  />
                   <TransactionActions
                     transactionId={transaction.id}
                     date={transaction.date}
@@ -242,6 +247,10 @@ export async function TransactionsTable({
                         <TransactionNotePopover
                           transactionId={transaction.id}
                           notes={transaction.notes}
+                        />
+                        <ReceiptButton
+                          transactionId={transaction.id}
+                          receiptCount={transaction.receiptCount}
                         />
                         <TransactionActions
                           transactionId={transaction.id}

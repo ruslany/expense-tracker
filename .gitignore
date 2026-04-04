@@ -44,3 +44,6 @@ next-env.d.ts
 
 # sample data
 /sampledata
+
+# local receipt uploads (dev only)
+/uploads

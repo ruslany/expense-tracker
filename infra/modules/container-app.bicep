@@ -31,6 +31,9 @@ param authUrl string
 @description('Monthly spending budget goal (optional)')
 param monthlyBudget string = ''
 
+@description('Azure Storage Account name for receipt attachments')
+param storageAccountName string = ''
+
 @description('Tags to apply to resources')
 param tags object = {}
 
@@ -139,6 +142,14 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'MONTHLY_BUDGET'
               value: monthlyBudget
+            }
+            {
+              name: 'STORAGE_PROVIDER'
+              value: 'azure'
+            }
+            {
+              name: 'AZURE_STORAGE_ACCOUNT_NAME'
+              value: storageAccountName
             }
           ]
         }
