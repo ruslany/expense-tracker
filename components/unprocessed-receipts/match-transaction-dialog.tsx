@@ -11,7 +11,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { DatePicker } from '@/components/ui/date-picker';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface Transaction {
   id: string;
@@ -37,8 +39,8 @@ export function MatchTransactionDialog({
   onMatched,
 }: MatchTransactionDialogProps) {
   const [search, setSearch] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [assigningId, setAssigningId] = useState<string | null>(null);
@@ -47,8 +49,8 @@ export function MatchTransactionDialog({
   useEffect(() => {
     if (!open) return;
     setSearch('');
-    setStartDate('');
-    setEndDate('');
+    setStartDate(undefined);
+    setEndDate(undefined);
     setTransactions([]);
   }, [open]);
 
@@ -69,8 +71,8 @@ export function MatchTransactionDialog({
     try {
       const params = new URLSearchParams({ pageSize: '20' });
       if (search) params.set('search', search);
-      if (startDate) params.set('startDate', startDate);
-      if (endDate) params.set('endDate', endDate);
+      if (startDate) params.set('startDate', format(startDate, 'yyyy-MM-dd'));
+      if (endDate) params.set('endDate', format(endDate, 'yyyy-MM-dd'));
 
       const res = await fetch(`/api/transactions?${params}`);
       if (!res.ok) throw new Error('Failed to fetch');
@@ -127,11 +129,11 @@ export function MatchTransactionDialog({
           <div className="flex gap-2">
             <div className="flex-1">
               <label className="mb-1 block text-xs text-muted-foreground">From</label>
-              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <DatePicker date={startDate} onDateChange={setStartDate} placeholder="Start date" />
             </div>
             <div className="flex-1">
               <label className="mb-1 block text-xs text-muted-foreground">To</label>
-              <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              <DatePicker date={endDate} onDateChange={setEndDate} placeholder="End date" />
             </div>
           </div>
         </div>
@@ -145,7 +147,7 @@ export function MatchTransactionDialog({
             <p className="py-8 text-center text-sm text-muted-foreground">
               {search || startDate || endDate
                 ? 'No transactions match your search.'
-                : 'Start typing to search transactions.'}
+                : 'Search by description, or pick a date range.'}
             </p>
           ) : (
             <ul className="divide-y">
