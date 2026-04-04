@@ -18,6 +18,7 @@ class LocalFileStorageProvider implements StorageProvider {
     this.baseDir = path.join(process.cwd(), 'uploads', 'receipts');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async upload(key: string, data: Buffer, _mimeType: string): Promise<void> {
     const filePath = path.join(this.baseDir, key);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -84,7 +85,7 @@ class AzureBlobStorageProvider implements StorageProvider {
   }
 
   async getDownloadUrl(key: string): Promise<string> {
-    const { generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } =
+    const { generateBlobSASQueryParameters, BlobSASPermissions } =
       await import('@azure/storage-blob');
     const { DefaultAzureCredential } = await import('@azure/identity');
 

@@ -78,6 +78,7 @@ export function UnprocessedReceiptsList({ receipts: initial }: UnprocessedReceip
               {/* Thumbnail */}
               <div className="flex h-40 items-center justify-center bg-muted">
                 {isImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={`/api/receipts/${receipt.id}/file`}
                     alt={receipt.fileName}

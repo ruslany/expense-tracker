@@ -114,6 +114,7 @@ export function ReceiptUploadForm() {
       ) : (
         <div className="relative overflow-hidden rounded-2xl border bg-muted">
           {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={preview} alt="Receipt preview" className="max-h-72 w-full object-contain" />
           ) : (
             <div className="flex h-36 items-center justify-center">
