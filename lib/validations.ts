@@ -113,6 +113,12 @@ export const splitTransactionSchema = z.object({
     .min(2, 'At least two splits are required'),
 });
 
+export const receiptUploadSchema = z.object({
+  fileName: z.string().min(1),
+  mimeType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf']),
+  fileSize: z.number().int().max(10 * 1024 * 1024),
+});
+
 export const watchlistItemSchema = z.object({
   symbol: z
     .string()

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { MoreHorizontal, Pencil, Trash2, Scissors, Merge } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, Scissors, Merge, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,6 +14,7 @@ import { EditTransactionDialog } from './edit-transaction-dialog';
 import { DeleteTransactionDialog } from './delete-transaction-dialog';
 import { SplitTransactionDialog } from './split-transaction-dialog';
 import { UnsplitTransactionDialog } from './unsplit-transaction-dialog';
+import { ReceiptsDialog } from './receipts-dialog';
 
 interface Category {
   id: string;
@@ -44,6 +45,7 @@ export function TransactionActions({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [splitOpen, setSplitOpen] = useState(false);
   const [unsplitOpen, setUnsplitOpen] = useState(false);
+  const [receiptsOpen, setReceiptsOpen] = useState(false);
 
   if (session?.user?.role !== 'admin') {
     return null;
@@ -75,6 +77,10 @@ export function TransactionActions({
               Unsplit
             </DropdownMenuItem>
           )}
+          <DropdownMenuItem onClick={() => setReceiptsOpen(true)}>
+            <Paperclip />
+            Receipts
+          </DropdownMenuItem>
           <DropdownMenuItem variant="destructive" onClick={() => setDeleteOpen(true)}>
             <Trash2 />
             Delete
@@ -112,6 +118,12 @@ export function TransactionActions({
       <UnsplitTransactionDialog
         open={unsplitOpen}
         onOpenChange={setUnsplitOpen}
+        transactionId={transactionId}
+      />
+
+      <ReceiptsDialog
+        open={receiptsOpen}
+        onOpenChange={setReceiptsOpen}
         transactionId={transactionId}
       />
     </>

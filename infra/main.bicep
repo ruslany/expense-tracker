@@ -88,7 +88,18 @@ module keyVaultSecrets 'modules/key-vault-secrets.bicep' = {
   }
 }
 
-// 5. Container Apps Environment
+// 5. Storage Account (for receipt attachments)
+module storage 'modules/storage.bicep' = {
+  name: '${appName}-storage-deployment'
+  params: {
+    name: replace('${appName}receipts', '-', '')
+    location: location
+    managedIdentityPrincipalId: managedIdentity.outputs.principalId
+    tags: tags
+  }
+}
+
+// 6. Container Apps Environment
 module containerAppEnv 'modules/container-app-env.bicep' = {
   name: '${appName}-env-deployment'
   params: {
@@ -98,7 +109,7 @@ module containerAppEnv 'modules/container-app-env.bicep' = {
   }
 }
 
-// 6. Container App (with identity + Key Vault secret references)
+// 7. Container App (with identity + Key Vault secret references)
 module containerApp 'modules/container-app.bicep' = {
   name: '${appName}-app-deployment'
   params: {
@@ -113,6 +124,7 @@ module containerApp 'modules/container-app.bicep' = {
     adminEmail: adminEmail
     authUrl: authUrl
     monthlyBudget: monthlyBudget
+    storageAccountName: storage.outputs.name
     tags: tags
     customDomainName: customDomainName
     customDomainCertificateId: customDomainCertificateId

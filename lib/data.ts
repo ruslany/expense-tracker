@@ -112,6 +112,9 @@ export async function fetchFilteredTransactions(
           include: { category: true },
           orderBy: { createdAt: 'asc' as const },
         },
+        _count: {
+          select: { receipts: true },
+        },
       },
       orderBy: [{ date: 'desc' }, { id: 'asc' }],
       take: pageSize,
@@ -142,6 +145,7 @@ export async function fetchFilteredTransactions(
         category: s.category?.name ?? null,
         categoryId: s.category?.id ?? null,
       })),
+      receiptCount: t._count.receipts,
     }));
   } catch (error) {
     console.error('Database Error:', error);
