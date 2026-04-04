@@ -105,14 +105,15 @@ model TransactionTag {
 
 model Receipt {
   id            String   @id @default(cuid())
-  transactionId String
+  transactionId String?
   storageKey    String
   fileName      String
   mimeType      String
   fileSize      Int
+  uploadedBy    String   @default("")
   uploadedAt    DateTime @default(now())
 
-  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transaction Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
 
   @@index([transactionId])
 }

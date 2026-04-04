@@ -146,6 +146,20 @@ export function getStorageProvider(): StorageProvider {
   return _provider;
 }
 
+// Exported for use in upload routes — generates a consistent storage key
+export function makeReceiptStorageKey(
+  receiptId: string,
+  fileName: string,
+  transactionId?: string,
+): string {
+  const dotIndex = fileName.lastIndexOf('.');
+  const ext = dotIndex > 0 ? fileName.slice(dotIndex) : '';
+  const base = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
+  const safeFileName = base.slice(0, 100) + ext;
+  const prefix = transactionId ?? 'unprocessed';
+  return `${prefix}/${receiptId}-${safeFileName}`;
+}
+
 // Exported for use in the local file proxy route
 export function getLocalFilePath(key: string): string {
   const provider = getStorageProvider();
