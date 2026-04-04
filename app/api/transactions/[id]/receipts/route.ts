@@ -52,7 +52,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     });
 
     const receiptId = crypto.randomUUID();
-    const storageKey = `${transactionId}/${receiptId}-${validated.fileName}`;
+    const ext = validated.fileName.lastIndexOf('.') > 0 ? validated.fileName.slice(validated.fileName.lastIndexOf('.')) : '';
+    const base = validated.fileName.slice(0, validated.fileName.lastIndexOf('.') > 0 ? validated.fileName.lastIndexOf('.') : validated.fileName.length);
+    const safeFileName = base.slice(0, 100) + ext;
+    const storageKey = `${transactionId}/${receiptId}-${safeFileName}`;
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const storage = getStorageProvider();
