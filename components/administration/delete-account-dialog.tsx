@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { TriangleAlertIcon } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,10 +64,7 @@ export function DeleteAccountDialog({ open, onOpenChange, account }: DeleteAccou
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <TriangleAlertIcon className="text-destructive size-5" />
-            Delete Account
-          </AlertDialogTitle>
+          <AlertDialogTitle>Delete Account</AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div>
               <p>
@@ -99,7 +95,9 @@ export function DeleteAccountDialog({ open, onOpenChange, account }: DeleteAccou
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline" disabled={isDeleting}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             onClick={handleDelete}

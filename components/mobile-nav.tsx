@@ -43,7 +43,7 @@ export function MobileNav({ unprocessedCount = 0 }: MobileNavProps) {
             {visibleItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-              const showBadge = item.href === '/unprocessed-receipts' && unprocessedCount > 0;
+              const showBadge = item.href === '/receipts' && unprocessedCount > 0;
 
               return (
                 <SheetClose key={item.href} asChild>

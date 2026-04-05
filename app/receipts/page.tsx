@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { AppShell } from '@/components/app-shell';
 import { fetchUnprocessedReceipts } from '@/lib/data';
-import { UnprocessedReceiptsList } from '@/components/unprocessed-receipts/unprocessed-receipts-list';
+import { UnprocessedReceiptsList } from '@/components/receipts/unprocessed-receipts-list';
 
 export const metadata: Metadata = { title: 'Unprocessed Receipts' };
 export const dynamic = 'force-dynamic';

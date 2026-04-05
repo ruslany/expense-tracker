@@ -5,11 +5,14 @@ import { toast } from 'sonner';
 import { Search, Loader2 } from 'lucide-react';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -178,6 +181,14 @@ export function MatchTransactionDialog({
             </ul>
           )}
         </div>
+
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

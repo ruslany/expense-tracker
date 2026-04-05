@@ -63,7 +63,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Receipts',
-    href: '/unprocessed-receipts',
+    href: '/receipts',
     icon: Receipt,
     requireAdmin: true,
   },

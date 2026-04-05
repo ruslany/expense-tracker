@@ -130,8 +130,11 @@ export function UnprocessedReceiptsList({ receipts: initial }: UnprocessedReceip
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(receipt.id)}>
+                        <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          onClick={() => handleDelete(receipt.id)}
+                        >
                           Discard
                         </AlertDialogAction>
                       </AlertDialogFooter>
