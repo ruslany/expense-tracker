@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +12,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
@@ -50,8 +52,11 @@ export function DeleteCategoryDialog({ open, onOpenChange, category }: DeleteCat
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent size="sm">
         <AlertDialogHeader>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+            <Trash2 />
+          </AlertDialogMedia>
           <AlertDialogTitle>Delete Category</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete &quot;{category?.name}&quot;?
@@ -66,7 +71,7 @@ export function DeleteCategoryDialog({ open, onOpenChange, category }: DeleteCat
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline" disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
             {isDeleting ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>

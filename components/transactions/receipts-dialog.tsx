@@ -7,8 +7,10 @@ import { Paperclip, Trash2, Download, Upload, FileText, Image as ImageIcon } fro
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -225,6 +227,12 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
             </div>
           )}
         </div>
+
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">Close</Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

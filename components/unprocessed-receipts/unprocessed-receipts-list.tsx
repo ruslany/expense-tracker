@@ -13,6 +13,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
@@ -121,8 +122,11 @@ export function UnprocessedReceiptsList({ receipts: initial }: UnprocessedReceip
                         <Trash2 className="size-3.5 text-destructive" />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent size="sm">
                       <AlertDialogHeader>
+                        <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                          <Trash2 />
+                        </AlertDialogMedia>
                         <AlertDialogTitle>Discard receipt?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This will permanently delete &ldquo;{receipt.fileName}&rdquo;. This cannot
@@ -130,8 +134,11 @@ export function UnprocessedReceiptsList({ receipts: initial }: UnprocessedReceip
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(receipt.id)}>
+                        <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          onClick={() => handleDelete(receipt.id)}
+                        >
                           Discard
                         </AlertDialogAction>
                       </AlertDialogFooter>

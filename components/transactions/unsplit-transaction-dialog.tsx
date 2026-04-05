@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Scissors } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +12,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
@@ -52,15 +54,18 @@ export function UnsplitTransactionDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent size="sm">
         <AlertDialogHeader>
+          <AlertDialogMedia>
+            <Scissors />
+          </AlertDialogMedia>
           <AlertDialogTitle>Unsplit Transaction</AlertDialogTitle>
           <AlertDialogDescription>
             This will remove all split parts and restore the original transaction.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline" disabled={isSubmitting}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleUnsplit} disabled={isSubmitting}>
             {isSubmitting ? 'Unsplitting...' : 'Unsplit'}
           </AlertDialogAction>

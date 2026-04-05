@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +12,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
@@ -50,8 +52,11 @@ export function DeleteTagDialog({ open, onOpenChange, tag }: DeleteTagDialogProp
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent size="sm">
         <AlertDialogHeader>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+            <Trash2 />
+          </AlertDialogMedia>
           <AlertDialogTitle>Delete Tag</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete &quot;{tag?.name}&quot;?
@@ -67,7 +72,7 @@ export function DeleteTagDialog({ open, onOpenChange, tag }: DeleteTagDialogProp
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline" disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
             {isDeleting ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>
