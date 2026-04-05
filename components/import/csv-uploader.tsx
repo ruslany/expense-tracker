@@ -316,12 +316,9 @@ export function CSVUploader() {
 
       {/* Upload Button */}
       <div className="flex justify-end">
-      <Button
-        onClick={handleUpload}
-        disabled={!file || !selectedAccountId || isUploading}
-      >
-        {isUploading ? 'Uploading...' : 'Upload and Import'}
-      </Button>
+        <Button onClick={handleUpload} disabled={!file || !selectedAccountId || isUploading}>
+          {isUploading ? 'Uploading...' : 'Upload and Import'}
+        </Button>
       </div>
 
       {/* Imported Transactions Preview */}
