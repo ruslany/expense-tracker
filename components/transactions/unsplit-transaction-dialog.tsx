@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Scissors } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,7 +11,6 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
@@ -54,11 +52,8 @@ export function UnsplitTransactionDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent size="sm">
+      <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogMedia>
-            <Scissors />
-          </AlertDialogMedia>
           <AlertDialogTitle>Unsplit Transaction</AlertDialogTitle>
           <AlertDialogDescription>
             This will remove all split parts and restore the original transaction.
