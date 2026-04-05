@@ -238,7 +238,7 @@ export function CSVUploader() {
             <Button
               variant="outline"
               data-empty={!cutoffDate}
-              className="justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+              className="w-48 justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
             >
               {cutoffDate ? format(cutoffDate, 'PPP') : <span>Pick a date</span>}
               <ChevronDown className="ml-2 h-4 w-4" />
@@ -315,13 +315,14 @@ export function CSVUploader() {
       </div>
 
       {/* Upload Button */}
+      <div className="flex justify-end">
       <Button
         onClick={handleUpload}
         disabled={!file || !selectedAccountId || isUploading}
-        className="w-full"
       >
         {isUploading ? 'Uploading...' : 'Upload and Import'}
       </Button>
+      </div>
 
       {/* Imported Transactions Preview */}
       {preview && preview.length > 0 && (
