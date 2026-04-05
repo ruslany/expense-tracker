@@ -56,15 +56,15 @@ export const navItems: NavItem[] = [
     icon: CreditCard,
   },
   {
-    title: 'Receipts',
-    href: '/unprocessed-receipts',
-    icon: Receipt,
-    requireAdmin: true,
-  },
-  {
     title: 'Import',
     href: '/import',
     icon: Upload,
+    requireAdmin: true,
+  },
+  {
+    title: 'Receipts',
+    href: '/unprocessed-receipts',
+    icon: Receipt,
     requireAdmin: true,
   },
   {
