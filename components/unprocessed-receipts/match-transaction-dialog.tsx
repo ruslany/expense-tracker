@@ -184,7 +184,9 @@ export function MatchTransactionDialog({
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">Close</Button>
+            <Button type="button" variant="outline">
+              Close
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

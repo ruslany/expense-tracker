@@ -60,7 +60,9 @@ export function UnsplitTransactionDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel variant="outline" disabled={isSubmitting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline" disabled={isSubmitting}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction onClick={handleUnsplit} disabled={isSubmitting}>
             {isSubmitting ? 'Unsplitting...' : 'Unsplit'}
           </AlertDialogAction>

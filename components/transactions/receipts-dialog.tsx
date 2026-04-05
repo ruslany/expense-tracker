@@ -230,7 +230,9 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">Close</Button>
+            <Button type="button" variant="outline">
+              Close
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

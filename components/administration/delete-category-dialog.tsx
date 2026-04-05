@@ -66,7 +66,9 @@ export function DeleteCategoryDialog({ open, onOpenChange, category }: DeleteCat
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel variant="outline" disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline" disabled={isDeleting}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
             {isDeleting ? 'Deleting...' : 'Delete'}
           </AlertDialogAction>

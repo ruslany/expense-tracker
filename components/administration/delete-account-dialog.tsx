@@ -95,7 +95,9 @@ export function DeleteAccountDialog({ open, onOpenChange, account }: DeleteAccou
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel variant="outline" disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline" disabled={isDeleting}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             onClick={handleDelete}
