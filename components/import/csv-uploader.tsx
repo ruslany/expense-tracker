@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { Upload, FileText, X, ChevronDown } from 'lucide-react';
+import { Upload, FileText, X, ChevronDown, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
@@ -24,7 +24,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { cn, formatDate } from '@/lib/utils';
+import { validateCSVHeaders, defaultMappings } from '@/lib/csv-parser';
+import type { Institution } from '@/types';
 
 interface Account {
   id: string;
@@ -52,6 +64,8 @@ export function CSVUploader() {
   const [cutoffDate, setCutoffDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
+  const [headerWarning, setHeaderWarning] = useState<string[] | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -87,6 +101,26 @@ export function CSVUploader() {
     fetchRecentTransactions();
   }, [selectedAccountId]);
 
+  useEffect(() => {
+    async function validateHeaders() {
+      if (!file || !selectedAccountId) {
+        setHeaderWarning(null);
+        return;
+      }
+      const account = accounts.find((a) => a.id === selectedAccountId);
+      if (!account) return;
+
+      const institution = account.institution as Institution;
+      const config = defaultMappings[institution];
+      if (!config) return;
+
+      const fileContent = await file.text();
+      const { missingHeaders } = validateCSVHeaders(fileContent, config.fieldMapping);
+      setHeaderWarning(missingHeaders.length > 0 ? missingHeaders : null);
+    }
+    validateHeaders();
+  }, [file, selectedAccountId, accounts]);
+
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -115,7 +149,12 @@ export function CSVUploader() {
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = () => {
+    if (!file || !selectedAccountId) return;
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmedUpload = async () => {
     const selectedAccount = accounts.find((a) => a.id === selectedAccountId);
     if (!file || !selectedAccount) return;
 
@@ -162,7 +201,8 @@ export function CSVUploader() {
           <SelectContent>
             {accounts.map((account) => (
               <SelectItem key={account.id} value={account.id}>
-                {account.name}
+                <span>{account.name}</span>
+                <span className="ml-2 text-muted-foreground text-xs">· {account.institution}</span>
               </SelectItem>
             ))}
           </SelectContent>
@@ -314,6 +354,23 @@ export function CSVUploader() {
         )}
       </div>
 
+      {/* Header Validation Warning */}
+      {headerWarning && (
+        <div className="flex items-start gap-3 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-sm">
+          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-yellow-500" />
+          <div>
+            <p className="font-medium text-yellow-700 dark:text-yellow-400">
+              CSV headers don&apos;t match the selected account
+            </p>
+            <p className="mt-1 text-muted-foreground">
+              Expected columns not found:{' '}
+              <span className="font-mono">{headerWarning.join(', ')}</span>. This file may be from a
+              different institution.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Upload Button */}
       <div className="flex justify-end">
         <Button onClick={handleUpload} disabled={!file || !selectedAccountId || isUploading}>
@@ -379,6 +436,48 @@ export function CSVUploader() {
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Import</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm">
+                <p>You are about to import transactions with the following settings:</p>
+                <ul className="space-y-1 rounded-md border p-3 text-foreground">
+                  <li>
+                    <span className="text-muted-foreground">File:</span>{' '}
+                    <span className="font-medium">{file?.name}</span>
+                  </li>
+                  <li>
+                    <span className="text-muted-foreground">Account:</span>{' '}
+                    <span className="font-medium">
+                      {accounts.find((a) => a.id === selectedAccountId)?.name}
+                    </span>
+                  </li>
+                  <li>
+                    <span className="text-muted-foreground">Institution format:</span>{' '}
+                    <span className="font-medium">
+                      {accounts.find((a) => a.id === selectedAccountId)?.institution}
+                    </span>
+                  </li>
+                </ul>
+                {headerWarning && (
+                  <p className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    Warning: CSV headers don&apos;t match the expected format for this institution.
+                  </p>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmedUpload}>Import</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
