@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { FileText, Trash2, Link2 } from 'lucide-react';
+import { FileText, Trash2, Link2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -109,6 +109,14 @@ export function UnprocessedReceiptsList({ receipts: initial }: UnprocessedReceip
                   <Button size="sm" className="flex-1" onClick={() => setMatchingId(receipt.id)}>
                     <Link2 className="mr-1 size-3.5" />
                     Match
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    title="View / Download"
+                    onClick={() => window.open(`/api/receipts/${receipt.id}/file`, '_blank')}
+                  >
+                    <Download className="size-3.5" />
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
