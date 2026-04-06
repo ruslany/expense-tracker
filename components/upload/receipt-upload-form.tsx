@@ -64,15 +64,20 @@ export function ReceiptUploadForm() {
     if (!file) return;
 
     if (file.type.startsWith('image/')) {
+      // Show original immediately so the UI transitions to 'selected' right away
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
+      setState('selected');
+
+      // Replace with compressed version in the background
       const compressed = await compressImage(file);
       setSelectedFile(compressed);
       setPreview(URL.createObjectURL(compressed));
     } else {
       setSelectedFile(file);
       setPreview(null);
+      setState('selected');
     }
-
-    setState('selected');
   }
 
   function handleClear() {
