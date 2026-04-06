@@ -31,7 +31,9 @@ async function compressImage(file: File): Promise<File> {
           if (!blob || blob.size >= file.size) {
             resolve(file); // compression made it larger or failed — use original
           } else {
-            resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+            resolve(
+              new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }),
+            );
           }
         },
         'image/jpeg',
