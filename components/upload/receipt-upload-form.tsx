@@ -5,6 +5,49 @@ import { Camera, CheckCircle2, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
+const MAX_WIDTH = 1600;
+const JPEG_QUALITY = 0.82;
+
+async function compressImage(file: File): Promise<File> {
+  if (file.type === 'application/pdf') return file;
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+
+      const scale = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob || blob.size >= file.size) {
+            resolve(file); // compression made it larger or failed — use original
+          } else {
+            resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+          }
+        },
+        'image/jpeg',
+        JPEG_QUALITY,
+      );
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file); // fallback to original on error
+    };
+
+    img.src = url;
+  });
+}
+
 type State = 'idle' | 'selected' | 'uploading' | 'success';
 
 export function ReceiptUploadForm() {
@@ -14,19 +57,20 @@ export function ReceiptUploadForm() {
   const [uploadedName, setUploadedName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setSelectedFile(file);
-    setState('selected');
-
     if (file.type.startsWith('image/')) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
+      const compressed = await compressImage(file);
+      setSelectedFile(compressed);
+      setPreview(URL.createObjectURL(compressed));
     } else {
+      setSelectedFile(file);
       setPreview(null);
     }
+
+    setState('selected');
   }
 
   function handleClear() {
