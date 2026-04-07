@@ -380,6 +380,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
             key={`dates-${startDate?.toISOString()}-${endDate?.toISOString()}`}
             startDate={startDate ?? undefined}
             endDate={endDate ?? undefined}
+            hideMonthPresets
           />
         </div>
 
