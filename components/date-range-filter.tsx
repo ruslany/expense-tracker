@@ -24,6 +24,7 @@ interface DateRangeFilterProps {
   endDate: Date | undefined;
   storageKey?: string;
   restoreOnMount?: boolean;
+  hideMonthPresets?: boolean;
 }
 
 export function DateRangeFilter({
@@ -31,6 +32,7 @@ export function DateRangeFilter({
   endDate,
   storageKey,
   restoreOnMount = true,
+  hideMonthPresets = false,
 }: DateRangeFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -169,8 +171,12 @@ export function DateRangeFilter({
           <SelectValue placeholder="Presets" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="current-month">Current month</SelectItem>
-          <SelectItem value="last-month">Last month</SelectItem>
+          {!hideMonthPresets && (
+            <>
+              <SelectItem value="current-month">Current month</SelectItem>
+              <SelectItem value="last-month">Last month</SelectItem>
+            </>
+          )}
           <SelectItem value="current-year">Current year</SelectItem>
           {Array.from({ length: new Date().getFullYear() - 2024 }, (_, i) => {
             const year = new Date().getFullYear() - 1 - i;

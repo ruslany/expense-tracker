@@ -163,6 +163,7 @@ export default async function TagsPage({ searchParams }: PageProps) {
             endDate={endDate ?? undefined}
             storageKey="tag-report-dates"
             restoreOnMount={false}
+            hideMonthPresets
           />
         </div>
 
