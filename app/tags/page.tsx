@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/app-shell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { FilterCard } from '@/components/tag-report/filter-card';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { SummaryStats } from '@/components/summary-stats';
@@ -183,22 +183,16 @@ export default async function TagsPage({ searchParams }: PageProps) {
                 title={`Category Breakdown for "${report.tagName}"`}
               />
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Category Details</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CategoryDetailsTable
-                    data={report.data}
-                    grandTotal={report.grandTotal}
-                    totalCount={report.totalCount}
-                    overallMaxTransaction={report.overallMaxTransaction}
-                    tagId={params.tagId}
-                    startDate={params.startDate}
-                    endDate={params.endDate}
-                  />
-                </CardContent>
-              </Card>
+              <CategoryDetailsTable
+                data={report.data}
+                grandTotal={report.grandTotal}
+                totalCount={report.totalCount}
+                overallMaxTransaction={report.overallMaxTransaction}
+                tagName={report.tagName}
+                tagId={params.tagId}
+                startDate={params.startDate}
+                endDate={params.endDate}
+              />
             </div>
           </>
         ) : (
