@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import { AppShell } from '@/components/app-shell';
 import { fetchUnprocessedReceipts } from '@/lib/data';
 import { UnprocessedReceiptsList } from '@/components/receipts/unprocessed-receipts-list';
+import { ReceiptDropzone } from '@/components/receipts/receipt-dropzone';
 
 export const metadata: Metadata = { title: 'Unprocessed Receipts' };
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,7 @@ export default async function UnprocessedReceiptsPage() {
               : `${receipts.length} receipt${receipts.length !== 1 ? 's' : ''} waiting to be matched to a transaction.`}
           </p>
         </div>
+        <ReceiptDropzone />
         <UnprocessedReceiptsList receipts={receipts} />
       </div>
     </AppShell>
