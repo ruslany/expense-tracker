@@ -84,9 +84,7 @@ export function ReceiptDropzone() {
       const succeeded = results.length - failed;
 
       if (succeeded > 0) {
-        toast.success(
-          succeeded === 1 ? 'Receipt uploaded' : `${succeeded} receipts uploaded`,
-        );
+        toast.success(succeeded === 1 ? 'Receipt uploaded' : `${succeeded} receipts uploaded`);
         router.refresh();
       }
       if (failed > 0) {
