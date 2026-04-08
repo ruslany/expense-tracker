@@ -1,5 +1,5 @@
+import type { Metadata } from 'next';
 import { AppShell } from '@/components/app-shell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { YearFilter } from '@/components/big-expenses/year-filter';
 import { ParamsInitializer } from '@/components/big-expenses/params-initializer';
 import { ExpensesByTagChart } from '@/components/big-expenses/expenses-by-tag-chart';
@@ -7,7 +7,7 @@ import { ExpensesByTagTable } from '@/components/big-expenses/expenses-by-tag-ta
 import { SummaryStats } from '@/components/summary-stats';
 import { getPrisma } from '@/lib/prisma';
 
-export async function generateMetadata({ searchParams }: PageProps) {
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const { year } = await searchParams;
   const displayYear = year || new Date().getFullYear();
   return { title: `${displayYear} Big Expenses` };
@@ -159,20 +159,13 @@ export default async function BigExpensesPage({ searchParams }: PageProps) {
             title={`Expenses by Tag (${currentYear})`}
           />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Tag Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ExpensesByTagTable
-                data={expensesByTag.data}
-                grandTotal={expensesByTag.grandTotal}
-                totalCount={expensesByTag.totalCount}
-                overallMaxTransaction={expensesByTag.overallMaxTransaction}
-                year={currentYear}
-              />
-            </CardContent>
-          </Card>
+          <ExpensesByTagTable
+            data={expensesByTag.data}
+            grandTotal={expensesByTag.grandTotal}
+            totalCount={expensesByTag.totalCount}
+            overallMaxTransaction={expensesByTag.overallMaxTransaction}
+            year={currentYear}
+          />
         </div>
       </div>
     </AppShell>
