@@ -376,7 +376,7 @@ export async function fetchUsers() {
 export async function fetchUnprocessedReceipts() {
   try {
     const prisma = await getPrisma();
-    return prisma.receipt.findMany({
+    return await prisma.receipt.findMany({
       where: { transactionId: null },
       orderBy: { uploadedAt: 'asc' },
       select: {
@@ -395,9 +395,10 @@ export async function fetchUnprocessedReceipts() {
 }
 
 export async function fetchUnprocessedReceiptsCount() {
+  if (!process.env.DATABASE_URL) return 0;
   try {
     const prisma = await getPrisma();
-    return prisma.receipt.count({ where: { transactionId: null } });
+    return await prisma.receipt.count({ where: { transactionId: null } });
   } catch (error) {
     console.error('Database Error:', error);
     return 0;
