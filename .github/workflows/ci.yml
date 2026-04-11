@@ -55,6 +55,8 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - run: npm run build
+        env:
+          DATABASE_URL: postgresql://localhost/build
 
   bicep:
     name: Bicep
