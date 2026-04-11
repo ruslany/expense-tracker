@@ -57,7 +57,10 @@ function getTokenManager(managedIdentityClientId?: string): AzureTokenManager {
 }
 
 async function createPrismaClient(): Promise<PrismaClient> {
-  const databaseUrl = process.env.DATABASE_URL!;
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
   const isAzureDb = databaseUrl.includes('azure');
 
   let pool: Pool;
