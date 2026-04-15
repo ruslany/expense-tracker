@@ -30,10 +30,27 @@ interface CurrencyConverterProps {
   trackedRates?: ForexQuote[];
 }
 
+const STORAGE_KEY = 'currency-converter-selection';
+
+function loadSelection() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved) as { from: string; to: string; amount: string };
+  } catch {}
+  return null;
+}
+
+function saveSelection(from: string, to: string, amount: string) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ from, to, amount }));
+  } catch {}
+}
+
 export function CurrencyConverter({ trackedRates = [] }: CurrencyConverterProps) {
-  const [amount, setAmount] = useState('100');
-  const [from, setFrom] = useState('USD');
-  const [to, setTo] = useState('EUR');
+  const saved = typeof window !== 'undefined' ? loadSelection() : null;
+  const [amount, setAmount] = useState(saved?.amount ?? '100');
+  const [from, setFrom] = useState(saved?.from ?? 'EUR');
+  const [to, setTo] = useState(saved?.to ?? 'USD');
   const [result, setResult] = useState<ConvertResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,17 +113,20 @@ export function CurrencyConverter({ trackedRates = [] }: CurrencyConverterProps)
 
   const handleFromChange = (value: string) => {
     setFrom(value);
+    saveSelection(value, to, amount);
     convert(amount, value, to);
   };
 
   const handleToChange = (value: string) => {
     setTo(value);
+    saveSelection(from, value, amount);
     convert(amount, from, value);
   };
 
   const handleSwap = () => {
     setFrom(to);
     setTo(from);
+    saveSelection(to, from, amount);
     convert(amount, to, from);
   };
 
@@ -125,9 +145,15 @@ export function CurrencyConverter({ trackedRates = [] }: CurrencyConverterProps)
               step="any"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              onBlur={(e) => convert(e.target.value, from, to)}
+              onBlur={(e) => {
+                saveSelection(from, to, e.target.value);
+                convert(e.target.value, from, to);
+              }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') convert(amount, from, to);
+                if (e.key === 'Enter') {
+                  saveSelection(from, to, amount);
+                  convert(amount, from, to);
+                }
               }}
               className="w-full"
             />

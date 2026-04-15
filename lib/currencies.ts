@@ -14,6 +14,7 @@ export const SUPPORTED_CURRENCIES = [
   'HKD',
   'NOK',
   'DKK',
+  'ISK',
   'PLN',
   'CZK',
   'HUF',

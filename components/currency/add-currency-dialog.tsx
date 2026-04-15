@@ -29,15 +29,15 @@ interface AddCurrencyDialogProps {
 
 export function AddCurrencyDialog({ open, onOpenChange, existingSymbols }: AddCurrencyDialogProps) {
   const router = useRouter();
-  const [base, setBase] = useState('USD');
-  const [quote, setQuote] = useState('EUR');
+  const [base, setBase] = useState('EUR');
+  const [quote, setQuote] = useState('USD');
   const [isAdding, setIsAdding] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) {
-      setBase('USD');
-      setQuote('EUR');
+      setBase('EUR');
+      setQuote('USD');
       setValidationError(null);
       setIsAdding(false);
     }
