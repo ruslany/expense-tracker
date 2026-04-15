@@ -130,9 +130,7 @@ export function AddCurrencyDialog({ open, onOpenChange, existingSymbols }: AddCu
           </div>
         </div>
 
-        {validationError && (
-          <p className="text-sm text-destructive">{validationError}</p>
-        )}
+        {validationError && <p className="text-sm text-destructive">{validationError}</p>}
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>

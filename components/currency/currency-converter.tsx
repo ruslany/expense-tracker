@@ -51,14 +51,24 @@ export function CurrencyConverter({ trackedRates = [] }: CurrencyConverterProps)
     const symbol = `${currentFrom}${currentTo}=X`;
     const cached = trackedRates.find((e) => e.symbol === symbol);
     if (cached?.rate !== null && cached?.rate !== undefined) {
-      setResult({ rate: cached.rate, result: parsed * cached.rate, from: currentFrom, to: currentTo, amount: parsed });
+      setResult({
+        rate: cached.rate,
+        result: parsed * cached.rate,
+        from: currentFrom,
+        to: currentTo,
+        amount: parsed,
+      });
       return;
     }
 
     // Also check the inverse pair (e.g. EURUSD=X covers both USD→EUR and EUR→USD)
     const inverseSymbol = `${currentTo}${currentFrom}=X`;
     const inverseCached = trackedRates.find((e) => e.symbol === inverseSymbol);
-    if (inverseCached?.rate !== null && inverseCached?.rate !== undefined && inverseCached.rate !== 0) {
+    if (
+      inverseCached?.rate !== null &&
+      inverseCached?.rate !== undefined &&
+      inverseCached.rate !== 0
+    ) {
       const rate = 1 / inverseCached.rate;
       setResult({ rate, result: parsed * rate, from: currentFrom, to: currentTo, amount: parsed });
       return;
@@ -139,7 +149,12 @@ export function CurrencyConverter({ trackedRates = [] }: CurrencyConverterProps)
             </Select>
           </div>
 
-          <Button variant="outline" size="icon" onClick={handleSwap} className="shrink-0 mt-6 sm:mt-0">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleSwap}
+            className="shrink-0 mt-6 sm:mt-0"
+          >
             <ArrowLeftRight className="size-4" />
             <span className="sr-only">Swap currencies</span>
           </Button>
@@ -168,9 +183,7 @@ export function CurrencyConverter({ trackedRates = [] }: CurrencyConverterProps)
               Fetching rate...
             </div>
           )}
-          {!isLoading && error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+          {!isLoading && error && <p className="text-sm text-destructive">{error}</p>}
           {!isLoading && !error && result && (
             <div className="w-full">
               <div className="text-2xl font-semibold">
@@ -182,7 +195,9 @@ export function CurrencyConverter({ trackedRates = [] }: CurrencyConverterProps)
             </div>
           )}
           {!isLoading && !error && !result && (
-            <p className="text-sm text-muted-foreground">Enter an amount and press Enter or click away</p>
+            <p className="text-sm text-muted-foreground">
+              Enter an amount and press Enter or click away
+            </p>
           )}
         </div>
       </CardContent>

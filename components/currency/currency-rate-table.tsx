@@ -23,7 +23,6 @@ import { AddCurrencyDialog } from './add-currency-dialog';
 import { RemoveCurrencyDialog } from './remove-currency-dialog';
 import type { ForexQuote } from '@/types';
 
-
 function formatRate(rate: number | null, quoteCurrency: string): string {
   if (rate === null || rate === 0) return '—';
   return quoteCurrency === 'JPY' ? rate.toFixed(2) : rate.toFixed(4);

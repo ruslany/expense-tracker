@@ -15,7 +15,10 @@ export async function GET(request: NextRequest) {
   const amountStr = searchParams.get('amount');
 
   if (!from || !to || !amountStr) {
-    return NextResponse.json({ error: 'Missing required params: from, to, amount' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing required params: from, to, amount' },
+      { status: 400 },
+    );
   }
 
   if (!VALID_CURRENCIES.has(from) || !VALID_CURRENCIES.has(to)) {
