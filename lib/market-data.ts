@@ -1,4 +1,5 @@
 import type { MarketQuote } from '@/types';
+export { SUPPORTED_CURRENCIES } from '@/lib/currencies';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const YahooFinance = require('yahoo-finance2').default;
@@ -65,6 +66,20 @@ interface SearchResult {
   name: string;
   type: string;
   exchange: string;
+}
+
+export async function fetchForexRate(
+  fromCurrency: string,
+  toCurrency: string,
+): Promise<number | null> {
+  const symbol = `${fromCurrency}${toCurrency}=X`;
+  try {
+    const q = await yf.quote(symbol);
+    return q.regularMarketPrice ?? null;
+  } catch (error) {
+    console.error(`Failed to fetch forex rate for ${symbol}:`, error);
+    return null;
+  }
 }
 
 export async function searchSymbols(query: string): Promise<SearchResult[]> {

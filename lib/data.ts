@@ -318,6 +318,24 @@ export async function fetchAccountsWithTransactionCount() {
   }
 }
 
+export async function fetchTrackedCurrencies() {
+  try {
+    const prisma = await getPrisma();
+    const items = await prisma.trackedCurrency.findMany({
+      orderBy: { symbol: 'asc' },
+    });
+    return items.map((item) => ({
+      id: item.id,
+      symbol: item.symbol,
+      baseCurrency: item.baseCurrency,
+      quoteCurrency: item.quoteCurrency,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch tracked currencies.');
+  }
+}
+
 export async function fetchWatchlistItems() {
   try {
     const prisma = await getPrisma();

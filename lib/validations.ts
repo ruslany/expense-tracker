@@ -131,3 +131,19 @@ export const watchlistItemSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   fundType: z.enum(['etf', 'mutual_fund', 'stock']),
 });
+
+export const trackedCurrencySchema = z.object({
+  symbol: z
+    .string()
+    .min(1, 'Symbol is required')
+    .max(20)
+    .transform((s) => s.toUpperCase()),
+  baseCurrency: z
+    .string()
+    .length(3, 'Currency code must be 3 characters')
+    .transform((s) => s.toUpperCase()),
+  quoteCurrency: z
+    .string()
+    .length(3, 'Currency code must be 3 characters')
+    .transform((s) => s.toUpperCase()),
+});
