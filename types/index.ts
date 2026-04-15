@@ -78,6 +78,26 @@ export interface MarketQuote {
   lastTradeTime: Date | null;
 }
 
+export interface ForexQuote {
+  id: string;
+  symbol: string;
+  baseCurrency: string;
+  quoteCurrency: string;
+  rate: number | null;
+  changePercent: number | null;
+  fiftyTwoWeekHigh: number | null;
+  fiftyTwoWeekLow: number | null;
+  lastTradeTime: Date | null;
+}
+
+export interface ConvertResult {
+  rate: number;
+  result: number;
+  from: string;
+  to: string;
+  amount: number;
+}
+
 export interface WatchlistEntry {
   id: string;
   symbol: string;

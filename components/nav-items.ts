@@ -9,6 +9,7 @@ import {
   LineChart,
   LayoutGrid,
   Receipt,
+  ArrowLeftRight,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -29,6 +30,11 @@ export const navItems: NavItem[] = [
     title: 'Investments',
     href: '/investments',
     icon: LineChart,
+  },
+  {
+    title: 'Currency',
+    href: '/currency',
+    icon: ArrowLeftRight,
   },
   {
     title: 'Big Expenses',
