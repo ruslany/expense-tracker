@@ -354,6 +354,26 @@ export async function fetchWatchlistItems() {
   }
 }
 
+export async function fetchPortfolioItems() {
+  try {
+    const prisma = await getPrisma();
+    const items = await prisma.portfolioItem.findMany({
+      orderBy: { symbol: 'asc' },
+    });
+    return items.map((item) => ({
+      id: item.id,
+      symbol: item.symbol,
+      name: item.name,
+      fundType: item.fundType as FundType,
+      quantity: item.quantity,
+      assetClass: item.assetClass as import('@/types').AssetClass,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch portfolio items.');
+  }
+}
+
 export async function fetchCSVMappings() {
   try {
     const prisma = await getPrisma();

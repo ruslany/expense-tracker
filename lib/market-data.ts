@@ -1,4 +1,4 @@
-import type { MarketQuote } from '@/types';
+import type { AssetClass, MarketQuote } from '@/types';
 export { SUPPORTED_CURRENCIES } from '@/lib/currencies';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -79,6 +79,42 @@ export async function fetchForexRate(
   } catch (error) {
     console.error(`Failed to fetch forex rate for ${symbol}:`, error);
     return null;
+  }
+}
+
+const CATEGORY_TO_ASSET_CLASS: Array<[RegExp, AssetClass]> = [
+  [/money market|stable value|cash/i, 'cash'],
+  [/real estate|reit/i, 'real_estate'],
+  [/commodit|precious metal|agriculture|energy limited/i, 'commodities'],
+  [
+    /foreign|international|emerging|world stock|global|europe|asia|japan|china|latin/i,
+    'intl_equity',
+  ],
+  [
+    /bond|fixed income|income|treasury|government|corporate|municipal|muni|inflation.protected|ultrashort|bank loan/i,
+    'fixed_income',
+  ],
+  [/large|mid.cap|small|blend|growth|value|equity|stock|domestic/i, 'us_equity'],
+];
+
+function categoryNameToAssetClass(category: string | null | undefined): AssetClass {
+  if (!category) return 'other';
+  for (const [pattern, cls] of CATEGORY_TO_ASSET_CLASS) {
+    if (pattern.test(category)) return cls;
+  }
+  return 'other';
+}
+
+export async function detectAssetClass(symbol: string): Promise<AssetClass> {
+  try {
+    const summary = await yf.quoteSummary(symbol, { modules: ['fundProfile', 'quoteType'] });
+    const category = (summary.fundProfile as { categoryName?: string } | null)?.categoryName;
+    if (category) return categoryNameToAssetClass(category);
+    const quoteType = (summary.quoteType as { quoteType?: string } | null)?.quoteType;
+    if (quoteType === 'EQUITY') return 'us_equity';
+    return 'other';
+  } catch {
+    return 'other';
   }
 }
 

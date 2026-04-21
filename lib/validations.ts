@@ -132,6 +132,33 @@ export const watchlistItemSchema = z.object({
   fundType: z.enum(['etf', 'mutual_fund', 'stock']),
 });
 
+export const assetClassEnum = z.enum([
+  'us_equity',
+  'intl_equity',
+  'fixed_income',
+  'cash',
+  'real_estate',
+  'commodities',
+  'other',
+]);
+
+export const portfolioItemSchema = z.object({
+  symbol: z
+    .string()
+    .min(1, 'Symbol is required')
+    .max(10)
+    .transform((s) => s.toUpperCase()),
+  name: z.string().min(1, 'Name is required'),
+  fundType: z.enum(['etf', 'mutual_fund', 'stock']),
+  quantity: z.number().positive('Quantity must be positive'),
+  assetClass: assetClassEnum.default('other'),
+});
+
+export const portfolioItemUpdateSchema = z.object({
+  quantity: z.number().positive('Quantity must be positive').optional(),
+  assetClass: assetClassEnum.optional(),
+});
+
 export const trackedCurrencySchema = z.object({
   symbol: z
     .string()
