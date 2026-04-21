@@ -245,7 +245,7 @@ export function AddPortfolioDialog({
                 <Label htmlFor="account-name">Account</Label>
                 <Input
                   id="account-name"
-                  placeholder="e.g. My Fidelity, Wife's Vanguard"
+                  placeholder="e.g. My Brokerage, Spouse's IRA"
                   value={accountName}
                   onChange={(e) => setAccountName(e.target.value)}
                   autoFocus

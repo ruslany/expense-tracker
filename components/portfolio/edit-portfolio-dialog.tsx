@@ -100,7 +100,7 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
               id="edit-account-name"
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
-              placeholder="e.g. My Fidelity"
+              placeholder="e.g. My Brokerage"
             />
           </div>
           <div className="space-y-2">
