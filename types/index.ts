@@ -143,6 +143,7 @@ export interface WatchlistEntry {
 export interface PortfolioEntry {
   id: string;
   symbol: string;
+  accountName: string;
   name: string;
   fundType: FundType;
   assetClass: AssetClass;

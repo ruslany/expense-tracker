@@ -358,11 +358,12 @@ export async function fetchPortfolioItems() {
   try {
     const prisma = await getPrisma();
     const items = await prisma.portfolioItem.findMany({
-      orderBy: { symbol: 'asc' },
+      orderBy: [{ accountName: 'asc' }, { symbol: 'asc' }],
     });
     return items.map((item) => ({
       id: item.id,
       symbol: item.symbol,
+      accountName: item.accountName,
       name: item.name,
       fundType: item.fundType as FundType,
       quantity: item.quantity,
