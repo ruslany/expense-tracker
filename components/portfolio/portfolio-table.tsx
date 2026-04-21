@@ -26,6 +26,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { AddPortfolioDialog } from './add-portfolio-dialog';
 import { EditPortfolioDialog } from './edit-portfolio-dialog';
 import { DeletePortfolioDialog } from './delete-portfolio-dialog';
@@ -188,7 +195,45 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
             <>
               {/* Mobile Card View */}
               <div className="space-y-3 md:hidden">
-                {entries.map((entry) => (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">Sort by</span>
+                  <Select
+                    value={sortColumn ? `${sortColumn}-${sortDir}` : 'none'}
+                    onValueChange={(value) => {
+                      if (value === 'none') {
+                        setSortColumn(null);
+                        return;
+                      }
+                      const lastDash = value.lastIndexOf('-');
+                      const col = value.slice(0, lastDash) as SortColumn;
+                      const dir = value.slice(lastDash + 1) as SortDirection;
+                      setSortColumn(col);
+                      setSortDir(dir);
+                      try {
+                        localStorage.setItem('portfolio-sort-column', col);
+                        localStorage.setItem('portfolio-sort-dir', dir);
+                      } catch {
+                        // ignore
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Default" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Default</SelectItem>
+                      <SelectItem value="name-asc">Name (A → Z)</SelectItem>
+                      <SelectItem value="name-desc">Name (Z → A)</SelectItem>
+                      <SelectItem value="account-asc">Account (A → Z)</SelectItem>
+                      <SelectItem value="account-desc">Account (Z → A)</SelectItem>
+                      <SelectItem value="type-asc">Type (A → Z)</SelectItem>
+                      <SelectItem value="type-desc">Type (Z → A)</SelectItem>
+                      <SelectItem value="percentOfTotal-desc">% of Total (high → low)</SelectItem>
+                      <SelectItem value="percentOfTotal-asc">% of Total (low → high)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {sortedEntries.map((entry) => (
                   <Card key={entry.id}>
                     <CardContent className="p-4 space-y-2">
                       <div className="flex items-center justify-between">
