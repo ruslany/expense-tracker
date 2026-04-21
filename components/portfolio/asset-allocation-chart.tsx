@@ -142,7 +142,9 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
               <TableFooter>
                 <TableRow>
                   <TableCell className="font-bold">Total</TableCell>
-                  <TableCell className="text-right font-bold">{formatCurrency(totalValue)}</TableCell>
+                  <TableCell className="text-right font-bold">
+                    {formatCurrency(totalValue)}
+                  </TableCell>
                   <TableCell className="text-right font-bold">100.0%</TableCell>
                 </TableRow>
               </TableFooter>
