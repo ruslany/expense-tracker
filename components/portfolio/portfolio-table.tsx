@@ -124,8 +124,6 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
     }
   });
 
-  const totalValue = entries.reduce((sum, e) => (e.currentValue ?? 0) + sum, 0);
-
   const handleSort = (col: SortColumn) => {
     const newDir: SortDirection = sortColumn === col && sortDir === 'asc' ? 'desc' : 'asc';
     const newCol = col;
@@ -171,14 +169,7 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>
-            Positions
-            {totalValue > 0 && (
-              <span className="ml-2 text-base font-normal text-muted-foreground">
-                {formatCurrencyValue(totalValue)} total
-              </span>
-            )}
-          </CardTitle>
+          <CardTitle>Positions</CardTitle>
           <CardAction>
             <Button onClick={() => setAddDialogOpen(true)}>
               <Plus />
