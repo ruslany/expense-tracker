@@ -64,7 +64,11 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
       const response = await fetch(`/api/portfolio/${item.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: qty, assetClass, accountName: accountName.trim() || undefined }),
+        body: JSON.stringify({
+          quantity: qty,
+          assetClass,
+          accountName: accountName.trim() || undefined,
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to update position');

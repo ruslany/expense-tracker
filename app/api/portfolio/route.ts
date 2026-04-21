@@ -29,7 +29,9 @@ export async function POST(request: NextRequest) {
     const validated = portfolioItemSchema.parse(body);
 
     const existing = await prisma.portfolioItem.findUnique({
-      where: { symbol_accountName: { symbol: validated.symbol, accountName: validated.accountName } },
+      where: {
+        symbol_accountName: { symbol: validated.symbol, accountName: validated.accountName },
+      },
     });
 
     if (existing) {
