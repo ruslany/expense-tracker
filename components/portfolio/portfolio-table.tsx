@@ -87,6 +87,8 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
     setDeleteDialogOpen(true);
   };
 
+  const existingAccountNames = [...new Set(entries.map((e) => e.accountName).filter(Boolean))];
+
   return (
     <>
       <Card>
@@ -122,6 +124,9 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                         <div>
                           <div className="font-medium">{entry.symbol}</div>
                           <div className="text-xs text-muted-foreground">{entry.name}</div>
+                          {entry.accountName && (
+                            <div className="text-xs text-muted-foreground">{entry.accountName}</div>
+                          )}
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -133,7 +138,7 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleEdit(entry)}>
                               <Pencil />
-                              Edit Shares
+                              Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               variant="destructive"
@@ -183,6 +188,7 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>Account</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead className="text-right">Price</TableHead>
                       <TableHead className="text-right">Today</TableHead>
@@ -198,6 +204,9 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                         <TableCell>
                           <div className="font-medium">{entry.symbol}</div>
                           <div className="text-xs text-muted-foreground">{entry.name}</div>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {entry.accountName || '—'}
                         </TableCell>
                         <TableCell>
                           <AssetClassBadge assetClass={entry.assetClass} />
@@ -228,7 +237,7 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem onClick={() => handleEdit(entry)}>
                                 <Pencil />
-                                Edit Shares
+                                Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 variant="destructive"
@@ -250,7 +259,11 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
         </CardContent>
       </Card>
 
-      <AddPortfolioDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
+      <AddPortfolioDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        existingAccountNames={existingAccountNames}
+      />
 
       <EditPortfolioDialog
         open={editDialogOpen}

@@ -29,16 +29,20 @@ export async function POST(request: NextRequest) {
     const validated = portfolioItemSchema.parse(body);
 
     const existing = await prisma.portfolioItem.findUnique({
-      where: { symbol: validated.symbol },
+      where: { symbol_accountName: { symbol: validated.symbol, accountName: validated.accountName } },
     });
 
     if (existing) {
-      return NextResponse.json({ error: 'Symbol already in portfolio' }, { status: 409 });
+      return NextResponse.json(
+        { error: `${validated.symbol} already exists in ${validated.accountName}` },
+        { status: 409 },
+      );
     }
 
     const item = await prisma.portfolioItem.create({
       data: {
         symbol: validated.symbol,
+        accountName: validated.accountName,
         name: validated.name,
         fundType: validated.fundType,
         quantity: validated.quantity,

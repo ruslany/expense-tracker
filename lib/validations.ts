@@ -148,6 +148,7 @@ export const portfolioItemSchema = z.object({
     .min(1, 'Symbol is required')
     .max(10)
     .transform((s) => s.toUpperCase()),
+  accountName: z.string().min(1, 'Account name is required').max(100),
   name: z.string().min(1, 'Name is required'),
   fundType: z.enum(['etf', 'mutual_fund', 'stock']),
   quantity: z.number().positive('Quantity must be positive'),
@@ -157,6 +158,7 @@ export const portfolioItemSchema = z.object({
 export const portfolioItemUpdateSchema = z.object({
   quantity: z.number().positive('Quantity must be positive').optional(),
   assetClass: assetClassEnum.optional(),
+  accountName: z.string().min(1).max(100).optional(),
 });
 
 export const trackedCurrencySchema = z.object({

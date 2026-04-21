@@ -34,6 +34,7 @@ interface SearchResult {
 interface AddPortfolioDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  existingAccountNames: string[];
 }
 
 const FUND_TYPE_MAP: Record<string, string> = {
@@ -48,13 +49,18 @@ function getFundType(typeDisp: string): string {
   return FUND_TYPE_MAP[typeDisp] || 'stock';
 }
 
-export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogProps) {
+export function AddPortfolioDialog({
+  open,
+  onOpenChange,
+  existingAccountNames,
+}: AddPortfolioDialogProps) {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null);
   const [quantity, setQuantity] = useState('');
+  const [accountName, setAccountName] = useState('');
   const [assetClass, setAssetClass] = useState<AssetClass>('other');
   const [isDetecting, setIsDetecting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -67,6 +73,7 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
       setIsSearching(false);
       setSelectedResult(null);
       setQuantity('');
+      setAccountName('');
       setAssetClass('other');
       setIsDetecting(false);
       setIsAdding(false);
@@ -123,6 +130,10 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
       toast.error('Please enter a valid quantity');
       return;
     }
+    if (!accountName.trim()) {
+      toast.error('Please enter an account name');
+      return;
+    }
 
     setIsAdding(true);
     try {
@@ -131,6 +142,7 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           symbol: selectedResult.symbol,
+          accountName: accountName.trim(),
           name: selectedResult.name,
           fundType: getFundType(selectedResult.type),
           quantity: qty,
@@ -230,6 +242,30 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
           {selectedResult && (
             <>
               <div className="space-y-2">
+                <Label htmlFor="account-name">Account</Label>
+                <Input
+                  id="account-name"
+                  placeholder="e.g. My Fidelity, Wife's Vanguard"
+                  value={accountName}
+                  onChange={(e) => setAccountName(e.target.value)}
+                  autoFocus
+                />
+                {existingAccountNames.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {existingAccountNames.map((name) => (
+                      <button
+                        key={name}
+                        type="button"
+                        className="rounded-full border px-2 py-0.5 text-xs hover:bg-muted transition-colors"
+                        onClick={() => setAccountName(name)}
+                      >
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="quantity">Number of Shares</Label>
                 <Input
                   id="quantity"
@@ -275,7 +311,10 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
                 <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
                   Cancel
                 </Button>
-                <Button onClick={handleAdd} disabled={isAdding || !quantity || isDetecting}>
+                <Button
+                  onClick={handleAdd}
+                  disabled={isAdding || !quantity || !accountName.trim() || isDetecting}
+                >
                   {isAdding ? 'Adding...' : 'Add Position'}
                 </Button>
               </div>

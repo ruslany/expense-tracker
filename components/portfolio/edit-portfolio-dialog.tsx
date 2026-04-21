@@ -30,6 +30,7 @@ interface EditPortfolioDialogProps {
     id: string;
     symbol: string;
     name: string;
+    accountName: string;
     quantity: number;
     assetClass: AssetClass;
   } | null;
@@ -38,12 +39,14 @@ interface EditPortfolioDialogProps {
 export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioDialogProps) {
   const router = useRouter();
   const [quantity, setQuantity] = useState('');
+  const [accountName, setAccountName] = useState('');
   const [assetClass, setAssetClass] = useState<AssetClass>('other');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (open && item) {
       setQuantity(String(item.quantity));
+      setAccountName(item.accountName);
       setAssetClass(item.assetClass);
     }
   }, [open, item]);
@@ -61,7 +64,7 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
       const response = await fetch(`/api/portfolio/${item.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: qty, assetClass }),
+        body: JSON.stringify({ quantity: qty, assetClass, accountName: accountName.trim() || undefined }),
       });
 
       if (!response.ok) throw new Error('Failed to update position');
@@ -91,6 +94,15 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="edit-account-name">Account</Label>
+            <Input
+              id="edit-account-name"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+              placeholder="e.g. My Fidelity"
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="edit-quantity">Number of Shares</Label>
             <Input

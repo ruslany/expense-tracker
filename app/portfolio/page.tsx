@@ -18,8 +18,8 @@ export default async function PortfolioPage() {
   }
 
   const items = await fetchPortfolioItems();
-  const symbols = items.map((item) => item.symbol);
-  const quotes = await fetchMarketQuotes(symbols);
+  const uniqueSymbols = [...new Set(items.map((item) => item.symbol))];
+  const quotes = await fetchMarketQuotes(uniqueSymbols);
 
   const entriesWithValue = items.map((item) => {
     const quote = quotes.find((q) => q.symbol === item.symbol);
@@ -28,6 +28,7 @@ export default async function PortfolioPage() {
     return {
       id: item.id,
       symbol: item.symbol,
+      accountName: item.accountName,
       name: item.name,
       fundType: item.fundType,
       assetClass: item.assetClass,

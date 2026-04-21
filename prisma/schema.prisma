@@ -128,14 +128,18 @@ model WatchlistItem {
 }
 
 model PortfolioItem {
-  id         String   @id @default(cuid())
-  symbol     String   @unique
-  name       String
-  fundType   String
-  quantity   Float
-  assetClass String   @default("other")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  symbol      String
+  accountName String   @default("")
+  name        String
+  fundType    String
+  quantity    Float
+  assetClass  String   @default("other")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([symbol, accountName])
+  @@index([accountName])
 }
 
 model TrackedCurrency {
