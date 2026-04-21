@@ -59,8 +59,8 @@ export default async function PortfolioPage() {
             Track your investment positions and portfolio value
           </p>
         </div>
-        <PortfolioTable entries={entries} />
         <AssetAllocationChart entries={entries} />
+        <PortfolioTable entries={entries} />
       </div>
     </AppShell>
   );
