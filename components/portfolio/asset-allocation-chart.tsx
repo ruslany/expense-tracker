@@ -54,7 +54,12 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
       <Card ref={chartRef}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Asset Allocation</CardTitle>
-          <Button variant="outline" size="icon" onClick={handleChartScreenshot} aria-label="Screenshot">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleChartScreenshot}
+            aria-label="Screenshot"
+          >
             <Camera className="h-4 w-4" />
           </Button>
         </CardHeader>
@@ -94,7 +99,12 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
       <Card ref={tableRef}>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>By Asset Type</CardTitle>
-          <Button variant="outline" size="icon" onClick={handleTableScreenshot} aria-label="Screenshot">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleTableScreenshot}
+            aria-label="Screenshot"
+          >
             <Camera className="h-4 w-4" />
           </Button>
         </CardHeader>
