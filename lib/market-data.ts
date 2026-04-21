@@ -86,8 +86,14 @@ const CATEGORY_TO_ASSET_CLASS: Array<[RegExp, AssetClass]> = [
   [/money market|stable value|cash/i, 'cash'],
   [/real estate|reit/i, 'real_estate'],
   [/commodit|precious metal|agriculture|energy limited/i, 'commodities'],
-  [/foreign|international|emerging|world stock|global|europe|asia|japan|china|latin/i, 'intl_equity'],
-  [/bond|fixed income|income|treasury|government|corporate|municipal|muni|inflation.protected|ultrashort|bank loan/i, 'fixed_income'],
+  [
+    /foreign|international|emerging|world stock|global|europe|asia|japan|china|latin/i,
+    'intl_equity',
+  ],
+  [
+    /bond|fixed income|income|treasury|government|corporate|municipal|muni|inflation.protected|ultrashort|bank loan/i,
+    'fixed_income',
+  ],
   [/large|mid.cap|small|blend|growth|value|equity|stock|domestic/i, 'us_equity'],
 ];
 

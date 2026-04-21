@@ -26,7 +26,13 @@ import { ASSET_CLASS_LABELS } from '@/types';
 interface EditPortfolioDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item: { id: string; symbol: string; name: string; quantity: number; assetClass: AssetClass } | null;
+  item: {
+    id: string;
+    symbol: string;
+    name: string;
+    quantity: number;
+    assetClass: AssetClass;
+  } | null;
 }
 
 export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioDialogProps) {

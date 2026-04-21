@@ -54,7 +54,9 @@ export default async function PortfolioPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Portfolio</h1>
-          <p className="text-muted-foreground">Track your investment positions and portfolio value</p>
+          <p className="text-muted-foreground">
+            Track your investment positions and portfolio value
+          </p>
         </div>
         <PortfolioTable entries={entries} />
         <AssetAllocationChart entries={entries} />

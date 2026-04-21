@@ -31,7 +31,11 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
   if (chartData.length === 0) return null;
 
   const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(value);
 
   return (
     <Card>
@@ -51,10 +55,7 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
               labelLine={false}
             >
               {chartData.map((entry) => (
-                <Cell
-                  key={entry.assetClass}
-                  fill={ASSET_CLASS_COLORS[entry.assetClass]}
-                />
+                <Cell key={entry.assetClass} fill={ASSET_CLASS_COLORS[entry.assetClass]} />
               ))}
             </Pie>
             <Tooltip
