@@ -12,7 +12,10 @@ import {
   TableFooter,
 } from '@/components/ui/table';
 import { useIsMobile } from '@/hooks/use-media-query';
+import { useScreenshot } from '@/hooks/use-screenshot';
 import { formatCurrency } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Camera } from 'lucide-react';
 import type { PortfolioEntry, AssetClass } from '@/types';
 import { ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/types';
 
@@ -22,6 +25,8 @@ interface AssetAllocationChartProps {
 
 export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
   const isMobile = useIsMobile();
+  const { ref: chartRef, handleScreenshot: handleChartScreenshot } = useScreenshot();
+  const { ref: tableRef, handleScreenshot: handleTableScreenshot } = useScreenshot();
 
   const grouped = entries.reduce<Record<string, number>>((acc, entry) => {
     if (entry.currentValue === null) return acc;
@@ -46,9 +51,17 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
-        <CardHeader>
+      <Card ref={chartRef}>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Asset Allocation</CardTitle>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleChartScreenshot}
+            aria-label="Screenshot"
+          >
+            <Camera className="h-4 w-4" />
+          </Button>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={chartHeight}>
@@ -83,9 +96,17 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card ref={tableRef}>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>By Asset Type</CardTitle>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleTableScreenshot}
+            aria-label="Screenshot"
+          >
+            <Camera className="h-4 w-4" />
+          </Button>
         </CardHeader>
         <CardContent>
           {/* Mobile Card View */}
