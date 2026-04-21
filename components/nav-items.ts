@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   Receipt,
   ArrowLeftRight,
+  Briefcase,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -30,6 +31,12 @@ export const navItems: NavItem[] = [
     title: 'Investments',
     href: '/investments',
     icon: LineChart,
+  },
+  {
+    title: 'Portfolio',
+    href: '/portfolio',
+    icon: Briefcase,
+    requireAdmin: true,
   },
   {
     title: 'Currency',

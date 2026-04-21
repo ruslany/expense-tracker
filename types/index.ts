@@ -110,3 +110,15 @@ export interface WatchlistEntry {
   fiftyTwoWeekLow: number | null;
   lastTradeTime: Date | null;
 }
+
+export interface PortfolioEntry {
+  id: string;
+  symbol: string;
+  name: string;
+  fundType: FundType;
+  quantity: number;
+  price: number | null;
+  changePercent: number | null;
+  currentValue: number | null;
+  percentOfTotal: number | null;
+}
