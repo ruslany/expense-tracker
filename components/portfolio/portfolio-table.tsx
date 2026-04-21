@@ -1,7 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2, Plus } from 'lucide-react';
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Plus,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
 import {
@@ -65,8 +73,28 @@ function ChangeText({ value }: { value: number | null }) {
   );
 }
 
+type SortColumn = 'name' | 'account' | 'type' | 'percentOfTotal';
+type SortDirection = 'asc' | 'desc';
+
 interface PortfolioTableProps {
   entries: PortfolioEntry[];
+}
+
+function SortIcon({
+  column,
+  sortColumn,
+  sortDir,
+}: {
+  column: SortColumn;
+  sortColumn: SortColumn | null;
+  sortDir: SortDirection;
+}) {
+  if (sortColumn !== column) return <ArrowUpDown className="ml-1 inline size-3 opacity-50" />;
+  return sortDir === 'asc' ? (
+    <ArrowUp className="ml-1 inline size-3" />
+  ) : (
+    <ArrowDown className="ml-1 inline size-3" />
+  );
 }
 
 export function PortfolioTable({ entries }: PortfolioTableProps) {
@@ -74,8 +102,51 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PortfolioEntry | null>(null);
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(() => {
+    try {
+      return (localStorage.getItem('portfolio-sort-column') as SortColumn | null) ?? null;
+    } catch {
+      return null;
+    }
+  });
+  const [sortDir, setSortDir] = useState<SortDirection>(() => {
+    try {
+      return (localStorage.getItem('portfolio-sort-dir') as SortDirection | null) ?? 'asc';
+    } catch {
+      return 'asc';
+    }
+  });
 
   const totalValue = entries.reduce((sum, e) => (e.currentValue ?? 0) + sum, 0);
+
+  const handleSort = (col: SortColumn) => {
+    const newDir: SortDirection = sortColumn === col && sortDir === 'asc' ? 'desc' : 'asc';
+    const newCol = col;
+    setSortColumn(newCol);
+    setSortDir(newDir);
+    try {
+      localStorage.setItem('portfolio-sort-column', newCol);
+      localStorage.setItem('portfolio-sort-dir', newDir);
+    } catch {
+      // ignore
+    }
+  };
+
+  const sortedEntries = sortColumn
+    ? [...entries].sort((a, b) => {
+        let cmp = 0;
+        if (sortColumn === 'name') {
+          cmp = (a.name ?? a.symbol).localeCompare(b.name ?? b.symbol);
+        } else if (sortColumn === 'account') {
+          cmp = (a.accountName ?? '').localeCompare(b.accountName ?? '');
+        } else if (sortColumn === 'type') {
+          cmp = a.assetClass.localeCompare(b.assetClass);
+        } else if (sortColumn === 'percentOfTotal') {
+          cmp = (a.percentOfTotal ?? -1) - (b.percentOfTotal ?? -1);
+        }
+        return sortDir === 'asc' ? cmp : -cmp;
+      })
+    : entries;
 
   const handleEdit = (entry: PortfolioEntry) => {
     setSelectedItem(entry);
@@ -187,19 +258,55 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Account</TableHead>
-                      <TableHead>Type</TableHead>
+                      <TableHead>
+                        <button
+                          onClick={() => handleSort('name')}
+                          className="flex items-center hover:text-foreground"
+                        >
+                          Name
+                          <SortIcon column="name" sortColumn={sortColumn} sortDir={sortDir} />
+                        </button>
+                      </TableHead>
+                      <TableHead>
+                        <button
+                          onClick={() => handleSort('account')}
+                          className="flex items-center hover:text-foreground"
+                        >
+                          Account
+                          <SortIcon column="account" sortColumn={sortColumn} sortDir={sortDir} />
+                        </button>
+                      </TableHead>
+                      <TableHead>
+                        <button
+                          onClick={() => handleSort('type')}
+                          className="flex items-center hover:text-foreground"
+                        >
+                          Type
+                          <SortIcon column="type" sortColumn={sortColumn} sortDir={sortDir} />
+                        </button>
+                      </TableHead>
                       <TableHead className="text-right">Price</TableHead>
                       <TableHead className="text-right">Today</TableHead>
                       <TableHead className="text-right">Current Value</TableHead>
                       <TableHead className="text-right">Shares</TableHead>
-                      <TableHead className="text-right">% of Total</TableHead>
+                      <TableHead className="text-right">
+                        <button
+                          onClick={() => handleSort('percentOfTotal')}
+                          className="flex items-center ml-auto hover:text-foreground"
+                        >
+                          % of Total
+                          <SortIcon
+                            column="percentOfTotal"
+                            sortColumn={sortColumn}
+                            sortDir={sortDir}
+                          />
+                        </button>
+                      </TableHead>
                       <TableHead className="w-10"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {entries.map((entry) => (
+                    {sortedEntries.map((entry) => (
                       <TableRow key={entry.id}>
                         <TableCell>
                           <div className="font-medium">{entry.symbol}</div>
