@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
         name: validated.name,
         fundType: validated.fundType,
         quantity: validated.quantity,
+        assetClass: validated.assetClass,
       },
     });
 

@@ -14,6 +14,15 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import type { AssetClass } from '@/types';
+import { ASSET_CLASS_LABELS } from '@/types';
 
 interface SearchResult {
   symbol: string;
@@ -46,6 +55,8 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
   const [isSearching, setIsSearching] = useState(false);
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null);
   const [quantity, setQuantity] = useState('');
+  const [assetClass, setAssetClass] = useState<AssetClass>('other');
+  const [isDetecting, setIsDetecting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -56,47 +67,53 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
       setIsSearching(false);
       setSelectedResult(null);
       setQuantity('');
+      setAssetClass('other');
+      setIsDetecting(false);
       setIsAdding(false);
     }
   }, [open]);
 
   useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!query || query.length < 1) {
       setResults([]);
       setIsSearching(false);
       return;
     }
-
     setIsSearching(true);
     debounceRef.current = setTimeout(async () => {
       try {
         const response = await fetch(`/api/watchlist/search?q=${encodeURIComponent(query)}`);
-        if (response.ok) {
-          const data = await response.json();
-          setResults(data);
-        }
+        if (response.ok) setResults(await response.json());
       } catch (error) {
         console.error('Search failed:', error);
       } finally {
         setIsSearching(false);
       }
     }, 300);
-
     return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [query]);
 
-  const handleSelect = (result: SearchResult) => {
+  const handleSelect = async (result: SearchResult) => {
     setSelectedResult(result);
     setResults([]);
     setQuery('');
+    setIsDetecting(true);
+    try {
+      const res = await fetch(
+        `/api/portfolio/detect-asset-class?symbol=${encodeURIComponent(result.symbol)}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAssetClass(data.assetClass as AssetClass);
+      }
+    } catch {
+      // keep default 'other'
+    } finally {
+      setIsDetecting(false);
+    }
   };
 
   const handleAdd = async () => {
@@ -117,6 +134,7 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
           name: selectedResult.name,
           fundType: getFundType(selectedResult.type),
           quantity: qty,
+          assetClass,
         }),
       });
 
@@ -174,7 +192,6 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
                   autoFocus
                 />
               </div>
-
               <div className="max-h-48 overflow-y-auto space-y-1">
                 {isSearching && (
                   <div className="flex items-center justify-center py-4 text-muted-foreground">
@@ -182,13 +199,11 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
                     Searching...
                   </div>
                 )}
-
                 {!isSearching && results.length === 0 && query.length > 0 && (
                   <div className="py-4 text-center text-sm text-muted-foreground">
                     No results found
                   </div>
                 )}
-
                 {!isSearching &&
                   results.map((result) => (
                     <div
@@ -213,30 +228,58 @@ export function AddPortfolioDialog({ open, onOpenChange }: AddPortfolioDialogPro
           )}
 
           {selectedResult && (
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Number of Shares</Label>
-              <Input
-                id="quantity"
-                type="number"
-                min="0.000001"
-                step="any"
-                placeholder="e.g. 10"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                autoFocus
-              />
-            </div>
-          )}
-
-          {selectedResult && (
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
-                Cancel
-              </Button>
-              <Button onClick={handleAdd} disabled={isAdding || !quantity}>
-                {isAdding ? 'Adding...' : 'Add Position'}
-              </Button>
-            </div>
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="quantity">Number of Shares</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min="0.000001"
+                  step="any"
+                  placeholder="e.g. 10"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="asset-class">
+                  Asset Class
+                  {isDetecting && (
+                    <span className="ml-2 text-xs text-muted-foreground inline-flex items-center gap-1">
+                      <Loader2 className="size-3 animate-spin" />
+                      Detecting...
+                    </span>
+                  )}
+                </Label>
+                <Select
+                  value={assetClass}
+                  onValueChange={(v) => setAssetClass(v as AssetClass)}
+                  disabled={isDetecting}
+                >
+                  <SelectTrigger id="asset-class">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.entries(ASSET_CLASS_LABELS) as [AssetClass, string][]).map(
+                      ([value, label]) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
+                  Cancel
+                </Button>
+                <Button onClick={handleAdd} disabled={isAdding || !quantity || isDetecting}>
+                  {isAdding ? 'Adding...' : 'Add Position'}
+                </Button>
+              </div>
+            </>
           )}
         </div>
       </DialogContent>

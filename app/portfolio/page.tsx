@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { AppShell } from '@/components/app-shell';
 import { PortfolioTable } from '@/components/portfolio/portfolio-table';
+import { AssetAllocationChart } from '@/components/portfolio/asset-allocation-chart';
 import { fetchPortfolioItems } from '@/lib/data';
 import { fetchMarketQuotes } from '@/lib/market-data';
 import type { PortfolioEntry } from '@/types';
@@ -29,6 +30,7 @@ export default async function PortfolioPage() {
       symbol: item.symbol,
       name: item.name,
       fundType: item.fundType,
+      assetClass: item.assetClass,
       quantity: item.quantity,
       price,
       changePercent: quote?.changePercent ?? null,
@@ -55,6 +57,7 @@ export default async function PortfolioPage() {
           <p className="text-muted-foreground">Track your investment positions and portfolio value</p>
         </div>
         <PortfolioTable entries={entries} />
+        <AssetAllocationChart entries={entries} />
       </div>
     </AppShell>
   );

@@ -21,7 +21,8 @@ import {
 import { AddPortfolioDialog } from './add-portfolio-dialog';
 import { EditPortfolioDialog } from './edit-portfolio-dialog';
 import { DeletePortfolioDialog } from './delete-portfolio-dialog';
-import type { PortfolioEntry } from '@/types';
+import type { PortfolioEntry, AssetClass } from '@/types';
+import { ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/types';
 
 function formatPrice(price: number | null): string {
   if (price === null || price === 0) return '—';
@@ -36,6 +37,19 @@ function formatCurrencyValue(value: number | null): string {
 function formatPercent(value: number | null): string {
   if (value === null) return '—';
   return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+}
+
+function AssetClassBadge({ assetClass }: { assetClass: AssetClass }) {
+  const color = ASSET_CLASS_COLORS[assetClass];
+  const label = ASSET_CLASS_LABELS[assetClass];
+  return (
+    <span
+      className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium text-white"
+      style={{ backgroundColor: color }}
+    >
+      {label}
+    </span>
+  );
 }
 
 function ChangeText({ value }: { value: number | null }) {
@@ -148,11 +162,14 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                           <span className="text-muted-foreground">Value: </span>
                           {formatCurrencyValue(entry.currentValue)}
                         </div>
-                        <div className="col-span-2">
+                        <div>
                           <span className="text-muted-foreground">% of Portfolio: </span>
                           {entry.percentOfTotal !== null
                             ? `${entry.percentOfTotal.toFixed(1)}%`
                             : '—'}
+                        </div>
+                        <div>
+                          <AssetClassBadge assetClass={entry.assetClass} />
                         </div>
                       </div>
                     </CardContent>
@@ -166,6 +183,7 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead className="text-right">Price</TableHead>
                       <TableHead className="text-right">Today</TableHead>
                       <TableHead className="text-right">Current Value</TableHead>
@@ -180,6 +198,9 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                         <TableCell>
                           <div className="font-medium">{entry.symbol}</div>
                           <div className="text-xs text-muted-foreground">{entry.name}</div>
+                        </TableCell>
+                        <TableCell>
+                          <AssetClassBadge assetClass={entry.assetClass} />
                         </TableCell>
                         <TableCell className="text-right font-medium">
                           {formatPrice(entry.price)}

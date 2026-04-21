@@ -67,6 +67,35 @@ export interface PaginatedResponse<T> {
 
 export type FundType = 'etf' | 'mutual_fund' | 'stock';
 
+export type AssetClass =
+  | 'us_equity'
+  | 'intl_equity'
+  | 'fixed_income'
+  | 'cash'
+  | 'real_estate'
+  | 'commodities'
+  | 'other';
+
+export const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
+  us_equity: 'US Equity',
+  intl_equity: 'Intl. Equity',
+  fixed_income: 'Fixed Income',
+  cash: 'Cash',
+  real_estate: 'Real Estate',
+  commodities: 'Commodities',
+  other: 'Other',
+};
+
+export const ASSET_CLASS_COLORS: Record<AssetClass, string> = {
+  us_equity: '#3b82f6',
+  intl_equity: '#10b981',
+  fixed_income: '#f59e0b',
+  cash: '#8b5cf6',
+  real_estate: '#f97316',
+  commodities: '#84cc16',
+  other: '#9ca3af',
+};
+
 export interface MarketQuote {
   symbol: string;
   name: string;
@@ -116,6 +145,7 @@ export interface PortfolioEntry {
   symbol: string;
   name: string;
   fundType: FundType;
+  assetClass: AssetClass;
   quantity: number;
   price: number | null;
   changePercent: number | null;
