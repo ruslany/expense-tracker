@@ -69,11 +69,21 @@ async function getTagReport(
     dateFilter.lt = nextDay;
   }
 
+  // For split transactions, include children (not the parent) and inherit the tag from parent.
   const transactions = await prisma.transaction.findMany({
     where: {
-      tags: { some: { tagId } },
       ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
-      NOT: { splits: { some: {} } },
+      OR: [
+        {
+          parentId: null,
+          NOT: { splits: { some: {} } },
+          tags: { some: { tagId } },
+        },
+        {
+          parentId: { not: null },
+          parent: { tags: { some: { tagId } } },
+        },
+      ],
     },
     include: { category: true },
   });

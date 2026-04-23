@@ -56,21 +56,35 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
   const yearStart = new Date(Date.UTC(year, 0, 1));
   const yearEnd = new Date(Date.UTC(year + 1, 0, 1));
 
-  // Include all transactions (expenses and refunds) to get net amounts
+  // Include all transactions (expenses and refunds) to get net amounts.
+  // For split transactions, include children (not the parent) and inherit tags from parent.
   const transactions = await prisma.transaction.findMany({
     where: {
       date: { gte: yearStart, lt: yearEnd },
-      tags: {
-        some: {
-          tag: { isBigExpense: true },
+      OR: [
+        {
+          parentId: null,
+          NOT: { splits: { some: {} } },
+          tags: { some: { tag: { isBigExpense: true } } },
         },
-      },
-      NOT: { splits: { some: {} } },
+        {
+          parentId: { not: null },
+          parent: { tags: { some: { tag: { isBigExpense: true } } } },
+        },
+      ],
     },
     include: {
       tags: {
         include: { tag: true },
         where: { tag: { isBigExpense: true } },
+      },
+      parent: {
+        include: {
+          tags: {
+            include: { tag: true },
+            where: { tag: { isBigExpense: true } },
+          },
+        },
       },
     },
   });
@@ -81,7 +95,8 @@ async function getExpensesByBigExpenseTags(year: number): Promise<{
   >();
 
   for (const t of transactions) {
-    for (const tt of t.tags) {
+    const effectiveTags = t.tags.length > 0 ? t.tags : (t.parent?.tags ?? []);
+    for (const tt of effectiveTags) {
       const existing = tagMap.get(tt.tagId);
       // Negate amount: expenses (-) become positive, refunds (+) become negative (deductions)
       const netAmount = -t.amount;
