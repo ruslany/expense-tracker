@@ -1,7 +1,15 @@
 'use client';
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '@/components/ui/chart';
 import {
   Table,
   TableBody,
@@ -11,7 +19,6 @@ import {
   TableRow,
   TableFooter,
 } from '@/components/ui/table';
-import { useIsMobile } from '@/hooks/use-media-query';
 import { useScreenshot } from '@/hooks/use-screenshot';
 import { formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -23,8 +30,14 @@ interface AssetAllocationChartProps {
   entries: PortfolioEntry[];
 }
 
+const chartConfig = Object.fromEntries(
+  Object.entries(ASSET_CLASS_LABELS).map(([key, label]) => [
+    key,
+    { label, color: ASSET_CLASS_COLORS[key as AssetClass] },
+  ]),
+) satisfies ChartConfig;
+
 export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
-  const isMobile = useIsMobile();
   const { ref: chartRef, handleScreenshot: handleChartScreenshot } = useScreenshot();
   const { ref: tableRef, handleScreenshot: handleTableScreenshot } = useScreenshot();
 
@@ -40,14 +53,13 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
       name: ASSET_CLASS_LABELS[key as AssetClass] ?? key,
       value,
       assetClass: key as AssetClass,
+      fill: ASSET_CLASS_COLORS[key as AssetClass],
     }))
     .sort((a, b) => b.value - a.value);
 
   if (chartData.length === 0) return null;
 
   const totalValue = chartData.reduce((sum, d) => sum + d.value, 0);
-  const chartHeight = isMobile ? 300 : 400;
-  const outerRadius = isMobile ? 60 : 100;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -63,36 +75,43 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
             <Camera className="h-4 w-4" />
           </Button>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={chartHeight}>
-            <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <CardContent className="flex-1 pb-0">
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[300px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
+          >
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value, name, item) => (
+                      <div className="flex items-center gap-2 w-full">
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                          style={{ backgroundColor: item.payload?.fill }}
+                        />
+                        <span>{name}</span>
+                        <span className="ml-auto font-medium">
+                          {formatCurrency(value as number)}
+                        </span>
+                      </div>
+                    )}
+                  />
+                }
+              />
               <Pie
                 data={chartData}
-                cx="50%"
-                cy="50%"
-                outerRadius={outerRadius}
                 dataKey="value"
+                nameKey="name"
+                innerRadius={60}
                 label={({ percent }) => `${((percent ?? 0) * 100).toFixed(1)}%`}
                 labelLine={false}
-              >
-                {chartData.map((entry) => (
-                  <Cell key={entry.assetClass} fill={ASSET_CLASS_COLORS[entry.assetClass]} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(value) => formatCurrency(value as number)}
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
-                  color: 'hsl(var(--card-foreground))',
-                }}
-                itemStyle={{ color: 'hsl(var(--card-foreground))' }}
-                labelStyle={{ color: 'hsl(var(--card-foreground))' }}
               />
-              <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 14 }} />
+              <ChartLegend content={<ChartLegendContent nameKey="assetClass" />} />
             </PieChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </CardContent>
       </Card>
 
