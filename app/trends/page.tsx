@@ -436,11 +436,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
               averagePerPeriod={(trends as TrendsData).averagePerPeriod}
               categoryName={categories.find((c) => c.id === categoryId)?.name}
             />
-            <TrendsTable
-              view="default"
-              data={(trends as TrendsData).data}
-              groupBy={groupBy}
-            />
+            <TrendsTable view="default" data={(trends as TrendsData).data} groupBy={groupBy} />
           </div>
         )}
       </div>
