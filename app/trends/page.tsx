@@ -4,6 +4,7 @@ import { FilterCard } from '@/components/spending-trends/filter-card';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { SummaryStats } from '@/components/spending-trends/summary-stats';
 import { TrendsChart } from '@/components/spending-trends/trends-chart';
+import { TrendsTable } from '@/components/spending-trends/trends-table';
 import { getPrisma } from '@/lib/prisma';
 import { fetchTags } from '@/lib/data';
 
@@ -412,21 +413,31 @@ export default async function TrendsPage({ searchParams }: PageProps) {
         />
 
         {view === 'essential' ? (
-          <TrendsChart
-            view="essential"
-            data={(trends as EssentialTrendsData).data}
-            groupBy={groupBy}
-            categoryName="Essential vs Discretionary"
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 items-start">
+            <TrendsChart
+              view="essential"
+              data={(trends as EssentialTrendsData).data}
+              groupBy={groupBy}
+              categoryName="Essential vs Discretionary"
+            />
+            <TrendsTable
+              view="essential"
+              data={(trends as EssentialTrendsData).data}
+              groupBy={groupBy}
+            />
+          </div>
         ) : (
-          <TrendsChart
-            view="default"
-            data={(trends as TrendsData).data}
-            groupBy={groupBy}
-            monthlyBudget={monthlyBudget}
-            averagePerPeriod={(trends as TrendsData).averagePerPeriod}
-            categoryName={categories.find((c) => c.id === categoryId)?.name}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 items-start">
+            <TrendsChart
+              view="default"
+              data={(trends as TrendsData).data}
+              groupBy={groupBy}
+              monthlyBudget={monthlyBudget}
+              averagePerPeriod={(trends as TrendsData).averagePerPeriod}
+              categoryName={categories.find((c) => c.id === categoryId)?.name}
+            />
+            <TrendsTable view="default" data={(trends as TrendsData).data} groupBy={groupBy} />
+          </div>
         )}
       </div>
     </AppShell>
