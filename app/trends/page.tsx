@@ -413,7 +413,7 @@ export default async function TrendsPage({ searchParams }: PageProps) {
         />
 
         {view === 'essential' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 items-start">
+          <div className="flex flex-col gap-6">
             <TrendsChart
               view="essential"
               data={(trends as EssentialTrendsData).data}
@@ -424,10 +424,11 @@ export default async function TrendsPage({ searchParams }: PageProps) {
               view="essential"
               data={(trends as EssentialTrendsData).data}
               groupBy={groupBy}
+              title="Essential vs Discretionary"
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 items-start">
+          <div className="flex flex-col gap-6">
             <TrendsChart
               view="default"
               data={(trends as TrendsData).data}
@@ -436,7 +437,12 @@ export default async function TrendsPage({ searchParams }: PageProps) {
               averagePerPeriod={(trends as TrendsData).averagePerPeriod}
               categoryName={categories.find((c) => c.id === categoryId)?.name}
             />
-            <TrendsTable view="default" data={(trends as TrendsData).data} groupBy={groupBy} />
+            <TrendsTable
+              view="default"
+              data={(trends as TrendsData).data}
+              groupBy={groupBy}
+              title={categories.find((c) => c.id === categoryId)?.name ?? 'All Categories'}
+            />
           </div>
         )}
       </div>
