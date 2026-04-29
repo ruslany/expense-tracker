@@ -20,11 +20,13 @@ type TrendsTableProps =
       view: 'default';
       data: TrendDataPoint[];
       groupBy: 'month' | 'quarter' | 'year';
+      title: string;
     }
   | {
       view: 'essential';
       data: EssentialDataPoint[];
       groupBy: 'month' | 'quarter' | 'year';
+      title: string;
     };
 
 const periodLabel = (groupBy: 'month' | 'quarter' | 'year') => {
@@ -37,11 +39,11 @@ export function TrendsTable(props: TrendsTableProps) {
   if (props.data.length === 0) return null;
 
   if (props.view === 'essential') {
-    const rows = props.data;
+    const rows = [...props.data].reverse();
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Data Table</CardTitle>
+          <CardTitle>{props.title}</CardTitle>
         </CardHeader>
         <CardContent>
           {/* Mobile Card View */}
@@ -91,12 +93,12 @@ export function TrendsTable(props: TrendsTableProps) {
     );
   }
 
-  const rows = props.data;
+  const rows = [...props.data].reverse();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Data Table</CardTitle>
+        <CardTitle>{props.title}</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Mobile Card View */}
