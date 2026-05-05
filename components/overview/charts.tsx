@@ -96,10 +96,18 @@ export function OverviewCharts({
               className="text-xs"
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 10 : 12 }}
               width={isMobile ? 45 : 60}
-              domain={[
-                0,
-                (dataMax: number) => Math.ceil(Math.max(dataMax, monthlyBudget ?? 0) * 1.1),
-              ]}
+              domain={
+                !showLastYear && monthlyBudget != null
+                  ? [
+                      0,
+                      (dataMax: number) => {
+                        const raw = Math.max(dataMax, monthlyBudget) * 1.1;
+                        const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+                        return Math.ceil(raw / mag) * mag;
+                      },
+                    ]
+                  : [0, 'auto']
+              }
             />
             <Tooltip
               contentStyle={{
