@@ -2,6 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   ComposedChart,
   Area,
@@ -15,6 +17,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { useIsMobile } from '@/hooks/use-media-query';
+import { useState } from 'react';
 import { Camera } from 'lucide-react';
 import { useScreenshot } from '@/hooks/use-screenshot';
 
@@ -43,6 +46,7 @@ export function OverviewCharts({
   const hasPrevYearData = spendingOverTime.some((d) => d.prevYearRunningTotal !== null);
   const hasEssentialData = spendingOverTime.some((d) => d.essentialRunningTotal !== null);
   const { ref: cardRef, handleScreenshot } = useScreenshot();
+  const [showLastYear, setShowLastYear] = useState(true);
 
   return (
     <Card ref={cardRef}>
@@ -57,9 +61,23 @@ export function OverviewCharts({
             })}
           </CardDescription>
         </div>
-        <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
-          <Camera className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-4">
+          {hasPrevYearData && (
+            <div className="flex items-center gap-2">
+              <Switch
+                id="show-last-year"
+                checked={showLastYear}
+                onCheckedChange={setShowLastYear}
+              />
+              <Label htmlFor="show-last-year" className="text-sm font-normal">
+                Last year
+              </Label>
+            </div>
+          )}
+          <Button variant="outline" size="icon" onClick={handleScreenshot} aria-label="Screenshot">
+            <Camera className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={chartHeight}>
@@ -119,7 +137,7 @@ export function OverviewCharts({
                 }}
               />
             )}
-            {hasPrevYearData && (
+            {hasPrevYearData && showLastYear && (
               <Line
                 type="monotone"
                 dataKey="prevYearRunningTotal"
