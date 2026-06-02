@@ -122,7 +122,7 @@ export async function searchSymbols(query: string): Promise<SearchResult[]> {
   if (!query || query.length < 1) return [];
 
   try {
-    const result = await yf.search(query);
+    const result = await yf.search(query, {}, { validateResult: false });
     return (result.quotes || [])
       .filter((q: { isYahooFinance?: boolean }) => q.isYahooFinance)
       .slice(0, 10)
