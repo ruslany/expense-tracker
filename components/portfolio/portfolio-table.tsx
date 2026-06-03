@@ -9,6 +9,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Download,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
@@ -165,15 +166,59 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
 
   const existingAccountNames = [...new Set(entries.map((e) => e.accountName).filter(Boolean))];
 
+  const handleExportCsv = () => {
+    const headers = [
+      'Symbol',
+      'Name',
+      'Account',
+      'Asset Class',
+      'Fund Type',
+      'Shares',
+      'Price',
+      'Today Change %',
+      'Current Value',
+      '% of Portfolio',
+    ];
+    const r2 = (v: number | null) => (v !== null ? v.toFixed(2) : '');
+    const rows = sortedEntries.map((e) => [
+      e.symbol,
+      e.name ?? '',
+      e.accountName ?? '',
+      ASSET_CLASS_LABELS[e.assetClass],
+      e.fundType,
+      e.quantity.toFixed(2),
+      r2(e.price),
+      r2(e.changePercent),
+      r2(e.currentValue),
+      r2(e.percentOfTotal),
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `portfolio-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle>Positions</CardTitle>
-          <CardAction>
+          <CardAction className="flex gap-2">
+            {entries.length > 0 && (
+              <Button variant="outline" onClick={handleExportCsv}>
+                <Download />
+                <span className="hidden md:inline">Export CSV</span>
+              </Button>
+            )}
             <Button onClick={() => setAddDialogOpen(true)}>
               <Plus />
-              Add Position
+              <span className="hidden md:inline">Add Position</span>
             </Button>
           </CardAction>
         </CardHeader>
