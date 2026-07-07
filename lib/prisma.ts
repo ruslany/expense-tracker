@@ -65,8 +65,9 @@ async function createPrismaClient(): Promise<PrismaClient> {
 
   let pool: Pool;
 
-  if (process.env.AZURE_CLIENT_ID || isAzureDb) {
-    // Azure environment (managed identity) or local dev with Azure database (az login)
+  if (isAzureDb) {
+    // Azure Postgres: authenticate via managed identity (or az login for local dev)
+    // using an Azure AD access token instead of a static password.
     // Use async password function for automatic token refresh on each new connection
     const url = new URL(databaseUrl);
     const tokenManager = getTokenManager(process.env.AZURE_CLIENT_ID);
@@ -90,9 +91,10 @@ async function createPrismaClient(): Promise<PrismaClient> {
 
 /**
  * Get a Prisma client instance.
- * - In Azure (AZURE_CLIENT_ID set): uses managed identity to fetch Azure AD token
- * - Local dev with Azure DB: uses az login credentials to fetch Azure AD token
- * - Local dev with local DB: uses DATABASE_URL directly
+ * - DATABASE_URL points at Azure Postgres: uses managed identity (or az login
+ *   locally) to fetch an Azure AD token
+ * - DATABASE_URL points anywhere else (e.g. Neon, local Postgres): connects
+ *   with the connection string directly
  */
 export async function getPrisma(): Promise<PrismaClient> {
   if (globalForPrisma.prisma) {
@@ -111,9 +113,10 @@ export async function getPrisma(): Promise<PrismaClient> {
   return globalForPrisma.prismaPromise;
 }
 
-// Check if we need Azure AD authentication (either in Azure or local dev with Azure DB)
-const requiresAzureAuth =
-  !!process.env.AZURE_CLIENT_ID || !!process.env.DATABASE_URL?.includes('azure');
+// Check if we need Azure AD authentication - determined solely by DATABASE_URL,
+// so an unrelated AZURE_CLIENT_ID (e.g. a service principal used for Blob Storage
+// on Vercel) doesn't force Azure AD auth for a non-Azure database like Neon.
+const requiresAzureAuth = !!process.env.DATABASE_URL?.includes('azure');
 
 // For backwards compatibility in local development with local PostgreSQL only
 function createSyncPrismaClient(): PrismaClient {
