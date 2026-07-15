@@ -10,6 +10,10 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+# npm ci/yarn/pnpm install runs the postinstall script (`prisma generate`),
+# which needs the schema present even at this stage.
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f package-lock.json ]; then npm ci; \
