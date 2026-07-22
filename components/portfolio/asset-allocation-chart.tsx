@@ -92,6 +92,8 @@ function buildAssetClassRows(entries: PortfolioEntry[]): AllocationRow[] {
     .sort((a, b) => b.value - a.value);
 }
 
+// One row per account, sorted by value descending — used for the table, which
+// should always list every account individually.
 function buildAccountRows(entries: PortfolioEntry[]): AllocationRow[] {
   const grouped = entries.reduce<Record<string, number>>((acc, entry) => {
     if (entry.currentValue === null) return acc;
@@ -100,39 +102,45 @@ function buildAccountRows(entries: PortfolioEntry[]): AllocationRow[] {
     return acc;
   }, {});
 
-  const sorted = Object.entries(grouped).sort((a, b) => b[1] - a[1]);
-  const total = sorted.reduce((sum, [, value]) => sum + value, 0);
-  const countLimit = sorted.length > MAX_ACCOUNT_SLICES ? MAX_ACCOUNT_SLICES - 1 : sorted.length;
+  return Object.entries(grouped)
+    .map(([key, value], i) => ({
+      groupKey: key,
+      name: key,
+      value,
+      fill: ACCOUNT_COLORS[i] ?? ACCOUNT_COLOR_FALLBACK,
+    }))
+    .sort((a, b) => b.value - a.value);
+}
 
-  const topEntries: [string, number][] = [];
-  const otherEntries: [string, number][] = [];
-  sorted.forEach(([key, value], i) => {
-    const percent = total > 0 ? (value / total) * 100 : 0;
+// Bundles small rows into "Other" for the pie/legend only — the table keeps
+// every account listed individually.
+function bundleSmallRows(rows: AllocationRow[]): AllocationRow[] {
+  const total = rows.reduce((sum, row) => sum + row.value, 0);
+  const countLimit = rows.length > MAX_ACCOUNT_SLICES ? MAX_ACCOUNT_SLICES - 1 : rows.length;
+
+  const topRows: AllocationRow[] = [];
+  const otherRows: AllocationRow[] = [];
+  rows.forEach((row, i) => {
+    const percent = total > 0 ? (row.value / total) * 100 : 0;
     if (i < countLimit && percent >= MIN_ACCOUNT_SLICE_PERCENT) {
-      topEntries.push([key, value]);
+      topRows.push(row);
     } else {
-      otherEntries.push([key, value]);
+      otherRows.push(row);
     }
   });
 
-  const rows: AllocationRow[] = topEntries.map(([key, value], i) => ({
-    groupKey: key,
-    name: key,
-    value,
-    fill: ACCOUNT_COLORS[i] ?? ACCOUNT_COLOR_FALLBACK,
-  }));
+  if (otherRows.length === 0) return topRows;
 
-  if (otherEntries.length > 0) {
-    const otherTotal = otherEntries.reduce((sum, [, value]) => sum + value, 0);
-    rows.push({
+  const otherTotal = otherRows.reduce((sum, row) => sum + row.value, 0);
+  return [
+    ...topRows,
+    {
       groupKey: OTHER_ACCOUNT_LABEL,
       name: OTHER_ACCOUNT_LABEL,
       value: otherTotal,
       fill: ACCOUNT_COLOR_FALLBACK,
-    });
-  }
-
-  return rows;
+    },
+  ];
 }
 
 export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
@@ -158,12 +166,13 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
     }
   };
 
-  const chartData =
+  const tableData =
     groupBy === 'assetClass' ? buildAssetClassRows(entries) : buildAccountRows(entries);
+  const chartData = groupBy === 'assetClass' ? tableData : bundleSmallRows(tableData);
 
   if (chartData.length === 0) return null;
 
-  const totalValue = chartData.reduce((sum, d) => sum + d.value, 0);
+  const totalValue = tableData.reduce((sum, d) => sum + d.value, 0);
   const chartConfig: ChartConfig = Object.fromEntries(
     chartData.map((row) => [row.groupKey, { label: row.name, color: row.fill }]),
   );
@@ -252,7 +261,7 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
         <CardContent>
           {/* Mobile Card View */}
           <div className="space-y-3 md:hidden">
-            {chartData.map((row) => (
+            {tableData.map((row) => (
               <div key={row.groupKey} className="border rounded-lg p-3 space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{row.name}</span>
@@ -283,7 +292,7 @@ export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {chartData.map((row) => (
+                {tableData.map((row) => (
                   <TableRow key={row.groupKey}>
                     <TableCell className="font-medium">
                       <span className="flex items-center gap-2">
