@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrisma } from '@/lib/prisma';
 import { portfolioItemSchema } from '@/lib/validations';
@@ -28,27 +29,34 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = portfolioItemSchema.parse(body);
 
+    const symbol = validated.isManual
+      ? `MANUAL-${randomUUID().slice(0, 8).toUpperCase()}`
+      : validated.symbol!;
+    const fundType = validated.isManual ? 'mutual_fund' : validated.fundType;
+
     const existing = await prisma.portfolioItem.findUnique({
       where: {
-        symbol_accountName: { symbol: validated.symbol, accountName: validated.accountName },
+        symbol_accountName: { symbol, accountName: validated.accountName },
       },
     });
 
     if (existing) {
       return NextResponse.json(
-        { error: `${validated.symbol} already exists in ${validated.accountName}` },
+        { error: `${symbol} already exists in ${validated.accountName}` },
         { status: 409 },
       );
     }
 
     const item = await prisma.portfolioItem.create({
       data: {
-        symbol: validated.symbol,
+        symbol,
         accountName: validated.accountName,
         name: validated.name,
-        fundType: validated.fundType,
+        fundType,
         quantity: validated.quantity,
         assetClass: validated.assetClass,
+        isManual: validated.isManual,
+        manualPrice: validated.isManual ? validated.manualPrice : undefined,
       },
     });
 

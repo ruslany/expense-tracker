@@ -135,6 +135,8 @@ model PortfolioItem {
   fundType    String
   quantity    Float
   assetClass  String   @default("other")
+  isManual    Boolean  @default(false)
+  manualPrice Float?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

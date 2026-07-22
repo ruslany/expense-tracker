@@ -18,10 +18,31 @@ export default async function PortfolioPage() {
   }
 
   const items = await fetchPortfolioItems();
-  const uniqueSymbols = [...new Set(items.map((item) => item.symbol))];
+  const uniqueSymbols = [
+    ...new Set(items.filter((item) => !item.isManual).map((item) => item.symbol)),
+  ];
   const quotes = await fetchMarketQuotes(uniqueSymbols);
 
   const entriesWithValue = items.map((item) => {
+    if (item.isManual) {
+      const price = item.manualPrice;
+      const currentValue = price !== null ? price * item.quantity : null;
+      return {
+        id: item.id,
+        symbol: item.symbol,
+        accountName: item.accountName,
+        name: item.name,
+        fundType: item.fundType,
+        assetClass: item.assetClass,
+        quantity: item.quantity,
+        price,
+        changePercent: null,
+        currentValue,
+        isManual: item.isManual,
+        manualPrice: item.manualPrice,
+      };
+    }
+
     const quote = quotes.find((q) => q.symbol === item.symbol);
     const price = quote?.price ?? null;
     const currentValue = price !== null ? price * item.quantity : null;
@@ -36,6 +57,8 @@ export default async function PortfolioPage() {
       price,
       changePercent: quote?.changePercent ?? null,
       currentValue,
+      isManual: item.isManual,
+      manualPrice: item.manualPrice,
     };
   });
 

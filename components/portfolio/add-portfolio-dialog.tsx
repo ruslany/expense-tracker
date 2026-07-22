@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AssetClass } from '@/types';
 import { ASSET_CLASS_LABELS } from '@/types';
 
@@ -55,6 +56,7 @@ export function AddPortfolioDialog({
   existingAccountNames,
 }: AddPortfolioDialogProps) {
   const router = useRouter();
+  const [mode, setMode] = useState<'ticker' | 'manual'>('ticker');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -66,8 +68,16 @@ export function AddPortfolioDialog({
   const [isAdding, setIsAdding] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
+  const [manualName, setManualName] = useState('');
+  const [manualAccountName, setManualAccountName] = useState('');
+  const [manualQuantity, setManualQuantity] = useState('');
+  const [manualPrice, setManualPrice] = useState('');
+  const [manualAssetClass, setManualAssetClass] = useState<AssetClass>('other');
+  const [isAddingManual, setIsAddingManual] = useState(false);
+
   useEffect(() => {
     if (!open) {
+      setMode('ticker');
       setQuery('');
       setResults([]);
       setIsSearching(false);
@@ -77,6 +87,12 @@ export function AddPortfolioDialog({
       setAssetClass('other');
       setIsDetecting(false);
       setIsAdding(false);
+      setManualName('');
+      setManualAccountName('');
+      setManualQuantity('');
+      setManualPrice('');
+      setManualAssetClass('other');
+      setIsAddingManual(false);
     }
   }, [open]);
 
@@ -166,161 +182,324 @@ export function AddPortfolioDialog({
     }
   };
 
+  const handleAddManual = async () => {
+    if (!manualName.trim()) {
+      toast.error('Please enter a fund name');
+      return;
+    }
+    if (!manualAccountName.trim()) {
+      toast.error('Please enter an account name');
+      return;
+    }
+    const qty = parseFloat(manualQuantity);
+    if (!manualQuantity || isNaN(qty) || qty <= 0) {
+      toast.error('Please enter a valid quantity');
+      return;
+    }
+    const price = parseFloat(manualPrice);
+    if (!manualPrice || isNaN(price) || price <= 0) {
+      toast.error('Please enter a valid NAV price');
+      return;
+    }
+
+    setIsAddingManual(true);
+    try {
+      const response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isManual: true,
+          name: manualName.trim(),
+          accountName: manualAccountName.trim(),
+          fundType: 'mutual_fund',
+          quantity: qty,
+          manualPrice: price,
+          assetClass: manualAssetClass,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to add position');
+      }
+
+      toast.success(`${manualName.trim()} added to portfolio`);
+      onOpenChange(false);
+      router.refresh();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to add position';
+      toast.error(message);
+    } finally {
+      setIsAddingManual(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add Position</DialogTitle>
           <DialogDescription>
-            Search for a ticker to add to your portfolio, then enter your share quantity.
+            {mode === 'ticker'
+              ? 'Search for a ticker to add to your portfolio, then enter your share quantity.'
+              : 'Add a fund with no public ticker by entering its name and NAV price yourself.'}
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          {selectedResult ? (
-            <div className="rounded-md border p-3 bg-muted/50">
-              <div className="font-medium">{selectedResult.symbol}</div>
-              <div className="text-sm text-muted-foreground">{selectedResult.name}</div>
-              <div className="text-xs text-muted-foreground">
-                {selectedResult.type} &bull; {selectedResult.exchange}
+        <Tabs value={mode} onValueChange={(v) => setMode(v as 'ticker' | 'manual')}>
+          <TabsList className="w-full">
+            <TabsTrigger value="ticker">Ticker</TabsTrigger>
+            <TabsTrigger value="manual">Manual Fund</TabsTrigger>
+          </TabsList>
+          <TabsContent value="ticker" className="space-y-4">
+            {selectedResult ? (
+              <div className="rounded-md border p-3 bg-muted/50">
+                <div className="font-medium">{selectedResult.symbol}</div>
+                <div className="text-sm text-muted-foreground">{selectedResult.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {selectedResult.type} &bull; {selectedResult.exchange}
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="mt-2 h-auto p-0 text-xs text-muted-foreground"
+                  onClick={() => setSelectedResult(null)}
+                >
+                  Change selection
+                </Button>
               </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="mt-2 h-auto p-0 text-xs text-muted-foreground"
-                onClick={() => setSelectedResult(null)}
+            ) : (
+              <>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by ticker or name..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="pl-9"
+                    autoFocus
+                  />
+                </div>
+                <div className="max-h-48 overflow-y-auto space-y-1">
+                  {isSearching && (
+                    <div className="flex items-center justify-center py-4 text-muted-foreground">
+                      <Loader2 className="size-4 animate-spin mr-2" />
+                      Searching...
+                    </div>
+                  )}
+                  {!isSearching && results.length === 0 && query.length > 0 && (
+                    <div className="py-4 text-center text-sm text-muted-foreground">
+                      No results found
+                    </div>
+                  )}
+                  {!isSearching &&
+                    results.map((result) => (
+                      <div
+                        key={result.symbol}
+                        className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer"
+                        onClick={() => handleSelect(result)}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium text-sm">{result.symbol}</div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {result.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {result.type} &bull; {result.exchange}
+                          </div>
+                        </div>
+                        <Button size="sm" variant="outline" tabIndex={-1}>
+                          Select
+                        </Button>
+                      </div>
+                    ))}
+                </div>
+              </>
+            )}
+
+            {selectedResult && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="account-name">Account</Label>
+                  <Input
+                    id="account-name"
+                    placeholder="e.g. My Brokerage, Spouse's IRA"
+                    value={accountName}
+                    onChange={(e) => setAccountName(e.target.value)}
+                    autoFocus
+                  />
+                  {existingAccountNames.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {existingAccountNames.map((name) => (
+                        <button
+                          key={name}
+                          type="button"
+                          className="rounded-full border px-2 py-0.5 text-xs hover:bg-muted transition-colors"
+                          onClick={() => setAccountName(name)}
+                        >
+                          {name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="quantity">Number of Shares</Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    min="0.000001"
+                    step="any"
+                    placeholder="e.g. 10"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="asset-class">
+                    Asset Class
+                    {isDetecting && (
+                      <span className="ml-2 text-xs text-muted-foreground inline-flex items-center gap-1">
+                        <Loader2 className="size-3 animate-spin" />
+                        Detecting...
+                      </span>
+                    )}
+                  </Label>
+                  <Select
+                    value={assetClass}
+                    onValueChange={(v) => setAssetClass(v as AssetClass)}
+                    disabled={isDetecting}
+                  >
+                    <SelectTrigger id="asset-class">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.entries(ASSET_CLASS_LABELS) as [AssetClass, string][]).map(
+                        ([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleAdd}
+                    disabled={isAdding || !quantity || !accountName.trim() || isDetecting}
+                  >
+                    {isAdding ? 'Adding...' : 'Add Position'}
+                  </Button>
+                </div>
+              </>
+            )}
+          </TabsContent>
+
+          <TabsContent value="manual" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="manual-name">Fund Name</Label>
+              <Input
+                id="manual-name"
+                placeholder="e.g. Stable Value Fund"
+                value={manualName}
+                onChange={(e) => setManualName(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="manual-account-name">Account</Label>
+              <Input
+                id="manual-account-name"
+                placeholder="e.g. My 401(k)"
+                value={manualAccountName}
+                onChange={(e) => setManualAccountName(e.target.value)}
+              />
+              {existingAccountNames.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {existingAccountNames.map((name) => (
+                    <button
+                      key={name}
+                      type="button"
+                      className="rounded-full border px-2 py-0.5 text-xs hover:bg-muted transition-colors"
+                      onClick={() => setManualAccountName(name)}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="manual-quantity">Number of Shares</Label>
+              <Input
+                id="manual-quantity"
+                type="number"
+                min="0.000001"
+                step="any"
+                placeholder="e.g. 10"
+                value={manualQuantity}
+                onChange={(e) => setManualQuantity(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="manual-price">NAV Price</Label>
+              <Input
+                id="manual-price"
+                type="number"
+                min="0.000001"
+                step="any"
+                placeholder="e.g. 12.50"
+                value={manualPrice}
+                onChange={(e) => setManualPrice(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="manual-asset-class">Asset Class</Label>
+              <Select
+                value={manualAssetClass}
+                onValueChange={(v) => setManualAssetClass(v as AssetClass)}
               >
-                Change selection
+                <SelectTrigger id="manual-asset-class">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.entries(ASSET_CLASS_LABELS) as [AssetClass, string][]).map(
+                    ([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isAddingManual}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddManual}
+                disabled={
+                  isAddingManual ||
+                  !manualName.trim() ||
+                  !manualAccountName.trim() ||
+                  !manualQuantity ||
+                  !manualPrice
+                }
+              >
+                {isAddingManual ? 'Adding...' : 'Add Position'}
               </Button>
             </div>
-          ) : (
-            <>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by ticker or name..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="pl-9"
-                  autoFocus
-                />
-              </div>
-              <div className="max-h-48 overflow-y-auto space-y-1">
-                {isSearching && (
-                  <div className="flex items-center justify-center py-4 text-muted-foreground">
-                    <Loader2 className="size-4 animate-spin mr-2" />
-                    Searching...
-                  </div>
-                )}
-                {!isSearching && results.length === 0 && query.length > 0 && (
-                  <div className="py-4 text-center text-sm text-muted-foreground">
-                    No results found
-                  </div>
-                )}
-                {!isSearching &&
-                  results.map((result) => (
-                    <div
-                      key={result.symbol}
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer"
-                      onClick={() => handleSelect(result)}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="font-medium text-sm">{result.symbol}</div>
-                        <div className="text-xs text-muted-foreground truncate">{result.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {result.type} &bull; {result.exchange}
-                        </div>
-                      </div>
-                      <Button size="sm" variant="outline" tabIndex={-1}>
-                        Select
-                      </Button>
-                    </div>
-                  ))}
-              </div>
-            </>
-          )}
-
-          {selectedResult && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="account-name">Account</Label>
-                <Input
-                  id="account-name"
-                  placeholder="e.g. My Brokerage, Spouse's IRA"
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
-                  autoFocus
-                />
-                {existingAccountNames.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {existingAccountNames.map((name) => (
-                      <button
-                        key={name}
-                        type="button"
-                        className="rounded-full border px-2 py-0.5 text-xs hover:bg-muted transition-colors"
-                        onClick={() => setAccountName(name)}
-                      >
-                        {name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="quantity">Number of Shares</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min="0.000001"
-                  step="any"
-                  placeholder="e.g. 10"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  autoFocus
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="asset-class">
-                  Asset Class
-                  {isDetecting && (
-                    <span className="ml-2 text-xs text-muted-foreground inline-flex items-center gap-1">
-                      <Loader2 className="size-3 animate-spin" />
-                      Detecting...
-                    </span>
-                  )}
-                </Label>
-                <Select
-                  value={assetClass}
-                  onValueChange={(v) => setAssetClass(v as AssetClass)}
-                  disabled={isDetecting}
-                >
-                  <SelectTrigger id="asset-class">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(Object.entries(ASSET_CLASS_LABELS) as [AssetClass, string][]).map(
-                      ([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ),
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleAdd}
-                  disabled={isAdding || !quantity || !accountName.trim() || isDetecting}
-                >
-                  {isAdding ? 'Adding...' : 'Add Position'}
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

@@ -142,23 +142,36 @@ export const assetClassEnum = z.enum([
   'other',
 ]);
 
-export const portfolioItemSchema = z.object({
-  symbol: z
-    .string()
-    .min(1, 'Symbol is required')
-    .max(10)
-    .transform((s) => s.toUpperCase()),
-  accountName: z.string().min(1, 'Account name is required').max(100),
-  name: z.string().min(1, 'Name is required'),
-  fundType: z.enum(['etf', 'mutual_fund', 'stock']),
-  quantity: z.number().positive('Quantity must be positive'),
-  assetClass: assetClassEnum.default('other'),
-});
+export const portfolioItemSchema = z
+  .object({
+    symbol: z
+      .string()
+      .max(10)
+      .transform((s) => s.toUpperCase())
+      .optional(),
+    accountName: z.string().min(1, 'Account name is required').max(100),
+    name: z.string().min(1, 'Name is required'),
+    fundType: z.enum(['etf', 'mutual_fund', 'stock']),
+    quantity: z.number().positive('Quantity must be positive'),
+    assetClass: assetClassEnum.default('other'),
+    isManual: z.boolean().default(false),
+    manualPrice: z.number().positive('NAV price must be positive').optional(),
+  })
+  .refine((data) => data.isManual || (data.symbol && data.symbol.length > 0), {
+    message: 'Symbol is required',
+    path: ['symbol'],
+  })
+  .refine((data) => !data.isManual || data.manualPrice !== undefined, {
+    message: 'NAV price is required for manual funds',
+    path: ['manualPrice'],
+  });
 
 export const portfolioItemUpdateSchema = z.object({
+  name: z.string().min(1).optional(),
   quantity: z.number().positive('Quantity must be positive').optional(),
   assetClass: assetClassEnum.optional(),
   accountName: z.string().min(1).max(100).optional(),
+  manualPrice: z.number().positive('NAV price must be positive').optional(),
 });
 
 export const trackedCurrencySchema = z.object({
