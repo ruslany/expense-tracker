@@ -55,7 +55,18 @@ const ACCOUNT_COLORS = [
 ];
 const ACCOUNT_COLOR_FALLBACK = ASSET_CLASS_COLORS.other;
 
+// Bundle accounts beyond this count into "Other" so the pie doesn't get
+// overloaded with slices, and so every remaining slice keeps a distinct color
+// instead of several unrelated accounts sharing the fallback gray.
+const MAX_ACCOUNT_SLICES = ACCOUNT_COLORS.length;
+
+// Accounts making up less than this share of the total also get bundled into
+// "Other", even when there are few accounts overall — thin slices otherwise
+// produce overlapping percentage labels on the pie.
+const MIN_ACCOUNT_SLICE_PERCENT = 4;
+
 const UNASSIGNED_ACCOUNT_LABEL = 'Unassigned';
+const OTHER_ACCOUNT_LABEL = 'Other';
 
 interface AllocationRow {
   groupKey: string;
@@ -82,13 +93,6 @@ function buildAssetClassRows(entries: PortfolioEntry[]): AllocationRow[] {
 }
 
 function buildAccountRows(entries: PortfolioEntry[]): AllocationRow[] {
-  const accountNames = [
-    ...new Set(entries.map((e) => e.accountName || UNASSIGNED_ACCOUNT_LABEL)),
-  ].sort();
-  const colorByAccount = new Map(
-    accountNames.map((name, i) => [name, ACCOUNT_COLORS[i] ?? ACCOUNT_COLOR_FALLBACK]),
-  );
-
   const grouped = entries.reduce<Record<string, number>>((acc, entry) => {
     if (entry.currentValue === null) return acc;
     const key = entry.accountName || UNASSIGNED_ACCOUNT_LABEL;
@@ -96,14 +100,39 @@ function buildAccountRows(entries: PortfolioEntry[]): AllocationRow[] {
     return acc;
   }, {});
 
-  return Object.entries(grouped)
-    .map(([key, value]) => ({
-      groupKey: key,
-      name: key,
-      value,
-      fill: colorByAccount.get(key) ?? ACCOUNT_COLOR_FALLBACK,
-    }))
-    .sort((a, b) => b.value - a.value);
+  const sorted = Object.entries(grouped).sort((a, b) => b[1] - a[1]);
+  const total = sorted.reduce((sum, [, value]) => sum + value, 0);
+  const countLimit = sorted.length > MAX_ACCOUNT_SLICES ? MAX_ACCOUNT_SLICES - 1 : sorted.length;
+
+  const topEntries: [string, number][] = [];
+  const otherEntries: [string, number][] = [];
+  sorted.forEach(([key, value], i) => {
+    const percent = total > 0 ? (value / total) * 100 : 0;
+    if (i < countLimit && percent >= MIN_ACCOUNT_SLICE_PERCENT) {
+      topEntries.push([key, value]);
+    } else {
+      otherEntries.push([key, value]);
+    }
+  });
+
+  const rows: AllocationRow[] = topEntries.map(([key, value], i) => ({
+    groupKey: key,
+    name: key,
+    value,
+    fill: ACCOUNT_COLORS[i] ?? ACCOUNT_COLOR_FALLBACK,
+  }));
+
+  if (otherEntries.length > 0) {
+    const otherTotal = otherEntries.reduce((sum, [, value]) => sum + value, 0);
+    rows.push({
+      groupKey: OTHER_ACCOUNT_LABEL,
+      name: OTHER_ACCOUNT_LABEL,
+      value: otherTotal,
+      fill: ACCOUNT_COLOR_FALLBACK,
+    });
+  }
+
+  return rows;
 }
 
 export function AssetAllocationChart({ entries }: AssetAllocationChartProps) {
