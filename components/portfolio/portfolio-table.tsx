@@ -181,7 +181,7 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
     ];
     const r2 = (v: number | null) => (v !== null ? v.toFixed(2) : '');
     const rows = sortedEntries.map((e) => [
-      e.symbol,
+      e.isManual ? 'Manual' : e.symbol,
       e.name ?? '',
       e.accountName ?? '',
       ASSET_CLASS_LABELS[e.assetClass],
@@ -274,7 +274,9 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                     <CardContent className="p-4 space-y-2">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-medium">{entry.symbol}</div>
+                          <div className="font-medium">
+                            {entry.isManual ? 'MANUAL' : entry.symbol}
+                          </div>
                           <div className="text-xs text-muted-foreground">{entry.name}</div>
                           {entry.accountName && (
                             <div className="text-xs text-muted-foreground">{entry.accountName}</div>
@@ -390,7 +392,9 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
                     {sortedEntries.map((entry) => (
                       <TableRow key={entry.id}>
                         <TableCell>
-                          <div className="font-medium">{entry.symbol}</div>
+                          <div className="font-medium">
+                            {entry.isManual ? 'MANUAL' : entry.symbol}
+                          </div>
                           <div className="text-xs text-muted-foreground">{entry.name}</div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">

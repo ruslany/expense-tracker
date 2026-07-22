@@ -17,7 +17,7 @@ import {
 interface DeletePortfolioDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item: { id: string; symbol: string; name: string } | null;
+  item: { id: string; symbol: string; name: string; isManual: boolean } | null;
 }
 
 export function DeletePortfolioDialog({ open, onOpenChange, item }: DeletePortfolioDialogProps) {
@@ -38,7 +38,7 @@ export function DeletePortfolioDialog({ open, onOpenChange, item }: DeletePortfo
       }
 
       onOpenChange(false);
-      toast.success(`${item.symbol} removed from portfolio`);
+      toast.success(`${item.isManual ? item.name : item.symbol} removed from portfolio`);
       router.refresh();
     } catch (error) {
       console.error('Error deleting portfolio item:', error);
@@ -54,8 +54,17 @@ export function DeletePortfolioDialog({ open, onOpenChange, item }: DeletePortfo
         <AlertDialogHeader>
           <AlertDialogTitle>Remove Position</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to remove <strong>{item?.symbol}</strong> ({item?.name}) from your
-            portfolio? This action cannot be undone.
+            {item?.isManual ? (
+              <>
+                Are you sure you want to remove <strong>{item?.name}</strong> from your portfolio?
+              </>
+            ) : (
+              <>
+                Are you sure you want to remove <strong>{item?.symbol}</strong> ({item?.name}) from
+                your portfolio?
+              </>
+            )}{' '}
+            This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

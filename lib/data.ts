@@ -368,6 +368,8 @@ export async function fetchPortfolioItems() {
       fundType: item.fundType as FundType,
       quantity: item.quantity,
       assetClass: item.assetClass as import('@/types').AssetClass,
+      isManual: item.isManual,
+      manualPrice: item.manualPrice,
     }));
   } catch (error) {
     console.error('Database Error:', error);

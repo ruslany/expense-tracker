@@ -152,4 +152,6 @@ export interface PortfolioEntry {
   changePercent: number | null;
   currentValue: number | null;
   percentOfTotal: number | null;
+  isManual: boolean;
+  manualPrice: number | null;
 }

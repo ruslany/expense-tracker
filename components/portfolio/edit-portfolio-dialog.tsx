@@ -33,21 +33,27 @@ interface EditPortfolioDialogProps {
     accountName: string;
     quantity: number;
     assetClass: AssetClass;
+    isManual: boolean;
+    manualPrice: number | null;
   } | null;
 }
 
 export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioDialogProps) {
   const router = useRouter();
+  const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [accountName, setAccountName] = useState('');
   const [assetClass, setAssetClass] = useState<AssetClass>('other');
+  const [manualPrice, setManualPrice] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (open && item) {
+      setName(item.name);
       setQuantity(String(item.quantity));
       setAccountName(item.accountName);
       setAssetClass(item.assetClass);
+      setManualPrice(item.manualPrice !== null ? String(item.manualPrice) : '');
     }
   }, [open, item]);
 
@@ -59,6 +65,19 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
       return;
     }
 
+    let navPrice: number | null = null;
+    if (item.isManual) {
+      navPrice = parseFloat(manualPrice);
+      if (!manualPrice || isNaN(navPrice) || navPrice <= 0) {
+        toast.error('Please enter a valid NAV price');
+        return;
+      }
+      if (!name.trim()) {
+        toast.error('Please enter a fund name');
+        return;
+      }
+    }
+
     setIsSaving(true);
     try {
       const response = await fetch(`/api/portfolio/${item.id}`, {
@@ -68,12 +87,13 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
           quantity: qty,
           assetClass,
           accountName: accountName.trim() || undefined,
+          ...(item.isManual ? { name: name.trim(), manualPrice: navPrice } : {}),
         }),
       });
 
       if (!response.ok) throw new Error('Failed to update position');
 
-      toast.success(`${item.symbol} updated`);
+      toast.success(`${item.isManual ? item.name : item.symbol} updated`);
       onOpenChange(false);
       router.refresh();
     } catch (error) {
@@ -90,14 +110,33 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
         <DialogHeader>
           <DialogTitle>Edit Position</DialogTitle>
           <DialogDescription>
-            Update shares and asset class for{' '}
-            <strong>
-              {item?.symbol} — {item?.name}
-            </strong>
-            .
+            {item?.isManual ? (
+              <>
+                Update details for <strong>{item?.name}</strong>.
+              </>
+            ) : (
+              <>
+                Update shares and asset class for{' '}
+                <strong>
+                  {item?.symbol} — {item?.name}
+                </strong>
+                .
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          {item?.isManual && (
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Fund Name</Label>
+              <Input
+                id="edit-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoFocus
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="edit-account-name">Account</Label>
             <Input
@@ -116,9 +155,22 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
               step="any"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              autoFocus
+              autoFocus={!item?.isManual}
             />
           </div>
+          {item?.isManual && (
+            <div className="space-y-2">
+              <Label htmlFor="edit-manual-price">NAV Price</Label>
+              <Input
+                id="edit-manual-price"
+                type="number"
+                min="0.000001"
+                step="any"
+                value={manualPrice}
+                onChange={(e) => setManualPrice(e.target.value)}
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="edit-asset-class">Asset Class</Label>
             <Select value={assetClass} onValueChange={(v) => setAssetClass(v as AssetClass)}>
