@@ -10,6 +10,7 @@ import {
   ArrowUp,
   ArrowDown,
   Download,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardAction } from '@/components/ui/card';
@@ -37,7 +38,8 @@ import {
 import { AddPortfolioDialog } from './add-portfolio-dialog';
 import { EditPortfolioDialog } from './edit-portfolio-dialog';
 import { DeletePortfolioDialog } from './delete-portfolio-dialog';
-import type { PortfolioEntry, AssetClass } from '@/types';
+import { ManageAccountsDialog } from './manage-accounts-dialog';
+import type { PortfolioEntry, AssetClass, TaxCategory } from '@/types';
 import { ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/types';
 
 function formatPrice(price: number | null): string {
@@ -86,6 +88,7 @@ type SortDirection = 'asc' | 'desc';
 
 interface PortfolioTableProps {
   entries: PortfolioEntry[];
+  accountTaxCategories: Record<string, TaxCategory>;
 }
 
 function SortIcon({
@@ -105,10 +108,11 @@ function SortIcon({
   );
 }
 
-export function PortfolioTable({ entries }: PortfolioTableProps) {
+export function PortfolioTable({ entries, accountTaxCategories }: PortfolioTableProps) {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [manageAccountsDialogOpen, setManageAccountsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PortfolioEntry | null>(null);
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(() => {
     try {
@@ -210,6 +214,12 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
         <CardHeader>
           <CardTitle>Positions</CardTitle>
           <CardAction className="flex gap-2">
+            {existingAccountNames.length > 0 && (
+              <Button variant="outline" onClick={() => setManageAccountsDialogOpen(true)}>
+                <Settings />
+                <span className="hidden md:inline">Manage Accounts</span>
+              </Button>
+            )}
             {entries.length > 0 && (
               <Button variant="outline" onClick={handleExportCsv}>
                 <Download />
@@ -467,6 +477,13 @@ export function PortfolioTable({ entries }: PortfolioTableProps) {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         item={selectedItem}
+      />
+
+      <ManageAccountsDialog
+        open={manageAccountsDialogOpen}
+        onOpenChange={setManageAccountsDialogOpen}
+        accountNames={existingAccountNames}
+        accountTaxCategories={accountTaxCategories}
       />
     </>
   );

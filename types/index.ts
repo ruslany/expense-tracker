@@ -140,6 +140,20 @@ export interface WatchlistEntry {
   lastTradeTime: Date | null;
 }
 
+export type TaxCategory = 'taxable' | 'tax_deferred' | 'tax_free';
+
+export const TAX_CATEGORY_LABELS: Record<TaxCategory, string> = {
+  taxable: 'Taxable',
+  tax_deferred: 'Tax Deferred',
+  tax_free: 'Tax Free',
+};
+
+export interface PortfolioAccountEntry {
+  id: string;
+  name: string;
+  taxCategory: TaxCategory;
+}
+
 export interface PortfolioEntry {
   id: string;
   symbol: string;

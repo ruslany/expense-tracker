@@ -166,6 +166,13 @@ export const portfolioItemSchema = z
     path: ['manualPrice'],
   });
 
+export const taxCategoryEnum = z.enum(['taxable', 'tax_deferred', 'tax_free']);
+
+export const portfolioAccountSchema = z.object({
+  name: z.string().min(1, 'Account name is required').max(100),
+  taxCategory: taxCategoryEnum,
+});
+
 export const portfolioItemUpdateSchema = z.object({
   name: z.string().min(1).optional(),
   quantity: z.number().positive('Quantity must be positive').optional(),
