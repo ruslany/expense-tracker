@@ -1,6 +1,6 @@
 import { getPrisma } from './prisma';
 import type { TransactionWhereInput } from './generated/prisma/models/Transaction';
-import type { FundType } from '@/types';
+import type { FundType, TaxCategory } from '@/types';
 import { DEFAULT_PAGE_SIZE } from './constants';
 
 function buildTransactionWhereClause(
@@ -374,6 +374,23 @@ export async function fetchPortfolioItems() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch portfolio items.');
+  }
+}
+
+export async function fetchPortfolioAccounts() {
+  try {
+    const prisma = await getPrisma();
+    const accounts = await prisma.portfolioAccount.findMany({
+      orderBy: { name: 'asc' },
+    });
+    return accounts.map((account) => ({
+      id: account.id,
+      name: account.name,
+      taxCategory: account.taxCategory as TaxCategory,
+    }));
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch portfolio accounts.');
   }
 }
 

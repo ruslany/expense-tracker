@@ -4,9 +4,10 @@ import { auth } from '@/lib/auth';
 import { AppShell } from '@/components/app-shell';
 import { PortfolioTable } from '@/components/portfolio/portfolio-table';
 import { AssetAllocationChart } from '@/components/portfolio/asset-allocation-chart';
-import { fetchPortfolioItems } from '@/lib/data';
+import { PortfolioTaxSummary } from '@/components/portfolio/portfolio-tax-summary';
+import { fetchPortfolioItems, fetchPortfolioAccounts } from '@/lib/data';
 import { fetchMarketQuotes } from '@/lib/market-data';
-import type { PortfolioEntry } from '@/types';
+import type { PortfolioEntry, TaxCategory } from '@/types';
 
 export const metadata: Metadata = { title: 'Portfolio' };
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,10 @@ export default async function PortfolioPage() {
   }
 
   const items = await fetchPortfolioItems();
+  const portfolioAccounts = await fetchPortfolioAccounts();
+  const accountTaxCategories = Object.fromEntries(
+    portfolioAccounts.map((account) => [account.name, account.taxCategory]),
+  ) as Record<string, TaxCategory>;
   const uniqueSymbols = [
     ...new Set(items.filter((item) => !item.isManual).map((item) => item.symbol)),
   ];
@@ -73,6 +78,17 @@ export default async function PortfolioPage() {
       e.currentValue !== null && totalValue > 0 ? (e.currentValue / totalValue) * 100 : null,
   }));
 
+  const categoryTotals: Record<TaxCategory, number> = {
+    taxable: 0,
+    tax_deferred: 0,
+    tax_free: 0,
+  };
+  for (const entry of entries) {
+    if (entry.currentValue === null) continue;
+    const category = accountTaxCategories[entry.accountName] ?? 'taxable';
+    categoryTotals[category] += entry.currentValue;
+  }
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -82,8 +98,9 @@ export default async function PortfolioPage() {
             Track your investment positions and portfolio value
           </p>
         </div>
+        <PortfolioTaxSummary totalValue={totalValue} categoryTotals={categoryTotals} />
         <AssetAllocationChart entries={entries} />
-        <PortfolioTable entries={entries} />
+        <PortfolioTable entries={entries} accountTaxCategories={accountTaxCategories} />
       </div>
     </AppShell>
   );
