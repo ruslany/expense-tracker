@@ -68,7 +68,13 @@ export interface PaginatedResponse<T> {
 export type FundType = 'etf' | 'mutual_fund' | 'stock';
 
 export type AssetClass =
-  'us_equity' | 'intl_equity' | 'fixed_income' | 'cash' | 'real_estate' | 'commodities' | 'other';
+  | 'us_equity'
+  | 'intl_equity'
+  | 'fixed_income'
+  | 'cash'
+  | 'real_estate'
+  | 'commodities'
+  | 'other';
 
 export const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
   us_equity: 'US Equity',
