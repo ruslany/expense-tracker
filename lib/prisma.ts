@@ -56,6 +56,20 @@ function getTokenManager(managedIdentityClientId?: string): AzureTokenManager {
   return globalForPrisma.tokenManager;
 }
 
+// pg-connection-string currently treats sslmode=prefer/require/verify-ca as
+// aliases for verify-full, but warns that a future major version will switch
+// to weaker libpq semantics. Pin to verify-full explicitly so behavior stays
+// the same and the warning goes away.
+function normalizeSslMode(databaseUrl: string | undefined): string | undefined {
+  if (!databaseUrl) return databaseUrl;
+  const url = new URL(databaseUrl);
+  const sslmode = url.searchParams.get('sslmode');
+  if (sslmode === 'prefer' || sslmode === 'require' || sslmode === 'verify-ca') {
+    url.searchParams.set('sslmode', 'verify-full');
+  }
+  return url.toString();
+}
+
 async function createPrismaClient(): Promise<PrismaClient> {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
@@ -81,8 +95,8 @@ async function createPrismaClient(): Promise<PrismaClient> {
       ssl: { rejectUnauthorized: true },
     });
   } else {
-    // Local development with local PostgreSQL
-    pool = new Pool({ connectionString: databaseUrl });
+    // Local development with local PostgreSQL, or a hosted Postgres like Neon
+    pool = new Pool({ connectionString: normalizeSslMode(databaseUrl) });
   }
 
   const adapter = new PrismaPg(pool);
@@ -126,7 +140,7 @@ function createSyncPrismaClient(): PrismaClient {
     );
   }
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: normalizeSslMode(process.env.DATABASE_URL),
   });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
