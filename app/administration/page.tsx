@@ -9,6 +9,7 @@ import {
   fetchAccountsWithTransactionCount,
   fetchCategoriesWithKeywords,
   fetchTagsWithTransactionCount,
+  fetchCollegeBudgets,
   fetchUsers,
   fetchCSVMappings,
 } from '@/lib/data';
@@ -25,10 +26,11 @@ export default async function AdministrationPage() {
   const cookieStore = await cookies();
   const pageSize = Number(cookieStore.get(PAGE_SIZE_COOKIE)?.value) || DEFAULT_PAGE_SIZE;
 
-  const [accounts, categories, tags, users, csvMappings] = await Promise.all([
+  const [accounts, categories, tags, collegeBudgets, users, csvMappings] = await Promise.all([
     fetchAccountsWithTransactionCount(),
     fetchCategoriesWithKeywords(),
     fetchTagsWithTransactionCount(),
+    fetchCollegeBudgets(),
     fetchUsers(),
     fetchCSVMappings(),
   ]);
@@ -45,6 +47,7 @@ export default async function AdministrationPage() {
           accounts={accounts}
           categories={categories}
           tags={tags}
+          collegeBudgets={collegeBudgets}
           users={users}
           csvMappings={csvMappings}
           pageSize={pageSize}

@@ -88,7 +88,8 @@ model Tag {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  transactions TransactionTag[]
+  transactions   TransactionTag[]
+  collegeBudgets CollegeBudget[]
 }
 
 model TransactionTag {
@@ -100,6 +101,22 @@ model TransactionTag {
   tag         Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([transactionId, tagId])
+  @@index([tagId])
+}
+
+model CollegeBudget {
+  id                String   @id @default(cuid())
+  label             String
+  academicYearStart DateTime
+  academicYearEnd   DateTime
+  tagId             String
+  limitAmount       Float
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tag Tag @relation(fields: [tagId], references: [id])
+
   @@index([tagId])
 }
 

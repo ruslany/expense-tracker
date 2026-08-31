@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPrisma } from '@/lib/prisma';
-import { Prisma } from '@/lib/generated/prisma/client';
 import { z } from 'zod';
 import { requireAdmin } from '@/lib/authorization';
 
-const tagUpdateSchema = z.object({
-  isBigExpense: z.boolean().optional(),
-  name: z.string().min(1).max(50).optional(),
+const collegeBudgetUpdateSchema = z.object({
+  label: z.string().min(1).max(100).optional(),
+  academicYearStart: z.coerce.date().optional(),
+  academicYearEnd: z.coerce.date().optional(),
+  tagId: z.string().min(1).optional(),
+  limitAmount: z.number().positive().optional(),
+  notes: z.string().max(2000).nullable().optional(),
 });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -17,22 +20,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const prisma = await getPrisma();
     const { id } = await params;
     const body = await request.json();
-    const validated = tagUpdateSchema.parse(body);
+    const validated = collegeBudgetUpdateSchema.parse(body);
 
-    const tag = await prisma.tag.update({
+    const budget = await prisma.collegeBudget.update({
       where: { id },
       data: validated,
-      select: {
-        id: true,
-        name: true,
-        isBigExpense: true,
+      include: {
+        tag: { select: { id: true, name: true } },
       },
     });
 
-    return NextResponse.json(tag);
+    return NextResponse.json(budget);
   } catch (error) {
-    console.error('Error updating tag:', error);
-    return NextResponse.json({ error: 'Failed to update tag' }, { status: 500 });
+    console.error('Error updating college budget:', error);
+    return NextResponse.json({ error: 'Failed to update college budget' }, { status: 500 });
   }
 }
 
@@ -47,19 +48,13 @@ export async function DELETE(
     const prisma = await getPrisma();
     const { id } = await params;
 
-    await prisma.tag.delete({
+    await prisma.collegeBudget.delete({
       where: { id },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
-      return NextResponse.json(
-        { error: 'Tag is used by a college budget and cannot be deleted' },
-        { status: 409 },
-      );
-    }
-    console.error('Error deleting tag:', error);
-    return NextResponse.json({ error: 'Failed to delete tag' }, { status: 500 });
+    console.error('Error deleting college budget:', error);
+    return NextResponse.json({ error: 'Failed to delete college budget' }, { status: 500 });
   }
 }
