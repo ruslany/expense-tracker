@@ -24,11 +24,7 @@ export function AcademicYearSummary({
         value={formatCurrency(totalExpense)}
         valueColor={overspend ? 'red' : 'default'}
         subtext={overspend ? undefined : `${formatCurrency(totalReimbursement)} reimbursed`}
-        icon={
-          overspend ? (
-            <Badge variant="destructive">Over budget</Badge>
-          ) : undefined
-        }
+        icon={overspend ? <Badge variant="destructive">Over budget</Badge> : undefined}
       />
       <StatCard
         label="Remaining"

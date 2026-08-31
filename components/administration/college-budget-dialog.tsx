@@ -37,7 +37,12 @@ interface CollegeBudgetDialogProps {
   tags: Tag[];
 }
 
-export function CollegeBudgetDialog({ open, onOpenChange, budget, tags }: CollegeBudgetDialogProps) {
+export function CollegeBudgetDialog({
+  open,
+  onOpenChange,
+  budget,
+  tags,
+}: CollegeBudgetDialogProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [label, setLabel] = useState('');
@@ -99,7 +104,9 @@ export function CollegeBudgetDialog({ open, onOpenChange, budget, tags }: Colleg
       }
 
       onOpenChange(false);
-      toast.success(isEditing ? 'College budget updated successfully' : 'College budget created successfully');
+      toast.success(
+        isEditing ? 'College budget updated successfully' : 'College budget created successfully',
+      );
       router.refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to save college budget';

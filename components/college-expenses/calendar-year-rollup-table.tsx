@@ -26,8 +26,8 @@ export function CalendarYearRollupTable({ rows }: CalendarYearRollupTableProps) 
         <CardTitle>Calendar Year Rollup</CardTitle>
         <CardDescription>
           The 529 plan reports distributions per calendar year on Form 1099-Q, while the budget
-          above is tracked per academic year. Use this to see what each tax year&apos;s figures
-          will look like.
+          above is tracked per academic year. Use this to see what each tax year&apos;s figures will
+          look like.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -48,9 +48,7 @@ export function CalendarYearRollupTable({ rows }: CalendarYearRollupTableProps) 
                 {rows.map((row) => (
                   <TableRow key={row.year}>
                     <TableCell className="font-medium">{row.year}</TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(row.expenseTotal)}
-                    </TableCell>
+                    <TableCell className="text-right">{formatCurrency(row.expenseTotal)}</TableCell>
                     <TableCell className="text-right">
                       {formatCurrency(row.reimbursementTotal)}
                     </TableCell>
