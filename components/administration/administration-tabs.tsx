@@ -1,10 +1,11 @@
 'use client';
 
-import { Wallet, Tags, Tag, Users, FileInput, Settings } from 'lucide-react';
+import { Wallet, Tags, Tag, Users, FileInput, Settings, GraduationCap } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AccountList } from './account-list';
 import { CategoryList } from './category-list';
 import { TagList } from './tag-list';
+import { CollegeBudgetList, type CollegeBudget } from './college-budget-list';
 import { UserList } from './user-list';
 import { CSVMappingList } from './csv-mapping-list';
 import { SettingsTab } from './settings-tab';
@@ -50,6 +51,7 @@ interface AdministrationTabsProps {
   accounts: Account[];
   categories: Category[];
   tags: Tag[];
+  collegeBudgets: CollegeBudget[];
   users: User[];
   csvMappings: CSVMapping[];
   pageSize: number;
@@ -59,6 +61,7 @@ export function AdministrationTabs({
   accounts,
   categories,
   tags,
+  collegeBudgets,
   users,
   csvMappings,
   pageSize,
@@ -77,6 +80,10 @@ export function AdministrationTabs({
         <TabsTrigger value="tags">
           <Tag />
           <span className="hidden sm:inline">Tags</span>
+        </TabsTrigger>
+        <TabsTrigger value="college-budgets">
+          <GraduationCap />
+          <span className="hidden sm:inline">College Budgets</span>
         </TabsTrigger>
         <TabsTrigger value="users">
           <Users />
@@ -99,6 +106,9 @@ export function AdministrationTabs({
       </TabsContent>
       <TabsContent value="tags">
         <TagList tags={tags} />
+      </TabsContent>
+      <TabsContent value="college-budgets">
+        <CollegeBudgetList collegeBudgets={collegeBudgets} tags={tags} />
       </TabsContent>
       <TabsContent value="users">
         <UserList users={users} />

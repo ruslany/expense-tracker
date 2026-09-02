@@ -290,6 +290,22 @@ export async function fetchTagsWithTransactionCount() {
   }
 }
 
+export async function fetchCollegeBudgets() {
+  try {
+    const prisma = await getPrisma();
+    const budgets = await prisma.collegeBudget.findMany({
+      orderBy: { academicYearStart: 'desc' },
+      include: {
+        tag: { select: { id: true, name: true } },
+      },
+    });
+    return budgets;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch college budgets.');
+  }
+}
+
 export async function fetchAccountsWithTransactionCount() {
   try {
     const prisma = await getPrisma();

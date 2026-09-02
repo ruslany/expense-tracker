@@ -11,6 +11,7 @@ import {
   Receipt,
   ArrowLeftRight,
   Briefcase,
+  GraduationCap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -47,6 +48,11 @@ export const navItems: NavItem[] = [
     title: 'Big Expenses',
     href: '/big-expenses',
     icon: PieChart,
+  },
+  {
+    title: 'College Expenses',
+    href: '/college-expenses',
+    icon: GraduationCap,
   },
   {
     title: 'Categories',

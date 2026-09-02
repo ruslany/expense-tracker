@@ -79,6 +79,20 @@ export const tagSchema = z.object({
   isBigExpense: z.boolean().optional(),
 });
 
+export const collegeBudgetSchema = z
+  .object({
+    label: z.string().min(1, 'Label is required').max(100, 'Label too long'),
+    academicYearStart: z.coerce.date(),
+    academicYearEnd: z.coerce.date(),
+    tagId: z.string().min(1, 'Tag is required'),
+    limitAmount: z.number().positive('Limit must be greater than 0'),
+    notes: z.string().max(2000).optional(),
+  })
+  .refine((data) => data.academicYearEnd > data.academicYearStart, {
+    message: 'End date must be after start date',
+    path: ['academicYearEnd'],
+  });
+
 export const transactionTagsUpdateSchema = z.object({
   tagIds: z.array(z.string()),
 });
