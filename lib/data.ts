@@ -134,6 +134,7 @@ export async function fetchFilteredTransactions(
       },
       notes: t.notes,
       reviewedAt: t.reviewedAt,
+      excludeFromReports: t.excludeFromReports,
       tags: t.tags.map((tt) => ({
         id: tt.tag.id,
         name: tt.tag.name,

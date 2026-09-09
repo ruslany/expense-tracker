@@ -84,6 +84,7 @@ async function getTagReport(
           parent: { tags: { some: { tagId } } },
         },
       ],
+      excludeFromReports: false,
     },
     include: { category: true },
   });

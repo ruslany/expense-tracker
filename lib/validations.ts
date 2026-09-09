@@ -45,6 +45,7 @@ export const transactionUpdateSchema = z.object({
   amount: z.number().optional(),
   notes: z.string().nullable().optional(),
   reviewed: z.boolean().optional(),
+  excludeFromReports: z.boolean().optional(),
 });
 
 export const manualTransactionCreateSchema = z.object({
@@ -54,6 +55,7 @@ export const manualTransactionCreateSchema = z.object({
   amount: z.number(),
   categoryId: z.string().nullable().optional(),
   tagIds: z.array(z.string()).optional(),
+  excludeFromReports: z.boolean().optional(),
 });
 
 export const transactionFilterSchema = z.object({

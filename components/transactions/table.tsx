@@ -10,7 +10,8 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { fetchFilteredTransactions, fetchCategories, fetchTags } from '@/lib/data';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
-import { Scissors } from 'lucide-react';
+import { Scissors, EyeOff } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CategoryCell } from './category-cell';
 import { TagsCell } from './tags-cell';
 import { TransactionActions } from './actions';
@@ -102,6 +103,7 @@ export async function TransactionsTable({
                 >
                   {isSplit && <Scissors className="size-3 text-muted-foreground shrink-0" />}
                   {transaction.description}
+                  {transaction.excludeFromReports && <ExcludeFromReportsBadge />}
                 </div>
 
                 {/* Split breakdown */}
@@ -164,6 +166,7 @@ export async function TransactionsTable({
                     categoryId={transaction.categoryId}
                     categories={categories}
                     isSplit={isSplit}
+                    excludeFromReports={transaction.excludeFromReports}
                   />
                 </div>
               </CardContent>
@@ -209,6 +212,7 @@ export async function TransactionsTable({
                             <Scissors className="size-3 text-muted-foreground shrink-0" />
                           )}
                           {transaction.description}
+                          {transaction.excludeFromReports && <ExcludeFromReportsBadge />}
                         </div>
                         <TagsCell
                           transactionId={transaction.id}
@@ -260,6 +264,7 @@ export async function TransactionsTable({
                           categoryId={transaction.categoryId}
                           categories={categories}
                           isSplit={isSplit}
+                          excludeFromReports={transaction.excludeFromReports}
                         />
                       </div>
                     </TableCell>
@@ -294,5 +299,18 @@ export async function TransactionsTable({
         </Table>
       </div>
     </>
+  );
+}
+
+function ExcludeFromReportsBadge() {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <EyeOff className="size-3 text-muted-foreground shrink-0" />
+        </TooltipTrigger>
+        <TooltipContent>Excluded from reports</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

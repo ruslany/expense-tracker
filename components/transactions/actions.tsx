@@ -28,6 +28,7 @@ interface TransactionActionsProps {
   categoryId: string | null;
   categories: Category[];
   isSplit: boolean;
+  excludeFromReports: boolean;
 }
 
 export function TransactionActions({
@@ -38,6 +39,7 @@ export function TransactionActions({
   categoryId,
   categories,
   isSplit,
+  excludeFromReports,
 }: TransactionActionsProps) {
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
@@ -91,6 +93,7 @@ export function TransactionActions({
         amount={amount}
         categoryId={categoryId}
         categories={categories}
+        excludeFromReports={excludeFromReports}
       />
 
       <DeleteTransactionDialog

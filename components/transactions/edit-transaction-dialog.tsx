@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -43,6 +44,7 @@ interface EditTransactionDialogProps {
   amount: number;
   categoryId: string | null;
   categories: Category[];
+  excludeFromReports: boolean;
 }
 
 export function EditTransactionDialog({
@@ -54,6 +56,7 @@ export function EditTransactionDialog({
   amount,
   categoryId,
   categories,
+  excludeFromReports,
 }: EditTransactionDialogProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,6 +72,7 @@ export function EditTransactionDialog({
     reset: resetAmount,
   } = useAmountInput();
   const [editCategoryId, setEditCategoryId] = useState<string>(categoryId ?? '');
+  const [editExcludeFromReports, setEditExcludeFromReports] = useState(excludeFromReports);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,10 +82,11 @@ export function EditTransactionDialog({
       setEditDescription(description);
       resetAmount(amount);
       setEditCategoryId(categoryId ?? '');
+      setEditExcludeFromReports(excludeFromReports);
       setCalendarOpen(false);
       setError(null);
     }
-  }, [open, date, description, amount, categoryId, resetAmount]);
+  }, [open, date, description, amount, categoryId, excludeFromReports, resetAmount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,6 +102,7 @@ export function EditTransactionDialog({
           description: editDescription,
           amount: getAmountValue(),
           categoryId: editCategoryId || null,
+          excludeFromReports: editExcludeFromReports,
         }),
       });
 
@@ -188,6 +194,16 @@ export function EditTransactionDialog({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="edit-exclude-from-reports"
+                checked={editExcludeFromReports}
+                onCheckedChange={(checked) => setEditExcludeFromReports(checked === true)}
+              />
+              <Label htmlFor="edit-exclude-from-reports" className="font-normal leading-snug">
+                Exclude from reports
+              </Label>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
