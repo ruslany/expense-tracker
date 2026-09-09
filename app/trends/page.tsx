@@ -116,6 +116,7 @@ async function getSpendingTrends(
       // so that refunds reduce the period total
       amount: { not: 0 },
       NOT: { splits: { some: {} } },
+      excludeFromReports: false,
     },
     select: { date: true, amount: true },
     orderBy: { date: 'asc' },
@@ -233,6 +234,7 @@ async function getEssentialTrends(
       ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
       amount: { not: 0 },
       NOT: { splits: { some: {} } },
+      excludeFromReports: false,
     },
     select: {
       date: true,

@@ -46,6 +46,7 @@ async function getStats(year: number, month: number) {
         lte: endOfMonth,
       },
       NOT: { splits: { some: {} } },
+      excludeFromReports: false,
     },
   });
 
@@ -87,6 +88,7 @@ async function getCategorySpendingTable(year: number, month: number) {
         lte: endOfMonth,
       },
       NOT: { splits: { some: {} } },
+      excludeFromReports: false,
     },
     include: {
       category: true,
@@ -176,6 +178,7 @@ async function getRunningTotalForMonth(year: number, month: number) {
         lte: endOfMonth,
       },
       NOT: { splits: { some: {} } },
+      excludeFromReports: false,
     },
     orderBy: { date: 'asc' },
   });
@@ -217,6 +220,7 @@ async function getRunningEssentialTotalForMonth(year: number, month: number) {
         lte: endOfMonth,
       },
       NOT: { splits: { some: {} } },
+      excludeFromReports: false,
       category: { isEssential: true },
     },
     select: { date: true, amount: true },

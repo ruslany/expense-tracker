@@ -8,39 +8,40 @@ datasource db {
 }
 
 model Account {
-  id          String        @id @default(cuid())
-  name        String
-  institution String
-  accountType String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  institution  String
+  accountType  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   transactions Transaction[]
 
   @@index([institution])
 }
 
 model Transaction {
-  id           String   @id @default(cuid())
-  accountId    String
-  date         DateTime
-  description  String
-  amount       Float
-  categoryId   String?
-  originalData Json
-  contentHash  String
-  notes        String?
-  parentId     String?
-  importedAt   DateTime
-  reviewedAt   DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  accountId          String
+  date               DateTime
+  description        String
+  amount             Float
+  categoryId         String?
+  originalData       Json
+  contentHash        String
+  notes              String?
+  parentId           String?
+  excludeFromReports Boolean   @default(false)
+  importedAt         DateTime
+  reviewedAt         DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  account   Account      @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  category  Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  parent    Transaction?  @relation("SplitTransactions", fields: [parentId], references: [id], onDelete: Cascade)
-  splits    Transaction[] @relation("SplitTransactions")
-  tags      TransactionTag[]
-  receipts  Receipt[]
+  account  Account          @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  parent   Transaction?     @relation("SplitTransactions", fields: [parentId], references: [id], onDelete: Cascade)
+  splits   Transaction[]    @relation("SplitTransactions")
+  tags     TransactionTag[]
+  receipts Receipt[]
 
   @@unique([accountId, contentHash])
   @@index([accountId])
@@ -139,7 +140,7 @@ model WatchlistItem {
   id        String   @id @default(cuid())
   symbol    String   @unique
   name      String
-  fundType  String   // "etf" | "mutual_fund" | "stock"
+  fundType  String // "etf" | "mutual_fund" | "stock"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

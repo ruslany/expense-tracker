@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -72,6 +73,7 @@ export function AddTransactionDialog({
     reset: resetAmount,
   } = useAmountInput();
   const [categoryId, setCategoryId] = useState<string>('');
+  const [excludeFromReports, setExcludeFromReports] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,6 +85,7 @@ export function AddTransactionDialog({
       setDescription('');
       resetAmount();
       setCategoryId('');
+      setExcludeFromReports(false);
       setCalendarOpen(false);
       setError(null);
     }
@@ -103,6 +106,7 @@ export function AddTransactionDialog({
           description,
           amount: getAmountValue(),
           categoryId: categoryId || null,
+          excludeFromReports,
         }),
       });
 
@@ -207,6 +211,16 @@ export function AddTransactionDialog({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="exclude-from-reports"
+                checked={excludeFromReports}
+                onCheckedChange={(checked) => setExcludeFromReports(checked === true)}
+              />
+              <Label htmlFor="exclude-from-reports" className="font-normal leading-snug">
+                Exclude from reports
+              </Label>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>

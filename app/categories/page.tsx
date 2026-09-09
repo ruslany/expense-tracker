@@ -28,6 +28,7 @@ async function getCategoryReport(startDate: Date | null, endDate: Date | null) {
     where: {
       ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
       NOT: { splits: { some: {} } },
+      excludeFromReports: false,
     },
     include: { category: true },
   });

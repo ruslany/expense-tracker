@@ -134,6 +134,7 @@ export async function POST(request: NextRequest) {
         contentHash,
         importedAt: new Date(),
         reviewedAt: new Date(),
+        excludeFromReports: validated.excludeFromReports ?? false,
         ...(validated.tagIds && validated.tagIds.length > 0
           ? {
               tags: {
