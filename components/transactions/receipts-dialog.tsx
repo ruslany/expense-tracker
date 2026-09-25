@@ -126,7 +126,7 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
           <DialogDescription>Attached receipts for this transaction.</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           {/* Receipt list */}
           {isLoading ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
@@ -155,7 +155,9 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
                         <FileText className="size-4 shrink-0 text-muted-foreground" />
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">{receipt.fileName}</p>
+                        <p className="truncate text-sm font-medium" title={receipt.fileName}>
+                          {receipt.fileName}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {formatBytes(receipt.fileSize)} ·{' '}
                           {new Date(receipt.uploadedAt).toLocaleDateString()}
