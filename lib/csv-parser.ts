@@ -75,7 +75,56 @@ export const defaultMappings: Record<Institution, CSVParserConfig> = {
   },
 };
 
+// Matches the trailing part of an amount that was split on its thousands separator, e.g. "149.03" or "000"
+const AMOUNT_CONTINUATION = /^\d{3}(\.\d+)?$/;
+
+// Citi exports amounts of $1,000 or more without quotes (e.g. `, -$ 3,149.03,`), so the
+// thousands separator splits the amount into two fields. Rejoin those fragments so each
+// row has the same number of fields as the header.
+function repairCitiAmounts(fileContent: string): string {
+  const { data: rows } = Papa.parse<string[]>(fileContent, { skipEmptyLines: true });
+  if (rows.length === 0) {
+    return fileContent;
+  }
+
+  const headerLength = rows[0].length;
+  let repaired = false;
+
+  const fixedRows = rows.map((row, index) => {
+    if (index === 0 || row.length <= headerLength) {
+      return row;
+    }
+
+    // Status, Date, Description come first and Member Name comes last; only the
+    // Debit and Credit fields in between can contain split amounts.
+    const leading = row.slice(0, 3);
+    const trailing = row.slice(row.length - (headerLength - 5));
+    const amounts: string[] = [];
+    for (const field of row.slice(3, row.length - trailing.length)) {
+      const previous = amounts[amounts.length - 1];
+      if (previous && /\d/.test(previous) && AMOUNT_CONTINUATION.test(field)) {
+        amounts[amounts.length - 1] = `${previous},${field}`;
+      } else {
+        amounts.push(field);
+      }
+    }
+
+    const fixedRow = [...leading, ...amounts, ...trailing];
+    if (fixedRow.length !== headerLength) {
+      return row;
+    }
+    repaired = true;
+    return fixedRow;
+  });
+
+  return repaired ? Papa.unparse(fixedRows) : fileContent;
+}
+
 export function parseCSVFile(fileContent: string, config: CSVParserConfig): ParsedTransaction[] {
+  if (config.institution === 'citi') {
+    fileContent = repairCitiAmounts(fileContent);
+  }
+
   const parseResult = Papa.parse<Record<string, string>>(fileContent, {
     header: true,
     skipEmptyLines: true,
