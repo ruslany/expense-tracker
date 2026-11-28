@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Plus, X } from 'lucide-react';
@@ -63,19 +64,17 @@ export function SplitTransactionDialog({
   // Sign is inherited from the original transaction — no UI toggle needed.
   const isDebit = amount < 0;
 
-  useEffect(() => {
-    if (open) {
-      setLines([
-        {
-          description,
-          amountDigits: Math.round(Math.abs(amount) * 100).toString(),
-          categoryId: categoryId ?? '',
-        },
-        { description: '', amountDigits: '', categoryId: '' },
-      ]);
-      setError(null);
-    }
-  }, [open, description, amount, categoryId]);
+  useOnOpen(open, () => {
+    setLines([
+      {
+        description,
+        amountDigits: Math.round(Math.abs(amount) * 100).toString(),
+        categoryId: categoryId ?? '',
+      },
+      { description: '', amountDigits: '', categoryId: '' },
+    ]);
+    setError(null);
+  }, [description, amount, categoryId]);
 
   const lineAmounts = lines.map((l) => (l.amountDigits ? parseInt(l.amountDigits, 10) / 100 : 0));
   const splitsTotal = lineAmounts.reduce((sum, v) => sum + v, 0);

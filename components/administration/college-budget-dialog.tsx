@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -55,26 +56,24 @@ export function CollegeBudgetDialog({
 
   const isEditing = !!budget;
 
-  useEffect(() => {
-    if (open) {
-      if (budget) {
-        setLabel(budget.label);
-        setAcademicYearStart(new Date(budget.academicYearStart));
-        setAcademicYearEnd(new Date(budget.academicYearEnd));
-        setTagId(budget.tagId);
-        setLimitAmount(budget.limitAmount.toString());
-        setNotes(budget.notes ?? '');
-      } else {
-        setLabel('');
-        setAcademicYearStart(undefined);
-        setAcademicYearEnd(undefined);
-        setTagId('');
-        setLimitAmount('');
-        setNotes('');
-      }
-      setError(null);
+  useOnOpen(open, () => {
+    if (budget) {
+      setLabel(budget.label);
+      setAcademicYearStart(new Date(budget.academicYearStart));
+      setAcademicYearEnd(new Date(budget.academicYearEnd));
+      setTagId(budget.tagId);
+      setLimitAmount(budget.limitAmount.toString());
+      setNotes(budget.notes ?? '');
+    } else {
+      setLabel('');
+      setAcademicYearStart(undefined);
+      setAcademicYearEnd(undefined);
+      setTagId('');
+      setLimitAmount('');
+      setNotes('');
     }
-  }, [open, budget]);
+    setError(null);
+  }, [budget]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

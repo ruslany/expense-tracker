@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -59,20 +60,18 @@ export function AccountDialog({ open, onOpenChange, account }: AccountDialogProp
 
   const isEditing = !!account;
 
-  useEffect(() => {
-    if (open) {
-      if (account) {
-        setName(account.name);
-        setInstitution(account.institution);
-        setAccountType(account.accountType);
-      } else {
-        setName('');
-        setInstitution('');
-        setAccountType('');
-      }
-      setError(null);
+  useOnOpen(open, () => {
+    if (account) {
+      setName(account.name);
+      setInstitution(account.institution);
+      setAccountType(account.accountType);
+    } else {
+      setName('');
+      setInstitution('');
+      setAccountType('');
     }
-  }, [open, account]);
+    setError(null);
+  }, [account]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -36,14 +36,17 @@ export function TagsCell({ transactionId, tags, allTags }: TagsCellProps) {
   const [availableTags, setAvailableTags] = React.useState<Tag[]>(allTags);
   const [selectedTag, setSelectedTag] = React.useState<Tag | null>(null);
 
-  // Update local state when props change
-  React.useEffect(() => {
+  // Replace local state when the server sends new props (e.g. after router.refresh()).
+  const [prevTags, setPrevTags] = React.useState(tags);
+  if (tags !== prevTags) {
+    setPrevTags(tags);
     setLocalTags(tags);
-  }, [tags]);
-
-  React.useEffect(() => {
+  }
+  const [prevAllTags, setPrevAllTags] = React.useState(allTags);
+  if (allTags !== prevAllTags) {
+    setPrevAllTags(allTags);
     setAvailableTags(allTags);
-  }, [allTags]);
+  }
 
   const updateTags = async (newTags: Tag[]) => {
     setIsLoading(true);

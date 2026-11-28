@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -37,18 +38,16 @@ export function TagDialog({ open, onOpenChange, tag }: TagDialogProps) {
 
   const isEditing = !!tag;
 
-  useEffect(() => {
-    if (open) {
-      if (tag) {
-        setName(tag.name);
-        setIsBigExpense(tag.isBigExpense);
-      } else {
-        setName('');
-        setIsBigExpense(false);
-      }
-      setError(null);
+  useOnOpen(open, () => {
+    if (tag) {
+      setName(tag.name);
+      setIsBigExpense(tag.isBigExpense);
+    } else {
+      setName('');
+      setIsBigExpense(false);
     }
-  }, [open, tag]);
+    setError(null);
+  }, [tag]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

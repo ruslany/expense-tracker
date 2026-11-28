@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -33,12 +34,12 @@ export function CSVMappingDialog({ open, onOpenChange, mapping }: CSVMappingDial
   const [skipPatterns, setSkipPatterns] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (open && mapping) {
+  useOnOpen(open, () => {
+    if (mapping) {
       setSkipPatterns(mapping.skipPatterns);
       setError(null);
     }
-  }, [open, mapping]);
+  }, [mapping]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

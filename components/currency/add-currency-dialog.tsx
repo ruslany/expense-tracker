@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -32,29 +32,23 @@ export function AddCurrencyDialog({ open, onOpenChange, existingSymbols }: AddCu
   const [base, setBase] = useState('EUR');
   const [quote, setQuote] = useState('USD');
   const [isAdding, setIsAdding] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) {
+  const validationError =
+    base === quote
+      ? 'Base and quote currencies must be different'
+      : existingSymbols.includes(`${base}${quote}=X`)
+        ? `${base}/${quote} is already being tracked`
+        : null;
+
+  // Reset the dialog whenever it closes so it opens fresh next time.
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
       setBase('EUR');
       setQuote('USD');
-      setValidationError(null);
       setIsAdding(false);
     }
-  }, [open]);
-
-  useEffect(() => {
-    if (base === quote) {
-      setValidationError('Base and quote currencies must be different');
-      return;
-    }
-    const symbol = `${base}${quote}=X`;
-    if (existingSymbols.includes(symbol)) {
-      setValidationError(`${base}/${quote} is already being tracked`);
-      return;
-    }
-    setValidationError(null);
-  }, [base, quote, existingSymbols]);
+    onOpenChange(nextOpen);
+  };
 
   const handleAdd = async () => {
     if (validationError) return;
@@ -74,7 +68,7 @@ export function AddCurrencyDialog({ open, onOpenChange, existingSymbols }: AddCu
       }
 
       toast.success(`${base}/${quote} added to tracked currencies`);
-      onOpenChange(false);
+      handleOpenChange(false);
       router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add currency pair';
@@ -85,7 +79,7 @@ export function AddCurrencyDialog({ open, onOpenChange, existingSymbols }: AddCu
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>Track Currency Pair</DialogTitle>
@@ -133,7 +127,7 @@ export function AddCurrencyDialog({ open, onOpenChange, existingSymbols }: AddCu
         {validationError && <p className="text-sm text-destructive">{validationError}</p>}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
+          <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={isAdding}>
             Cancel
           </Button>
           <Button onClick={handleAdd} disabled={isAdding || !!validationError}>

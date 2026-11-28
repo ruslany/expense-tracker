@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { toast } from 'sonner';
 import { Search, Loader2 } from 'lucide-react';
 import {
@@ -49,25 +50,12 @@ export function MatchTransactionDialog({
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
+  useOnOpen(open, () => {
     setSearch('');
     setStartDate(undefined);
     setEndDate(undefined);
     setTransactions([]);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      fetchTransactions();
-    }, 300);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, startDate, endDate, open]);
+  });
 
   async function fetchTransactions() {
     setIsLoading(true);
@@ -87,6 +75,18 @@ export function MatchTransactionDialog({
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!open) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      fetchTransactions();
+    }, 300);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, startDate, endDate, open]);
 
   async function handleAssign(transactionId: string) {
     setAssigningId(transactionId);

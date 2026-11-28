@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
@@ -77,19 +78,17 @@ export function AddTransactionDialog({
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (open) {
-      setAccountId('');
-      const now = new Date();
-      setDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
-      setDescription('');
-      resetAmount();
-      setCategoryId('');
-      setExcludeFromReports(false);
-      setCalendarOpen(false);
-      setError(null);
-    }
-  }, [open, resetAmount]);
+  useOnOpen(open, () => {
+    setAccountId('');
+    const now = new Date();
+    setDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())));
+    setDescription('');
+    resetAmount();
+    setCategoryId('');
+    setExcludeFromReports(false);
+    setCalendarOpen(false);
+    setError(null);
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { FileText, Trash2, Link2, Download } from 'lucide-react';
@@ -41,11 +41,14 @@ export function UnprocessedReceiptsList({ receipts: initial }: UnprocessedReceip
   const router = useRouter();
   const [receipts, setReceipts] = useState(initial);
   const [matchingId, setMatchingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setReceipts(initial);
-  }, [initial]);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Replace the local list when the server sends a new one (e.g. after router.refresh()).
+  const [prevInitial, setPrevInitial] = useState(initial);
+  if (initial !== prevInitial) {
+    setPrevInitial(initial);
+    setReceipts(initial);
+  }
 
   const matchingReceipt = receipts.find((r) => r.id === matchingId) ?? null;
 

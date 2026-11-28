@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useSymbolSearch } from '@/hooks/use-symbol-search';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Search, Loader2 } from 'lucide-react';
@@ -57,16 +58,13 @@ export function AddPortfolioDialog({
 }: AddPortfolioDialogProps) {
   const router = useRouter();
   const [mode, setMode] = useState<'ticker' | 'manual'>('ticker');
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const { query, setQuery, results, isSearching } = useSymbolSearch<SearchResult>();
   const [selectedResult, setSelectedResult] = useState<SearchResult | null>(null);
   const [quantity, setQuantity] = useState('');
   const [accountName, setAccountName] = useState('');
   const [assetClass, setAssetClass] = useState<AssetClass>('other');
   const [isDetecting, setIsDetecting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const [manualName, setManualName] = useState('');
   const [manualAccountName, setManualAccountName] = useState('');
@@ -75,12 +73,11 @@ export function AddPortfolioDialog({
   const [manualAssetClass, setManualAssetClass] = useState<AssetClass>('other');
   const [isAddingManual, setIsAddingManual] = useState(false);
 
-  useEffect(() => {
-    if (!open) {
+  // Reset the dialog whenever it closes so it opens fresh next time.
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
       setMode('ticker');
       setQuery('');
-      setResults([]);
-      setIsSearching(false);
       setSelectedResult(null);
       setQuantity('');
       setAccountName('');
@@ -94,34 +91,11 @@ export function AddPortfolioDialog({
       setManualAssetClass('other');
       setIsAddingManual(false);
     }
-  }, [open]);
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!query || query.length < 1) {
-      setResults([]);
-      setIsSearching(false);
-      return;
-    }
-    setIsSearching(true);
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const response = await fetch(`/api/watchlist/search?q=${encodeURIComponent(query)}`);
-        if (response.ok) setResults(await response.json());
-      } catch (error) {
-        console.error('Search failed:', error);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [query]);
+    onOpenChange(nextOpen);
+  };
 
   const handleSelect = async (result: SearchResult) => {
     setSelectedResult(result);
-    setResults([]);
     setQuery('');
     setIsDetecting(true);
     try {
@@ -172,7 +146,7 @@ export function AddPortfolioDialog({
       }
 
       toast.success(`${selectedResult.symbol} added to portfolio`);
-      onOpenChange(false);
+      handleOpenChange(false);
       router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add position';
@@ -224,7 +198,7 @@ export function AddPortfolioDialog({
       }
 
       toast.success(`${manualName.trim()} added to portfolio`);
-      onOpenChange(false);
+      handleOpenChange(false);
       router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add position';
@@ -235,7 +209,7 @@ export function AddPortfolioDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add Position</DialogTitle>
@@ -385,7 +359,11 @@ export function AddPortfolioDialog({
                   </Select>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdding}>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleOpenChange(false)}
+                    disabled={isAdding}
+                  >
                     Cancel
                   </Button>
                   <Button
@@ -480,7 +458,7 @@ export function AddPortfolioDialog({
             <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleOpenChange(false)}
                 disabled={isAddingManual}
               >
                 Cancel
