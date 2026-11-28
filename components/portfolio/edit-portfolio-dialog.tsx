@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -47,15 +48,15 @@ export function EditPortfolioDialog({ open, onOpenChange, item }: EditPortfolioD
   const [manualPrice, setManualPrice] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (open && item) {
+  useOnOpen(open, () => {
+    if (item) {
       setName(item.name);
       setQuantity(String(item.quantity));
       setAccountName(item.accountName);
       setAssetClass(item.assetClass);
       setManualPrice(item.manualPrice !== null ? String(item.manualPrice) : '');
     }
-  }, [open, item]);
+  }, [item]);
 
   const handleSave = async () => {
     if (!item) return;

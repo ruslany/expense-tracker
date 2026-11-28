@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useSymbolSearch } from '@/hooks/use-symbol-search';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Search, Loader2 } from 'lucide-react';
@@ -40,53 +41,17 @@ function getFundType(typeDisp: string): string {
 
 export function AddWatchlistDialog({ open, onOpenChange }: AddWatchlistDialogProps) {
   const router = useRouter();
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const { query, setQuery, results, isSearching } = useSymbolSearch<SearchResult>();
   const [isAdding, setIsAdding] = useState<string | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  useEffect(() => {
-    if (!open) {
+  // Reset the dialog whenever it closes so it opens fresh next time.
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
       setQuery('');
-      setResults([]);
-      setIsSearching(false);
       setIsAdding(null);
     }
-  }, [open]);
-
-  useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    if (!query || query.length < 1) {
-      setResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    setIsSearching(true);
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const response = await fetch(`/api/watchlist/search?q=${encodeURIComponent(query)}`);
-        if (response.ok) {
-          const data = await response.json();
-          setResults(data);
-        }
-      } catch (error) {
-        console.error('Search failed:', error);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
-
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [query]);
+    onOpenChange(nextOpen);
+  };
 
   const handleAdd = async (result: SearchResult) => {
     setIsAdding(result.symbol);
@@ -107,7 +72,7 @@ export function AddWatchlistDialog({ open, onOpenChange }: AddWatchlistDialogPro
       }
 
       toast.success(`${result.symbol} added to watchlist`);
-      onOpenChange(false);
+      handleOpenChange(false);
       router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add to watchlist';
@@ -118,7 +83,7 @@ export function AddWatchlistDialog({ open, onOpenChange }: AddWatchlistDialogPro
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add to Watchlist</DialogTitle>

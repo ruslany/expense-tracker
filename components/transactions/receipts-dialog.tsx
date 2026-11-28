@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Paperclip, Trash2, Download, Upload, FileText, Image as ImageIcon } from 'lucide-react';
@@ -48,24 +49,30 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchReceipts = useCallback(async () => {
+  // Clear the previous selection and show the loading state as soon as the dialog opens.
+  useOnOpen(open, () => {
+    setSelectedFile(null);
     setIsLoading(true);
-    try {
-      const res = await fetch(`/api/transactions/${transactionId}/receipts`);
-      if (!res.ok) throw new Error('Failed to load receipts');
-      setReceipts(await res.json());
-    } catch {
-      toast.error('Failed to load receipts');
-    } finally {
-      setIsLoading(false);
-    }
   }, [transactionId]);
 
+  // Callers set isLoading to true before calling this. State is only updated in the
+  // promise callbacks, so calling it from the effect below doesn't cause an extra render.
+  const loadReceipts = useCallback(
+    () =>
+      fetch(`/api/transactions/${transactionId}/receipts`)
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to load receipts');
+          return res.json();
+        })
+        .then((data: Receipt[]) => setReceipts(data))
+        .catch(() => toast.error('Failed to load receipts'))
+        .finally(() => setIsLoading(false)),
+    [transactionId],
+  );
+
   useEffect(() => {
-    if (!open) return;
-    setSelectedFile(null);
-    fetchReceipts();
-  }, [open, fetchReceipts]);
+    if (open) loadReceipts();
+  }, [open, loadReceipts]);
 
   async function handleUpload() {
     if (!selectedFile) return;
@@ -87,7 +94,8 @@ export function ReceiptsDialog({ transactionId, open, onOpenChange }: ReceiptsDi
       toast.success('Receipt uploaded');
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
-      await fetchReceipts();
+      setIsLoading(true);
+      await loadReceipts();
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Upload failed');

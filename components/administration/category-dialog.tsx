@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -46,20 +47,18 @@ export function CategoryDialog({
 
   const isEditing = !!category;
 
-  useEffect(() => {
-    if (open) {
-      if (category) {
-        setName(category.name);
-        setKeywords(category.keywords);
-        setIsEssential(category.isEssential);
-      } else {
-        setName('');
-        setKeywords([]);
-        setIsEssential(false);
-      }
-      setError(null);
+  useOnOpen(open, () => {
+    if (category) {
+      setName(category.name);
+      setKeywords(category.keywords);
+      setIsEssential(category.isEssential);
+    } else {
+      setName('');
+      setKeywords([]);
+      setIsEssential(false);
     }
-  }, [open, category]);
+    setError(null);
+  }, [category]);
 
   // Filter out current category's keywords from existingKeywords
   const filteredExistingKeywords = category

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useOnOpen } from '@/hooks/use-on-open';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { formatInTimeZone } from 'date-fns-tz';
@@ -76,17 +77,15 @@ export function EditTransactionDialog({
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (open) {
-      setEditDate(date);
-      setEditDescription(description);
-      resetAmount(amount);
-      setEditCategoryId(categoryId ?? '');
-      setEditExcludeFromReports(excludeFromReports);
-      setCalendarOpen(false);
-      setError(null);
-    }
-  }, [open, date, description, amount, categoryId, excludeFromReports, resetAmount]);
+  useOnOpen(open, () => {
+    setEditDate(date);
+    setEditDescription(description);
+    resetAmount(amount);
+    setEditCategoryId(categoryId ?? '');
+    setEditExcludeFromReports(excludeFromReports);
+    setCalendarOpen(false);
+    setError(null);
+  }, [date, description, amount, categoryId, excludeFromReports]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
